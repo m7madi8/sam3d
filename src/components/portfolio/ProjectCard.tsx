@@ -12,7 +12,7 @@ type ProjectCardProps = {
 };
 
 export function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLButtonElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-80px" });
 
   return (

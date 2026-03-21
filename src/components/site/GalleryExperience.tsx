@@ -34,7 +34,7 @@ export function GalleryExperience() {
   const contentRef = useRef<HTMLDivElement>(null);
   const prevFilterRef = useRef<string>(ALL_ID);
   const isInitialLoadRef = useRef(true);
-  const cardRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const cardRefs = useRef<Record<string, HTMLElement | null>>({});
   const [zoomProject, setZoomProject] = useState<GalleryProject | null>(null);
   const [zoomReady, setZoomReady] = useState(false);
   const zoomCardRef = useRef<HTMLDivElement | null>(null);

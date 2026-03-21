@@ -62,7 +62,7 @@ export function ProjectDetailView() {
     };
     rafId = requestAnimationFrame(raf);
 
-    let refreshId: ReturnType<typeof setTimeout> | undefined;
+    let refreshId: number | undefined;
     const ctx = gsap.context(() => {
       const hero = heroRef.current;
       const heroImageWrap = heroImageWrapRef.current;

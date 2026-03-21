@@ -43,7 +43,7 @@ export function buildPortfolioProjects(
 ): PortfolioProject[] {
   const defaultSpecs = {
     status: "Completed",
-    services: ["Interior planning", "Spatial planning", "Furniture curation", "Project coordination"] as const,
+    services: ["Interior planning", "Spatial planning", "Furniture curation", "Project coordination"],
     year: "2024",
   };
   const interior: PortfolioProject[] = [

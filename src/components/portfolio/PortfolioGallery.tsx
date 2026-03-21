@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Lenis from "lenis";
@@ -155,8 +156,11 @@ export function PortfolioGallery() {
                 className="pointer-events-none fixed left-0 top-0 z-[85] overflow-hidden bg-neutral-900 shadow-2xl"
               >
                 <div className="absolute inset-0">
-                  <activeProject.image.component
+                  <Image
+                    src={activeProject.thumbnail}
                     alt={activeProject.title}
+                    fill
+                    sizes="100vw"
                     className="h-full w-full object-cover"
                   />
                 </div>
