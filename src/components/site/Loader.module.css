@@ -37,7 +37,6 @@
 
 .logoWrap {
   width: clamp(180px, 24vw, 270px);
-  position: relative;
   opacity: 0.98;
 }
 
@@ -46,24 +45,6 @@
   height: auto;
   display: block;
   object-fit: contain;
-}
-
-.logoBase {
-  opacity: 0.28;
-  filter: grayscale(1) contrast(1.05);
-}
-
-.logoFillMask {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  width: 0%;
-  animation: logoFillReveal 1.35s ease-out forwards;
-}
-
-.logoFill {
-  opacity: 1;
-  filter: none;
 }
 
 .percent {
@@ -94,11 +75,3 @@
   line-height: 1;
 }
 
-@keyframes logoFillReveal {
-  0% {
-    width: 0%;
-  }
-  100% {
-    width: 100%;
-  }
-}
