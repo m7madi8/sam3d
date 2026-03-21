@@ -1,0 +1,13 @@
+---
+description: Project stack, structure, and global conventions for sam3d
+alwaysApply: true
+---
+
+# sam3d – Project Overview
+
+- **Stack**: Next.js 16 (App Router), React 19, TypeScript. Animation: GSAP, Lenis (smooth scroll).
+- **Paths**: Use the `@/` alias for imports (e.g. `@/components/site/Loader`, `@/styles/tokens.css`).
+- **App Router**: Pages live under `src/app/`; use `layout.tsx` for shared shell and `page.tsx` for routes. Dynamic routes use `[param]` folders.
+- **Client vs server**: Add `"use client"` only when using hooks, browser APIs, or event handlers. Prefer server components by default.
+- **Content**: Typed content and constants live in `src/content/` (e.g. `capsules.ts`, `gallery.ts`). Use named exports and explicit types.
+- **Accessibility**: Respect `prefers-reduced-motion` via `useReducedMotion()`; avoid heavy motion when it returns true.

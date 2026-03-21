@@ -1,0 +1,13 @@
+---
+description: TypeScript and content module conventions
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# TypeScript
+
+- Use **explicit types** for exported data and props. Define interfaces or types for content shapes (e.g. `Service`, gallery items).
+- **Content modules** in `src/content/`: export typed arrays/objects and reuse types (e.g. `export type Service = { ... }; export const services: Service[]`).
+- Use **path alias** `@/` for imports (e.g. `@/content/capsules`, `@/lib/animations/scrollNarrative`).
+- Prefer **const assertions** for static option lists: `as const` for tuples of string literals used in forms or configs.
+- In hooks and lib code, avoid `any`; use `unknown` and narrow, or define minimal types for DOM/GSAP targets when needed.

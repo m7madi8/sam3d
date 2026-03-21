@@ -1,0 +1,14 @@
+---
+description: React and TSX component patterns
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# React / TSX Conventions
+
+- Use **functional components** and **named exports** (e.g. `export function Loader()`).
+- Colocate **CSS Modules** with the component: same folder, `ComponentName.module.css`, import as `styles`.
+- Use **typed props**: define a `ComponentNameProps` type (or inline) and use it on the component.
+- For client-only logic (hooks, refs, events), put `"use client"` at the top of the file.
+- Prefer **data attributes** for animation targets (e.g. `data-request-entry`) and query in `useEffect`/`useLayoutEffect` with GSAP rather than inline refs for many elements.
+- Use **Next.js** primitives: `Image`, `Link` from `next/image` and `next/link`; use `next/font` for fonts in the root layout.

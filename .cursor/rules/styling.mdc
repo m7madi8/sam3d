@@ -1,0 +1,13 @@
+---
+description: Styling with design tokens and CSS modules
+globs: "**/*.css"
+alwaysApply: false
+---
+
+# Styling
+
+- **Design tokens** live in `src/styles/tokens.css`. Use CSS variables for colors, spacing, typography, and radius (e.g. `var(--surface-primary)`, `var(--text-primary)`, `var(--space-md)`, `var(--radius-md)`).
+- **Theme**: Light/dark is driven by `data-theme="dark"` on `:root`. Tokens define both light and dark values; avoid hardcoding hex in component styles.
+- **Global base**: `src/app/globals.css` imports tokens and sets `html`/`body`. Page-level layout uses tokens.
+- **Component styles**: Use **CSS Modules** (`.module.css`) next to the component. Class names in CSS are plain (e.g. `.formRoot`); reference via `styles.formRoot`. Prefer semantic class names.
+- Prefer **tokens over raw values**: e.g. `padding: var(--space-md)` instead of `padding: 1.5rem`, and `color: var(--text-muted)` instead of a hex.

@@ -1,0 +1,92 @@
+:root {
+  --color-obsidian: #1c1b19;
+  --color-warm-cedar: #7a7268;
+  --color-amber-glow: #e8e3da;
+  --color-stone-grey: #3a3632;
+  --color-ivory: #fcfbf9;
+
+  /* Backward-compatible aliases used across existing styles */
+  --color-black: var(--color-obsidian);
+  --color-white: var(--color-ivory);
+  --color-sand: var(--color-warm-cedar);
+  --color-beige-light: var(--color-ivory);
+  --color-beige-soft: #f5f3ef;
+  --color-charcoal: var(--color-stone-grey);
+
+  --surface-primary: var(--color-beige-light);
+  --surface-secondary: var(--color-beige-soft);
+  --surface-dark: var(--color-obsidian);
+  --text-primary: #2d2a26;
+  --text-muted: #5c564f;
+  --accent-primary: var(--color-warm-cedar);
+  --accent-hover: #ebe7e0;
+
+  --border-light: rgb(45 42 38 / 14%);
+  --border-medium: rgb(45 42 38 / 22%);
+  --shadow-light: 0 2px 12px rgb(28 27 25 / 8%);
+  --shadow-soft: 0 18px 42px rgb(28 27 25 / 10%);
+
+  --font-sans:
+    "Inter", "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --display-size: clamp(3.4rem, 9vw, 8.5rem);
+  --heading-size: clamp(2rem, 4.1vw, 3.6rem);
+  --body-size: clamp(0.95rem, 1.2vw, 1.1rem);
+  --label-size: 0.75rem;
+  --line-height-body: 1.7;
+  --line-height-tight: 1.02;
+
+  --space-2xs: 0.4rem;
+  --space-xs: 0.75rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 7rem;
+  --space-3xl: 10rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.8rem;
+
+  --max-content-width: 1280px;
+}
+
+/* Light theme: higher contrast and comfortable reading */
+:root[data-theme="light"] {
+  --color-obsidian: #1c1b19;
+  --color-warm-cedar: #7a7268;
+  --color-stone-grey: #3a3632;
+  --text-primary: #2d2a26;
+  --text-muted: #5c564f;
+  --border-light: rgb(45 42 38 / 14%);
+  --border-medium: rgb(45 42 38 / 22%);
+  --shadow-soft: 0 18px 42px rgb(28 27 25 / 10%);
+}
+
+:root[data-theme="dark"] {
+  --color-obsidian: #121214;
+  --color-warm-cedar: #9d9386;
+  --color-amber-glow: #2a2622;
+  --color-stone-grey: #d6d1c8;
+  --color-ivory: #f4efe7;
+
+  --color-black: #121214;
+  --color-white: #f4efe7;
+  --color-sand: #9d9386;
+  --color-beige-light: #171719;
+  --color-beige-soft: #1f1f23;
+  --color-charcoal: #ece8e0;
+
+  --surface-primary: #121214;
+  --surface-secondary: #1a1a1d;
+  --surface-dark: #0f0f11;
+  --text-primary: #ece8e0;
+  --text-muted: #b5ad9f;
+  --accent-primary: #9d9386;
+  --accent-hover: #2a2622;
+
+  --border-light: rgb(255 255 255 / 12%);
+  --border-medium: rgb(255 255 255 / 18%);
+  --shadow-soft: 0 18px 48px rgb(0 0 0 / 42%);
+}

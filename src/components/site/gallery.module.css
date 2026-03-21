@@ -1,0 +1,763 @@
+.pageShell {
+  position: relative;
+  min-height: 100vh;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  isolation: isolate;
+}
+
+.pageShell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 12% 10%, rgb(233 228 220 / 26%), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgb(233 228 220 / 18%), transparent 30%),
+    linear-gradient(to bottom, #fcfbf8, #faf8f4 38%, #f7f5f1 100%);
+}
+
+.galleryRoot {
+  padding: 0 clamp(1.2rem, 4vw, 3rem) clamp(3rem, 6vh, 5rem);
+  max-width: var(--max-content-width);
+  margin-inline: auto;
+}
+
+/* —— Header: لوغو + رجوع (يسارًا لعدم تعارض مع زر المنيو) —— */
+.galleryHeaderBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(1rem, 2.5vh, 1.5rem) 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid rgb(42 39 37 / 12%);
+  padding-right: 5rem; /* مكان لزر المنيو الثابت */
+}
+
+.galleryHeaderBarLeft {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 1.75rem);
+}
+
+.galleryTopLogo {
+  display: block;
+  margin-bottom: 0;
+  width: clamp(128px, 20vw, 180px);
+}
+
+.galleryTopLogoImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0);
+  transition: filter 0.3s ease;
+}
+
+.galleryTopLogo:hover .galleryTopLogoImg {
+  filter: brightness(0) opacity(0.85);
+}
+
+:global(html[data-theme="dark"]) .galleryTopLogoImg {
+  filter: brightness(0) invert(1);
+}
+
+:global(html[data-theme="dark"]) .galleryTopLogo:hover .galleryTopLogoImg {
+  filter: brightness(0) invert(1) opacity(0.9);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0.5rem 0.9rem;
+  border: 1px solid rgb(42 39 37 / 18%);
+  border-radius: 999px;
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  color: var(--color-obsidian);
+  border-color: var(--color-warm-cedar);
+  background: rgb(42 39 37 / 4%);
+}
+
+/* —— Hero: عنوان المعرض —— */
+.galleryHeader {
+  text-align: center;
+  margin-top: clamp(3rem, 8vh, 5rem);
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+  padding-bottom: clamp(2rem, 5vh, 3rem);
+  border-bottom: 1px solid rgb(42 39 37 / 10%);
+}
+
+.galleryKicker {
+  color: var(--color-warm-cedar);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.galleryKicker::before,
+.galleryKicker::after {
+  content: "";
+  width: clamp(24px, 4vw, 48px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-warm-cedar));
+}
+
+.galleryKicker::after {
+  background: linear-gradient(90deg, var(--color-warm-cedar), transparent);
+}
+
+.galleryTitle {
+  font-size: clamp(2.8rem, 7vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+  color: var(--color-obsidian);
+  max-width: 14ch;
+  margin-inline: auto;
+  text-transform: uppercase;
+}
+
+/* —— أزرار الفلترة فاخرة —— */
+.filterBar {
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+
+.filterList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+}
+
+.filterTab {
+  padding: 0.6rem 1.35rem;
+  border: 1px solid rgb(42 39 37 / 22%);
+  background: rgb(255 255 255 / 60%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+}
+
+.filterTab:hover,
+.filterTab:focus-visible {
+  color: var(--color-obsidian);
+  border-color: var(--color-warm-cedar);
+  background: rgb(255 255 255 / 85%);
+  box-shadow: 0 4px 20px rgb(26 26 27 / 8%);
+}
+
+.filterTab::after {
+  display: none;
+}
+
+.filterTabActive {
+  color: var(--color-ivory);
+  background: var(--color-obsidian);
+  border-color: var(--color-obsidian);
+  box-shadow: 0 4px 24px rgb(26 26 27 / 20%);
+}
+
+.filterTabActive:hover,
+.filterTabActive:focus-visible {
+  color: var(--color-ivory);
+  background: var(--color-obsidian);
+  border-color: var(--color-obsidian);
+  box-shadow: 0 6px 28px rgb(26 26 27 / 25%);
+}
+
+.filterTabActive::after {
+  display: none;
+}
+
+.galleryContent {
+  min-height: 40vh;
+}
+
+.gallerySection {
+  margin-bottom: clamp(2.5rem, 6vh, 4rem);
+}
+
+.gallerySection:last-child {
+  margin-bottom: 0;
+}
+
+.gallerySectionLabel {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-obsidian);
+  margin: 0 0 clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(1.25rem, 2.5vw, 1.85rem);
+}
+
+.card {
+  position: relative;
+  border-radius: 0.5rem 0.5rem 1.75rem 0.5rem;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background: var(--surface-secondary);
+  box-shadow: 0 16px 40px rgb(26 26 27 / 10%);
+  border: 1px solid rgb(42 39 37 / 8%);
+  transition:
+    transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.4s ease,
+    border-color 0.3s ease;
+}
+
+.card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 0;
+  background: linear-gradient(to bottom, var(--color-warm-cedar), var(--color-obsidian));
+  z-index: 3;
+  transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card:hover,
+.card:focus-within {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: 0 28px 56px rgb(26 26 27 / 16%);
+  border-color: rgb(42 39 37 / 14%);
+}
+
+.card:hover::before {
+  height: 100%;
+}
+
+.cardTags {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: clamp(0.6rem, 1.2vw, 0.85rem);
+  pointer-events: none;
+}
+
+.cardTagPhotos,
+.cardTagCategory {
+  display: inline-block;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(255 252 248 / 98%);
+  line-height: 1.2;
+}
+
+.cardTagPhotos {
+  background: rgb(28 26 24 / 92%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 24%);
+}
+
+.cardTagCategory {
+  background: linear-gradient(135deg, #8f867b, #6b6258);
+  box-shadow: 0 2px 10px rgb(111 98 87 / 35%);
+}
+
+.cardLink {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 2;
+}
+
+.cardMedia {
+  position: absolute;
+  inset: 0;
+}
+
+.cardMedia img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.card:hover .cardMedia img {
+  transform: scale(1.08) rotate(0.5deg);
+}
+
+.cardOverlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, transparent 40%, rgb(18 16 14 / 85%) 100%),
+    linear-gradient(to top, rgb(18 16 14 / 78%) 0%, rgb(18 16 14 / 20%) 50%, transparent 75%);
+  pointer-events: none;
+}
+
+.cardCopy {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: clamp(1rem, 2.2vw, 1.5rem);
+  color: rgb(255 251 245 / 98%);
+  text-shadow: 0 2px 20px rgb(0 0 0 / 48%);
+}
+
+.cardTitle {
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 0.25rem;
+}
+
+.zoomOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgb(0 0 0 / 78%);
+  backdrop-filter: blur(18px);
+}
+
+.zoomCard {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 55%);
+}
+
+.zoomImage {
+  object-fit: cover;
+}
+
+.zoomGradient {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(135deg, transparent 40%, rgb(18 16 14 / 85%) 100%),
+    linear-gradient(to top, rgb(18 16 14 / 78%) 0%, rgb(18 16 14 / 20%) 50%, transparent 75%);
+}
+
+.zoomMeta {
+  position: absolute;
+  inset-inline: clamp(1.5rem, 4vw, 3rem);
+  bottom: clamp(1.75rem, 4vh, 3rem);
+  color: rgb(255 251 245 / 98%);
+  text-shadow: 0 4px 28px rgb(0 0 0 / 70%);
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.5s ease 0.25s,
+    transform 0.5s ease 0.25s;
+}
+
+.zoomMetaKicker {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin: 0 0 0.6rem;
+  opacity: 0.88;
+}
+
+.zoomMetaTitle {
+  font-size: clamp(1.8rem, 4.4vw, 2.6rem);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.zoomMetaReady {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.zoomClose {
+  position: fixed;
+  right: clamp(1rem, 4vw, 2rem);
+  top: clamp(1rem, 4vh, 2rem);
+  z-index: 81;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  border: none;
+  background: rgb(0 0 0 / 65%);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 55%);
+}
+
+.zoomClose:hover,
+.zoomClose:focus-visible {
+  background: rgb(0 0 0 / 85%);
+}
+
+.detailPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(460px, 42vw);
+  background: rgb(250 248 244 / 98%);
+  color: #14110f;
+  box-shadow: -32px 0 80px rgb(0 0 0 / 65%);
+  padding: clamp(1.5rem, 3vh, 2rem) clamp(1.5rem, 3vw, 2.25rem);
+  overflow-y: auto;
+  transform: translateX(100%);
+  opacity: 0;
+  transition:
+    transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 0.5s ease;
+}
+
+.detailPanelReady {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.detailPanelTitle {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
+}
+
+.detailPanelKicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7a6d5f;
+  margin: 0 0 1.25rem;
+}
+
+.detailPanelBody {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: #3a342e;
+  margin: 0 0 1.5rem;
+}
+
+.detailPanelMeta {
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #9b8977;
+}
+
+.detailPanelButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1.75rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: none;
+  background: #14110f;
+  color: #fdf8f1;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 10px 32px rgb(0 0 0 / 45%);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease;
+}
+
+.detailPanelButton:hover,
+.detailPanelButton:focus-visible {
+  background: #000;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 40px rgb(0 0 0 / 55%);
+}
+
+.detailPanelButtonIcon {
+  font-size: 0.85rem;
+}
+
+.cardSubtitle {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(255 248 238 / 78%);
+  margin: 0;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 1023px) {
+  .galleryHeaderBar {
+    padding: 0.85rem 0;
+  }
+
+  .galleryTitle {
+    font-size: clamp(2.2rem, 6vw, 3.5rem);
+  }
+
+  .cardsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(1rem, 2vw, 1.35rem);
+  }
+}
+
+@media (max-width: 767px) {
+  .galleryHeaderBar {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    padding-right: 3.5rem; /* مكان لزر المنيو على الموبايل */
+  }
+
+  .galleryTopLogo {
+    width: clamp(100px, 28vw, 140px);
+  }
+
+  .backLink {
+    font-size: 0.65rem;
+    letter-spacing: 0.16em;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .galleryHeader {
+    margin-top: clamp(2rem, 5vh, 3rem);
+    margin-bottom: clamp(2rem, 5vh, 3rem);
+  }
+
+  .galleryKicker {
+    letter-spacing: 0.2em;
+    font-size: 0.65rem;
+  }
+
+  .galleryKicker::before,
+  .galleryKicker::after {
+    width: 16px;
+  }
+
+  .galleryTitle {
+    font-size: clamp(1.85rem, 8vw, 2.5rem);
+  }
+
+  .filterTab {
+    font-size: 0.72rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .filterList {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 1.25rem;
+    padding-bottom: 0.5rem;
+    margin-inline: -0.5rem;
+    padding-inline: 0.75rem;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .filterList::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filterList li {
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  .filterTab {
+    font-size: 0.85rem;
+  }
+
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .card {
+    aspect-ratio: 4 / 5;
+    border-radius: 0.5rem 0.5rem 1.5rem 0.5rem;
+  }
+
+  .cardCopy {
+    padding: clamp(1.1rem, 3vw, 1.4rem);
+  }
+
+  .cardTitle {
+    font-size: clamp(1.1rem, 4.5vw, 1.35rem);
+  }
+
+  .gallerySectionLabel {
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+  }
+
+  .zoomCard {
+    box-shadow: none;
+  }
+
+  .detailPanel {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    width: 100%;
+    height: min(60vh, 420px);
+    border-radius: 1.5rem 1.5rem 0 0;
+    box-shadow: 0 -20px 60px rgb(0 0 0 / 70%);
+    padding: 1.25rem 1.25rem 1.75rem;
+    background: radial-gradient(circle at top, rgb(255 255 255 / 92%), rgb(245 240 232 / 98%));
+  }
+
+  .detailPanelTitle {
+    font-size: 1.3rem;
+  }
+
+  .detailPanelBody {
+    font-size: 0.85rem;
+  }
+}
+
+:global(html[data-theme="dark"]) .pageShell::before {
+  background:
+    radial-gradient(circle at 12% 10%, rgb(40 38 35 / 40%), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgb(30 28 26 / 35%), transparent 30%),
+    linear-gradient(to bottom, #121214, #171719 50%, #1a1a1d 100%);
+}
+
+:global(html[data-theme="dark"]) .galleryTitle,
+:global(html[data-theme="dark"]) .gallerySectionLabel {
+  color: var(--color-ivory);
+}
+
+:global(html[data-theme="dark"]) .galleryHeaderBar {
+  border-bottom-color: rgb(255 255 255 / 12%);
+}
+
+:global(html[data-theme="dark"]) .backLink {
+  color: var(--text-muted);
+  border-color: rgb(255 255 255 / 18%);
+}
+
+:global(html[data-theme="dark"]) .backLink:hover,
+:global(html[data-theme="dark"]) .backLink:focus-visible {
+  color: var(--color-ivory);
+  border-color: var(--color-warm-cedar);
+  background: rgb(255 255 255 / 6%);
+}
+
+:global(html[data-theme="dark"]) .galleryHeader {
+  border-bottom-color: rgb(255 255 255 / 10%);
+}
+
+:global(html[data-theme="dark"]) .galleryKicker::before,
+:global(html[data-theme="dark"]) .galleryKicker::after {
+  background: linear-gradient(90deg, transparent, var(--color-warm-cedar));
+}
+
+:global(html[data-theme="dark"]) .galleryKicker::after {
+  background: linear-gradient(90deg, var(--color-warm-cedar), transparent);
+}
+
+:global(html[data-theme="dark"]) .filterTab {
+  color: var(--text-muted);
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 6%);
+}
+
+:global(html[data-theme="dark"]) .filterTab:hover,
+:global(html[data-theme="dark"]) .filterTab:focus-visible {
+  color: var(--color-ivory);
+  border-color: var(--color-warm-cedar);
+  background: rgb(255 255 255 / 12%);
+}
+
+:global(html[data-theme="dark"]) .filterTabActive {
+  color: var(--color-obsidian);
+  background: var(--color-ivory);
+  border-color: var(--color-ivory);
+}
+
+:global(html[data-theme="dark"]) .filterTabActive:hover,
+:global(html[data-theme="dark"]) .filterTabActive:focus-visible {
+  color: var(--color-obsidian);
+  background: var(--color-ivory);
+  border-color: var(--color-ivory);
+}
+
+:global(html[data-theme="dark"]) .card {
+  background: linear-gradient(to bottom, rgb(28 27 25 / 96%), rgb(22 21 19 / 98%));
+  box-shadow: 0 12px 32px rgb(0 0 0 / 35%);
+  border-color: rgb(255 255 255 / 10%);
+}
+
+:global(html[data-theme="dark"]) .card:hover,
+:global(html[data-theme="dark"]) .card:focus-within {
+  box-shadow: 0 20px 44px rgb(0 0 0 / 45%);
+  border-color: rgb(255 255 255 / 18%);
+}
+
+:global(html[data-theme="dark"]) .cardTagPhotos {
+  background: rgb(18 16 14 / 95%);
+}
+
+:global(html[data-theme="dark"]) .cardTagCategory {
+  background: linear-gradient(135deg, #9d9386, #7a7064);
+}

@@ -1,0 +1,252 @@
+.pageShell {
+  position: relative;
+  min-height: 100vh;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  isolation: isolate;
+}
+
+.pageShell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(circle at 12% 10%, rgb(233 228 220 / 26%), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgb(233 228 220 / 18%), transparent 30%),
+    linear-gradient(to bottom, #fcfbf8, #faf8f4 38%, #f7f5f1 100%);
+}
+
+.formRoot {
+  padding: clamp(5rem, 10vh, 7rem) clamp(1.2rem, 4vw, 3rem) clamp(3rem, 6vh, 5rem);
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.backLink {
+  display: inline-block;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  transition: color 180ms ease;
+}
+
+.pageLogo {
+  display: block;
+  width: clamp(110px, 16vw, 140px);
+  margin-bottom: clamp(1.25rem, 3vh, 1.75rem);
+}
+
+.pageLogoImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+  filter: brightness(0);
+  transition: filter 0.25s ease;
+}
+
+:global(html[data-theme="dark"]) .pageLogoImg {
+  filter: brightness(0) invert(1);
+}
+
+.backLink:hover,
+.backLink:focus-visible {
+  color: var(--text-primary);
+}
+
+.formHeader {
+  margin-bottom: clamp(2rem, 5vh, 3rem);
+}
+
+.formKicker {
+  color: var(--color-warm-cedar);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: var(--label-size);
+  margin-bottom: 0.5rem;
+}
+
+.formTitle {
+  font-size: var(--heading-size);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: var(--color-obsidian);
+}
+
+.form {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgb(42 39 37 / 12%);
+  background: rgb(255 253 249 / 76%);
+  box-shadow: var(--shadow-soft);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  border: 1px solid rgb(42 39 37 / 18%);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.8rem;
+  background: rgb(255 255 255 / 95%);
+  color: var(--text-primary);
+  font: inherit;
+  line-height: 1.5;
+}
+
+.field select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: rgb(42 39 37 / 36%);
+  box-shadow: 0 0 0 2px rgb(177 166 150 / 18%);
+}
+
+.formActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(42 39 37 / 10%);
+}
+
+.submitButton {
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid rgb(42 39 37 / 25%);
+  background: linear-gradient(to bottom, rgb(42 39 37 / 98%), rgb(28 26 24 / 98%));
+  color: var(--color-ivory);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.submitButton:hover,
+.submitButton:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgb(26 26 27 / 28%);
+  outline: none;
+}
+
+.cancelLink {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 180ms ease;
+}
+
+.cancelLink:hover,
+.cancelLink:focus-visible {
+  color: var(--text-primary);
+}
+
+.successBlock {
+  text-align: center;
+  padding: clamp(2rem, 6vh, 4rem) 1rem;
+}
+
+.successTitle {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: var(--color-obsidian);
+  margin-bottom: 0.75rem;
+}
+
+.successText {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.successLink {
+  display: inline-block;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-warm-cedar);
+  font-weight: 600;
+  transition: color 180ms ease;
+}
+
+.successLink:hover,
+.successLink:focus-visible {
+  color: var(--color-obsidian);
+}
+
+:global(html[data-theme="dark"]) .pageShell::before {
+  background:
+    radial-gradient(circle at 12% 10%, rgb(40 38 35 / 40%), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgb(30 28 26 / 35%), transparent 30%),
+    linear-gradient(to bottom, #121214, #171719 50%, #1a1a1d 100%);
+}
+
+:global(html[data-theme="dark"]) .formTitle,
+:global(html[data-theme="dark"]) .successTitle {
+  color: var(--color-ivory);
+}
+
+:global(html[data-theme="dark"]) .form {
+  background: rgb(28 27 25 / 85%);
+  border-color: rgb(255 255 255 / 12%);
+}
+
+:global(html[data-theme="dark"]) .field input,
+:global(html[data-theme="dark"]) .field select,
+:global(html[data-theme="dark"]) .field textarea {
+  background: rgb(35 34 32 / 95%);
+  border-color: rgb(255 255 255 / 18%);
+  color: var(--color-ivory);
+}
+
+:global(html[data-theme="dark"]) .submitButton {
+  background: linear-gradient(to bottom, rgb(242 238 230 / 95%), rgb(232 227 218 / 94%));
+  color: var(--color-obsidian);
+  border-color: rgb(143 134 123 / 45%);
+}
+
+:global(html[data-theme="dark"]) .submitButton:hover,
+:global(html[data-theme="dark"]) .submitButton:focus-visible {
+  box-shadow: 0 8px 20px rgb(0 0 0 / 35%);
+}
