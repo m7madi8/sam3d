@@ -51,7 +51,6 @@ export function Loader() {
           />
         </div>
         <span className={styles.percent}>{progress}%</span>
-        <span className={styles.label}>Architectural Interior Atelier</span>
         <span className={styles.subLabel}>Samar Ammar Studio</span>
       </div>
     </div>

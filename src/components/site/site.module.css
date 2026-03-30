@@ -1751,30 +1751,30 @@
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoCardTitle {
-  color: #ffffff;
-  text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
+  color: #111111;
+  text-shadow: none;
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoAddress,
 :global(html[data-theme="dark"]) .locationMapInfoPlace {
-  color: #cfcfcf;
+  color: #2f2f2f;
 }
 
 :global(html[data-theme="dark"]) .locationMapPopup.leaflet-popup-content-wrapper {
-  background: linear-gradient(180deg, rgb(28 27 25) 0%, rgb(22 21 20) 100%);
-  border-color: rgb(255 255 255 / 10%);
+  background: linear-gradient(180deg, #f5f5f5 0%, #ebebeb 100%);
+  border-color: rgb(0 0 0 / 14%);
   box-shadow:
-    0 0 0 1px rgb(255 255 255 / 6%) inset,
-    0 4px 20px rgb(0 0 0 / 35%),
-    0 20px 60px rgb(0 0 0 / 25%);
+    0 0 0 1px rgb(255 255 255 / 55%) inset,
+    0 6px 24px rgb(0 0 0 / 24%),
+    0 18px 48px rgb(0 0 0 / 18%);
 }
 
 :global(html[data-theme="dark"]) .locationMapPopup .leaflet-popup-close-button {
-  color: var(--text-muted) !important;
+  color: #4a4a4a !important;
 }
 
 :global(html[data-theme="dark"]) .locationMapPopup .leaflet-popup-close-button:hover {
-  color: var(--color-white) !important;
+  color: #111111 !important;
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoCard {
@@ -1782,16 +1782,16 @@
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoMeta {
-  color: #b8b8b8;
+  color: #4a4a4a;
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoIcon {
-  color: #b8b8b8;
+  color: #4b4b4b;
   opacity: 1;
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoDivider {
-  background: linear-gradient(90deg, var(--color-warm-cedar), rgb(157 147 134 / 0.3));
+  background: linear-gradient(90deg, #111111, rgb(17 17 17 / 28%));
 }
 
 :global(html[data-theme="dark"]) .locationMapAttribution {
@@ -1800,16 +1800,16 @@
 }
 
 :global(html[data-theme="dark"]) .locationMapGetDirections {
-  background: var(--color-warm-cedar);
-  border-color: var(--color-warm-cedar);
-  color: var(--color-white);
+  background: #121212;
+  border-color: #121212;
+  color: #ffffff;
 }
 
 :global(html[data-theme="dark"]) .locationMapGetDirections:hover,
 :global(html[data-theme="dark"]) .locationMapGetDirections:focus-visible {
-  background: var(--color-ivory);
-  border-color: var(--color-ivory);
-  color: var(--color-obsidian);
+  background: #2a2a2a;
+  border-color: #2a2a2a;
+  color: #ffffff;
 }
 
 :global(html[data-theme="dark"]) .locationActions a,
