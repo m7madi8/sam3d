@@ -72,7 +72,6 @@ export function LocationMap() {
     `;
 
     marker.bindPopup(popupHtml, { className: styles.locationMapPopup, closeButton: true, autoClose: false });
-    marker.openPopup();
 
     // Ensure correct sizing after mount
     const id = window.setTimeout(() => map.invalidateSize(), 50);

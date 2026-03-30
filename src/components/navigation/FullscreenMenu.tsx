@@ -16,6 +16,7 @@ type FullscreenMenuProps = {
   items: MenuItem[];
   logoSrc: string;
   logoAlt?: string;
+  controlsVisible?: boolean;
   showThemeToggle?: boolean;
   theme?: "light" | "dark";
   setTheme?: (t: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
@@ -26,6 +27,7 @@ export default function FullscreenMenu({
   items,
   logoSrc,
   logoAlt = "Brand logo",
+  controlsVisible = true,
   showThemeToggle = true,
   theme: themeProp,
   setTheme: setThemeProp,
@@ -97,7 +99,10 @@ export default function FullscreenMenu({
 
   return (
     <div ref={wrapperRef} className={styles.wrapper} data-open={open || undefined}>
-      <header className={styles.header} aria-label="Main navigation">
+      <header
+        className={`${styles.header} ${!controlsVisible ? styles.headerHidden : ""}`}
+        aria-label="Main navigation"
+      >
         <span className={styles.brand}>{brand}</span>
         <div className={styles.headerControls}>
           {showThemeToggle && (

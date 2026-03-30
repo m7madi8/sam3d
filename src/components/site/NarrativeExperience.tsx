@@ -44,6 +44,7 @@ export function NarrativeExperience() {
   const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [isMusicMuted, setIsMusicMuted] = useState(false);
   const [heroInView, setHeroInView] = useState(true);
+  const [heroControlsVisible, setHeroControlsVisible] = useState(false);
   const [locationNums, setLocationNums] = useState({ total: 0, completed: 0, clients: 0, years: 0 });
   const locationStatsAnimatedRef = useRef(false);
   const locationStatsRef = useRef<HTMLDivElement | null>(null);
@@ -198,7 +199,7 @@ export function NarrativeExperience() {
 
       gsap.set(heroImage, { scale: 1.02, y: 0, z: 0, filter: "none", transformOrigin: "50% 28%" });
       gsap.set(heroOverlay, { opacity: 0.06 });
-      gsap.set(heroContent, { autoAlpha: 0, y: 20, pointerEvents: "none" });
+      gsap.set(heroContent, { autoAlpha: 1, y: 0, pointerEvents: "none" });
       if (heroScrollHint) gsap.set(heroScrollHint, { autoAlpha: 1, y: 0 });
       if (revealItems.length) gsap.set(revealItems, { y: 30, autoAlpha: 0 });
 
@@ -214,7 +215,9 @@ export function NarrativeExperience() {
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            gsap.set(heroContent, { pointerEvents: self.progress > 0.62 ? "auto" : "none" });
+            const isReady = self.progress > 0.62;
+            gsap.set(heroContent, { pointerEvents: isReady ? "auto" : "none" });
+            setHeroControlsVisible(isReady);
           },
         },
       });
@@ -235,8 +238,7 @@ export function NarrativeExperience() {
       );
       if (heroScrollHint) heroTl.to(heroScrollHint, { autoAlpha: 0, y: 8, duration: 0.2 }, 0.52);
 
-      // Phase 2: reveal hero content after zoom peak
-      heroTl.to(heroContent, { autoAlpha: 1, y: 0, duration: 0.2 }, 0.62);
+      // Phase 2: reveal hero copy after zoom peak (logo stays visible from start)
       if (revealItems.length) {
         heroTl.to(
           revealItems,
@@ -301,7 +303,7 @@ export function NarrativeExperience() {
         gsap.set(card, { zIndex: index + 1 });
         gsap.set(card, { yPercent: index === 0 ? 0 : 108 });
         gsap.set(layers[index], {
-          scale: index === 0 ? initialDepthScale : isMobile ? 0.97 : 0.955,
+          scale: index === 0 ? initialDepthScale : 1,
           borderRadius: index === 0 ? (isMobile ? 20 : 28) : 0,
           boxShadow: "0 28px 56px rgb(16 12 9 / 28%)",
         });
@@ -350,7 +352,7 @@ export function NarrativeExperience() {
         timeline.to(
           layers[index],
           {
-            scale: isMobile ? 0.965 : 0.948,
+            scale: 1,
             duration: isMobile ? 0.4 : 0.7,
           },
           transitionStart,
@@ -512,12 +514,13 @@ export function NarrativeExperience() {
           items={menuItems}
           logoSrc={brandLogo.src}
           logoAlt="samarammar logo"
+          controlsVisible={heroControlsVisible}
           showThemeToggle={false}
           theme={theme}
           setTheme={setTheme}
         />
         <section id="hero" className={`${styles.panel} ${styles.heroPanel}`} ref={heroRef}>
-          {heroInView && (
+          {heroInView && heroControlsVisible && (
             <button
               type="button"
               className={styles.heroMusicButton}
@@ -559,7 +562,7 @@ export function NarrativeExperience() {
             <span className={styles.heroScrollHintArrow}>↓</span>
           </div>
           <div className={`${styles.panelContent} ${styles.heroContent}`}>
-            <div className={styles.heroLogoWrap} data-hero-reveal>
+            <div className={styles.heroLogoWrap}>
               <Image src={brandLogo} alt="samarammar logo" className={styles.heroLogo} quality={100} />
             </div>
             <div className={styles.heroHeadingWrap} data-hero-reveal>

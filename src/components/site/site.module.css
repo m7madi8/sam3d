@@ -365,9 +365,21 @@
   justify-items: start;
   gap: 0.7rem;
   padding-bottom: clamp(1.6rem, 6vh, 4rem);
-  opacity: 0;
+  opacity: 1;
   pointer-events: none;
   transition: opacity 0.6s ease-out;
+}
+
+.heroContent [data-hero-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+@media (min-width: 1000px) {
+  .heroContent {
+    padding-bottom: clamp(0rem, 0.8vh, 0.35rem);
+    margin-bottom: -1.4rem;
+  }
 }
 
 .heroContentVisible {
@@ -472,8 +484,8 @@
 /* زر إيقاف/تشغيل الموسيقى — أسفل زر المنيو، يظهر فقط في الهيرو */
 .heroMusicButton {
   position: fixed;
-  top: 4.85rem;
-  right: min(3vw, 1.6rem);
+  top: 4.75rem;
+  right: min(3vw, 1.9rem);
   z-index: 90;
   display: inline-flex;
   align-items: center;
@@ -708,7 +720,7 @@
   z-index: 0;
   min-height: 100vh;
   min-height: 100svh;
-  padding: clamp(0.8rem, 2vh, 1.6rem) clamp(0.8rem, 3vw, 2rem);
+  padding: 0;
   background:
     radial-gradient(circle at 10% 8%, rgb(238 234 227 / 30%), transparent 42%),
     radial-gradient(circle at 90% 86%, rgb(230 225 218 / 26%), transparent 44%),
@@ -721,11 +733,9 @@
   height: 100vh;
   height: 100svh;
   margin-inline: auto;
-  border-radius: clamp(0.85rem, 1.8vw, 1.3rem);
-  border: 1px solid var(--border-light);
-  box-shadow:
-    var(--shadow-soft),
-    0 0 0 1px rgb(255 255 255 / 70%);
+  border-radius: 0;
+  border: 0;
+  box-shadow: none;
   background:
     radial-gradient(circle at 8% 0%, rgb(235 231 224 / 28%), transparent 38%),
     radial-gradient(circle at 92% 100%, rgb(235 231 224 / 24%), transparent 42%),
@@ -839,8 +849,8 @@
   position: relative;
   width: 100%;
   height: 100%;
-  border: 1px solid rgb(255 255 255 / 40%);
-  border-radius: clamp(0.85rem, 1.8vw, 1.3rem);
+  border: 0;
+  border-radius: 0;
   overflow: hidden;
   background:
     radial-gradient(circle at 82% 10%, rgb(255 255 255 / 56%), transparent 40%),
@@ -1352,7 +1362,7 @@
 
 .locationMapPopup .leaflet-popup-content {
   margin: 0;
-  min-width: 320px;
+  min-width: 280px;
 }
 
 .locationMapPopup .leaflet-popup-tip {
@@ -1385,7 +1395,7 @@
 }
 
 .locationMapInfoCard {
-  padding: 1.1rem 1.25rem 1.05rem;
+  padding: 0.9rem 1rem 0.9rem;
   background: transparent;
   color: var(--text-primary);
   display: grid;
@@ -1403,8 +1413,8 @@
 }
 
 .locationMapInfoCardTitle {
-  margin: 0 0 0.6rem;
-  font-size: 1.05rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.96rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   line-height: 1.4;
@@ -1424,7 +1434,7 @@
 .locationMapInfoAddress,
 .locationMapInfoPlace {
   margin: 0;
-  font-size: 0.82rem;
+  font-size: 0.76rem;
   color: var(--text-muted);
   line-height: 1.6;
   display: flex;
@@ -1448,9 +1458,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.55rem;
-  margin-top: 0.75rem;
-  padding: 0.6rem 1.05rem;
-  font-size: 0.72rem;
+  margin-top: 0.65rem;
+  padding: 0.52rem 0.9rem;
+  font-size: 0.66rem;
   font-weight: 500;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2035,8 +2045,8 @@
   }
 
   .heroMusicButton {
-    top: 4.35rem;
-    right: 0.7rem;
+    top: 4.05rem;
+    right: 1.25rem;
     padding: 0.28rem 0.58rem 0.28rem 0.28rem;
     font-size: 0.52rem;
   }

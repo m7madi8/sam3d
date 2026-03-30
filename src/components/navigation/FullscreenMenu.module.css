@@ -17,6 +17,11 @@
   z-index: 95;
 }
 
+.headerHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .headerControls {
   display: inline-flex;
   align-items: center;

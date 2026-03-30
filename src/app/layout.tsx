@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { RootWithScroll } from "@/components/site/RootWithScroll";
 import { ThemeSync } from "@/components/site/ThemeSync";
+import brandLogo from "../../white-logo.png";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,6 +14,11 @@ export const metadata: Metadata = {
   title: "samarammar",
   description:
     "samarammar is a premium design brand led by Samar, blending architectural precision with timeless elegance.",
+  icons: {
+    icon: brandLogo.src,
+    shortcut: brandLogo.src,
+    apple: brandLogo.src,
+  },
 };
 
 export default function RootLayout({
