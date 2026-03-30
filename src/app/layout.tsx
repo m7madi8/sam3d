@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { RootWithScroll } from "@/components/site/RootWithScroll";
 import { ThemeSync } from "@/components/site/ThemeSync";
 import "./globals.css";
 
@@ -22,8 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.variable}>
-        <ThemeSync />
-        {children}
+        <RootWithScroll>
+          <ThemeSync />
+          {children}
+        </RootWithScroll>
       </body>
     </html>
   );
