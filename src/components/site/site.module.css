@@ -1408,18 +1408,19 @@
   font-weight: 600;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: var(--color-warm-cedar);
-  opacity: 0.95;
+  color: #4a4a4a;
+  opacity: 1;
 }
 
 .locationMapInfoCardTitle {
   margin: 0 0 0.5rem;
   font-size: 0.96rem;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.02em;
   line-height: 1.4;
-  color: var(--color-obsidian);
+  color: #050505;
   font-family: var(--font-sans);
+  text-shadow: 0 1px 0 rgb(255 255 255 / 35%);
 }
 
 .locationMapInfoDivider {
@@ -1435,7 +1436,7 @@
 .locationMapInfoPlace {
   margin: 0;
   font-size: 0.76rem;
-  color: var(--text-muted);
+  color: #2f2f2f;
   line-height: 1.6;
   display: flex;
   align-items: flex-start;
@@ -1449,8 +1450,8 @@
 .locationMapInfoIcon {
   flex-shrink: 0;
   margin-top: 0.2rem;
-  color: var(--color-warm-cedar);
-  opacity: 0.85;
+  color: #4b4b4b;
+  opacity: 1;
 }
 
 .locationMapGetDirections {
@@ -1465,7 +1466,7 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #fff;
-  background: var(--color-obsidian);
+  background: #121212;
   border: none;
   border-radius: 999px;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -1750,12 +1751,13 @@
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoCardTitle {
-  color: var(--color-white);
+  color: #ffffff;
+  text-shadow: 0 1px 8px rgb(0 0 0 / 35%);
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoAddress,
 :global(html[data-theme="dark"]) .locationMapInfoPlace {
-  color: var(--text-muted);
+  color: #cfcfcf;
 }
 
 :global(html[data-theme="dark"]) .locationMapPopup.leaflet-popup-content-wrapper {
@@ -1780,7 +1782,12 @@
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoMeta {
-  color: var(--color-warm-cedar);
+  color: #b8b8b8;
+}
+
+:global(html[data-theme="dark"]) .locationMapInfoIcon {
+  color: #b8b8b8;
+  opacity: 1;
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoDivider {
