@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { buildGalleryCategories } from "@/content/gallery";
+import gsap from "gsap";
+import { buildGalleryCategories, type GalleryProject } from "@/content/gallery";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
 import styles from "./gallery.module.css";
 import interiorImage from "../../../interior.jpg";
@@ -27,6 +28,12 @@ const menuItems = [
 export function GalleryExperience() {
   const searchParams = useSearchParams();
   const [activeFilter, setActiveFilter] = useState<string>(ALL_ID);
+  const [zoomProject, setZoomProject] = useState<GalleryProject | null>(null);
+  const [zoomPanelReady, setZoomPanelReady] = useState(false);
+  const [sourceId, setSourceId] = useState<string | null>(null);
+  const cardRefs = useRef<Record<string, HTMLElement | null>>({});
+  const zoomImageWrapRef = useRef<HTMLDivElement | null>(null);
+  const isClosingRef = useRef(false);
 
   useEffect(() => {
     const category = searchParams.get("category");
@@ -44,6 +51,86 @@ export function GalleryExperience() {
     setActiveFilter(id);
     const url = id === ALL_ID ? "/gallery" : `/gallery?category=${id}`;
     window.history.replaceState(null, "", url);
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = zoomProject ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [zoomProject]);
+
+  useEffect(() => {
+    if (!zoomProject || !zoomImageWrapRef.current || !sourceId) return;
+    const sourceEl = cardRefs.current[sourceId];
+    const zoomEl = zoomImageWrapRef.current;
+    if (!sourceEl) return;
+
+    const rect = sourceEl.getBoundingClientRect();
+    const scaleX = rect.width / window.innerWidth;
+    const scaleY = rect.height / window.innerHeight;
+    gsap.set(zoomEl, {
+      x: rect.left,
+      y: rect.top,
+      scaleX,
+      scaleY,
+      transformOrigin: "top left",
+      borderRadius: 14,
+    });
+    gsap.to(zoomEl, {
+      x: 0,
+      y: 0,
+      scaleX: 1,
+      scaleY: 1,
+      borderRadius: 0,
+      duration: 0.46,
+      ease: "power3.inOut",
+      onComplete: () => setZoomPanelReady(true),
+    });
+  }, [zoomProject, sourceId]);
+
+  const openQuickView = (project: GalleryProject) => {
+    setZoomPanelReady(false);
+    setSourceId(project.id);
+    setZoomProject(project);
+  };
+
+  const closeQuickView = () => {
+    if (!zoomProject || !zoomImageWrapRef.current || !sourceId || isClosingRef.current) {
+      setZoomPanelReady(false);
+      setZoomProject(null);
+      setSourceId(null);
+      return;
+    }
+
+    const targetEl = cardRefs.current[sourceId];
+    const zoomEl = zoomImageWrapRef.current;
+    if (!targetEl) {
+      setZoomPanelReady(false);
+      setZoomProject(null);
+      setSourceId(null);
+      return;
+    }
+
+    isClosingRef.current = true;
+    setZoomPanelReady(false);
+    const rect = targetEl.getBoundingClientRect();
+    const scaleX = rect.width / window.innerWidth;
+    const scaleY = rect.height / window.innerHeight;
+    gsap.to(zoomEl, {
+      x: rect.left,
+      y: rect.top,
+      scaleX,
+      scaleY,
+      borderRadius: 14,
+      duration: 0.4,
+      ease: "power3.inOut",
+      onComplete: () => {
+        isClosingRef.current = false;
+        setZoomProject(null);
+        setSourceId(null);
+      },
+    });
   };
 
   return (
@@ -111,8 +198,20 @@ export function GalleryExperience() {
 
               <div className={styles.cardsGrid}>
                 {category.projects.map((project) => (
-                  <article key={project.id} className={styles.card}>
-                    <Link href={`/gallery/${project.id}`} className={styles.cardMedia} aria-label={project.title}>
+                  <article
+                    key={project.id}
+                    className={styles.card}
+                    ref={(el) => {
+                      cardRefs.current[project.id] = el;
+                    }}
+                  >
+                    <button
+                      type="button"
+                      className={styles.cardHit}
+                      aria-label={`Open quick details for ${project.title}`}
+                      onClick={() => openQuickView(project)}
+                    />
+                    <div className={styles.cardMedia}>
                       <Image
                         src={project.image}
                         alt=""
@@ -120,25 +219,20 @@ export function GalleryExperience() {
                         sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, 25vw"
                         quality={95}
                       />
-                      <span className={styles.cardCategoryBadge}>
-                        {(project.subtitle ?? category.titleEn).toUpperCase()}
-                      </span>
-                      <div className={styles.cardMediaCaption}>
-                        <p className={styles.cardMediaSubtitle}>{project.subtitle ?? category.titleEn}</p>
-                        <h3 className={styles.cardMediaTitle}>{project.title}</h3>
-                      </div>
-                    </Link>
+                    </div>
                     <div className={styles.cardCopy}>
                       <div className={styles.cardTopLine}>
                         <span>{project.photosCount ?? 10} photos</span>
                         <span>{project.subtitle ?? category.titleEn}</span>
                       </div>
                       <h3 className={styles.cardTitle}>
-                        <Link href={`/gallery/${project.id}`}>{project.title}</Link>
+                        <button type="button" onClick={() => openQuickView(project)} className={styles.cardTitleButton}>
+                          {project.title}
+                        </button>
                       </h3>
-                      <Link href={`/gallery/${project.id}`} className={styles.cardAction}>
+                      <button type="button" className={styles.cardAction} onClick={() => openQuickView(project)}>
                         View Project
-                      </Link>
+                      </button>
                     </div>
                   </article>
                 ))}
@@ -146,6 +240,45 @@ export function GalleryExperience() {
             </section>
           ))}
         </div>
+
+        {zoomProject && (
+          <div className={styles.quickViewOverlay} role="dialog" aria-modal="true">
+            <button
+              type="button"
+              className={styles.quickViewBackdrop}
+              aria-label="Close quick view"
+              onClick={closeQuickView}
+            />
+            <div ref={zoomImageWrapRef} className={styles.quickViewImageWrap}>
+              <Image
+                src={zoomProject.image}
+                alt={zoomProject.title}
+                fill
+                sizes="100vw"
+                className={styles.quickViewImage}
+                priority
+              />
+              <div className={styles.quickViewImageShade} />
+            </div>
+            <aside className={`${styles.quickViewPanel} ${zoomPanelReady ? styles.quickViewPanelReady : ""}`}>
+              <p className={styles.quickViewKicker}>
+                {zoomProject.subtitle ?? "Project"} · {zoomProject.photosCount ?? 10} photos
+              </p>
+              <h2 className={styles.quickViewTitle}>{zoomProject.title}</h2>
+              <p className={styles.quickViewBody}>
+                Preview this project, then choose to close or continue to the full project page.
+              </p>
+              <div className={styles.quickViewActions}>
+                <button type="button" onClick={closeQuickView} className={styles.quickViewClose}>
+                  Close
+                </button>
+                <Link href={`/gallery/${zoomProject.id}`} className={styles.quickViewEnter}>
+                  Enter Project
+                </Link>
+              </div>
+            </aside>
+          </div>
+        )}
       </main>
     </div>
   );

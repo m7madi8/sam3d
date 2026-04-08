@@ -1576,31 +1576,37 @@
 }
 
 .siteFooter {
-  padding: clamp(2rem, 4vw, 3rem) clamp(1rem, 2.2vw, 2rem) 1rem;
+  padding: clamp(1.6rem, 3vw, 2.2rem) clamp(1.1rem, 2.4vw, 2.4rem) 0.9rem;
   border-top: 1px solid rgb(42 39 37 / 12%);
-  background: linear-gradient(to top, rgb(245 243 238 / 68%), rgb(252 251 248 / 52%));
+  background: linear-gradient(to top, rgb(246 244 240 / 92%), rgb(252 251 248 / 78%));
 }
 
 .footerInner {
   width: min(100%, var(--max-content-width));
   margin-inline: auto;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: var(--space-md);
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.9rem, 2.2vw, 1.6rem);
   align-items: start;
 }
 
 .footerBrand p {
   color: #3f3a34;
-  max-width: 34ch;
-  line-height: 1.65;
+  max-width: 30ch;
+  line-height: 1.45;
+}
+
+.footerTagline {
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 .footerLogoWrap {
-  width: min(170px, 58%);
+  width: min(160px, 56%);
   border-radius: 0.55rem;
   overflow: hidden;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.35rem;
 }
 
 .footerLogo {
@@ -1615,7 +1621,7 @@
 .footerGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
+  gap: clamp(0.8rem, 2vw, 1.4rem);
 }
 
 .footerBlockTitle {
@@ -1648,20 +1654,22 @@
   display: grid;
   gap: 0.28rem;
   color: #3f3a34;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
 }
 
 .footerBottom {
   width: min(100%, var(--max-content-width));
-  margin: 1.2rem auto 0;
-  padding-top: 0.85rem;
+  margin: 0.95rem auto 0;
+  padding-top: 0.65rem;
   border-top: 1px solid rgb(42 39 37 / 10%);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
   color: #3f3a34;
-  font-size: 0.82rem;
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .footerCopy {

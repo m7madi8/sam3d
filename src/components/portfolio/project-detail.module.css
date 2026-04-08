@@ -71,6 +71,7 @@
   min-height: 50vh;
   height: clamp(50vh, 70vmin, 85vh);
   overflow: hidden;
+  contain: paint;
 }
 
 .heroImageWrap {
@@ -79,12 +80,18 @@
   width: 100%;
   height: 100%;
   transform-origin: center center;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .heroImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .heroOverlay {
@@ -202,7 +209,7 @@
 /* Gallery — full width, consistent sections */
 .gallery {
   width: 100%;
-  padding: 0 0 var(--section-y);
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -431,7 +438,7 @@
 
 /* Footer — full width, always sticks to bottom after last section */
 .footerStrip {
-  margin-top: auto;
+  margin-top: 0;
   flex-shrink: 0;
   width: 100%;
   padding: clamp(1rem, 2.5vw, 1.25rem) var(--section-x);
@@ -487,11 +494,6 @@
 
 @media (max-width: 767px) {
   .mobileBackBar {
-    display: block;
-  }
-
-  /* Ensure content isn't hidden behind the fixed bar */
-  .page {
-    padding-bottom: 5.25rem;
+    display: none;
   }
 }

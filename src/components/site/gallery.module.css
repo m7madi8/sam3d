@@ -924,6 +924,9 @@
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: auto;
   border-radius: 0.9rem;
   overflow: hidden;
   border: 1px solid rgb(56 45 33 / 12%);
@@ -934,6 +937,7 @@
 .cardMedia {
   position: relative;
   display: block;
+  flex: 0 0 auto;
   aspect-ratio: 3 / 4;
   overflow: hidden;
 }
@@ -946,50 +950,6 @@
   transform: scale(1.05);
 }
 
-.cardCategoryBadge {
-  position: absolute;
-  top: 0.62rem;
-  right: 0.62rem;
-  z-index: 3;
-  padding: 0.3rem 0.58rem;
-  border-radius: 999px;
-  border: 1px solid rgb(255 245 230 / 42%);
-  background: rgb(14 11 9 / 58%);
-  color: rgb(255 240 215 / 96%);
-  font-size: 0.52rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-.cardMediaCaption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  padding: 0.75rem 0.75rem 0.82rem;
-  background: linear-gradient(to top, rgb(16 13 10 / 82%), rgb(16 13 10 / 8%));
-}
-
-.cardMediaSubtitle {
-  margin: 0 0 0.24rem;
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgb(255 236 205 / 84%);
-}
-
-.cardMediaTitle {
-  margin: 0;
-  font-size: 0.9rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  color: #fffaf2;
-  text-shadow: 0 2px 12px rgb(0 0 0 / 45%);
-}
 
 .cardCopy {
   position: static;
@@ -1033,6 +993,142 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #5f4e3d;
+  cursor: pointer;
+}
+
+.cardHit {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.cardTitleButton {
+  all: unset;
+  display: block;
+  width: 100%;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+  cursor: pointer;
+  color: inherit;
+}
+
+.quickViewOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+}
+
+.quickViewBackdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(0 0 0 / 52%);
+  backdrop-filter: blur(4px);
+}
+
+.quickViewImageWrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  overflow: hidden;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.quickViewImage {
+  object-fit: cover;
+}
+
+.quickViewImageShade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, transparent 56%, rgb(0 0 0 / 44%));
+}
+
+.quickViewPanel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: min(420px, 42vw);
+  z-index: 2;
+  padding: clamp(1.2rem, 3vw, 2rem);
+  background: rgb(252 248 242 / 97%);
+  box-shadow: -12px 0 30px rgb(0 0 0 / 22%);
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  opacity: 0;
+  transform: translateX(26px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+  will-change: transform, opacity;
+}
+
+.quickViewPanelReady {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.quickViewKicker {
+  margin: 0;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8f755b;
+}
+
+.quickViewTitle {
+  margin: 0;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  line-height: 1.08;
+  color: #241c15;
+}
+
+.quickViewBody {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #5d4b3a;
+}
+
+.quickViewActions {
+  margin-top: 0.55rem;
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.quickViewClose,
+.quickViewEnter {
+  min-height: 2.2rem;
+  padding: 0.42rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgb(49 39 30 / 20%);
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quickViewClose {
+  background: #fff;
+  color: #2e241b;
+  cursor: pointer;
+}
+
+.quickViewEnter {
+  background: #2d241c;
+  border-color: #2d241c;
+  color: #fff;
 }
 
 @media (max-width: 1100px) {
@@ -1050,14 +1146,56 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .card {
+    aspect-ratio: auto;
+  }
+
+  .cardTopLine {
+    font-size: 0.52rem;
+    gap: 0.35rem;
+  }
+
+  .cardTitle {
+    font-size: 0.82rem;
+    line-height: 1.3;
+  }
+
   .gallerySectionHead {
     margin-bottom: 0.75rem;
+  }
+
+  .quickViewOverlay {
+    display: block;
+  }
+
+  .quickViewImageWrap {
+    min-height: 58vh;
+  }
+
+  .quickViewImageShade {
+    background: linear-gradient(to top, rgb(0 0 0 / 55%), transparent 42%);
+  }
+
+  .quickViewPanel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    border-radius: 1.2rem 1.2rem 0 0;
+    min-height: 42vh;
   }
 }
 
 @media (max-width: 520px) {
   .cardsGrid {
     grid-template-columns: 1fr;
+  }
+
+  .cardMedia {
+    aspect-ratio: 4 / 5;
   }
 }
 
@@ -1129,20 +1267,6 @@
   box-shadow: 0 8px 20px rgb(0 0 0 / 30%);
 }
 
-:global(html[data-theme="dark"]) .cardMediaCaption {
-  background: linear-gradient(to top, rgb(7 7 10 / 86%), rgb(7 7 10 / 12%));
-}
-
-:global(html[data-theme="dark"]) .cardCategoryBadge {
-  border-color: rgb(255 255 255 / 24%);
-  background: rgb(8 8 12 / 62%);
-  color: rgb(235 216 189 / 96%);
-}
-
-:global(html[data-theme="dark"]) .cardMediaSubtitle {
-  color: rgb(239 214 180 / 86%);
-}
-
 :global(html[data-theme="dark"]) .cardCopy {
   color: #f0e9dc;
 }
@@ -1159,4 +1283,33 @@
   border-color: rgb(255 255 255 / 16%);
   background: rgb(255 255 255 / 8%);
   color: #d9cdbd;
+}
+
+:global(html[data-theme="dark"]) .quickViewPanel {
+  background: rgb(22 22 29 / 96%);
+  box-shadow: -18px 0 44px rgb(0 0 0 / 45%);
+}
+
+:global(html[data-theme="dark"]) .quickViewKicker {
+  color: #c3a887;
+}
+
+:global(html[data-theme="dark"]) .quickViewTitle {
+  color: #f3eee5;
+}
+
+:global(html[data-theme="dark"]) .quickViewBody {
+  color: #cabbaa;
+}
+
+:global(html[data-theme="dark"]) .quickViewClose {
+  background: rgb(255 255 255 / 8%);
+  border-color: rgb(255 255 255 / 18%);
+  color: #eee6da;
+}
+
+:global(html[data-theme="dark"]) .quickViewEnter {
+  background: #f0e9dc;
+  border-color: #f0e9dc;
+  color: #1d1814;
 }

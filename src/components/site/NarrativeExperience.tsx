@@ -37,7 +37,7 @@ const LOCATION_STATS = {
   total: 1000,
   completed: 1000,
   clients: 999,
-  years: 8,
+  years: 10,
 } as const;
 
 export function NarrativeExperience() {
@@ -840,7 +840,10 @@ export function NarrativeExperience() {
         <footer className={styles.siteFooter}>
           <div className={styles.footerInner}>
             <div className={styles.footerBrand}>
-              <p>Executive-led interior and architectural direction by Samar.</p>
+              <div className={styles.footerLogoWrap}>
+                <Image src={brandLogo} alt="samarammar logo" className={styles.footerLogo} quality={100} />
+              </div>
+              <p className={styles.footerTagline}>Dare To Different.</p>
             </div>
 
             <div className={styles.footerGrid}>
@@ -855,17 +858,18 @@ export function NarrativeExperience() {
 
               <div className={styles.footerMeta}>
                 <p className={styles.footerBlockTitle}>Contact</p>
-                <p> Al-Asaad Building – Al-Kulliyah Al-Ahliyah Street – Ramallah – Palestine</p>
+                <p>Ramallah, Palestine</p>
                 <p><a href="tel:+972569126200">+972 56-912-6200</a></p>
                 <p><a href="mailto:sam.ammar1992@gmail.com">sam.ammar1992@gmail.com</a></p>
               </div>
             </div>
           </div>
           <div className={styles.footerBottom}>
-            <p>Designing spaces with clarity and soul.</p>
+            <p>Interior • Landscape • Architectural • Commercial</p>
             <p className={styles.footerCopy}>© {new Date().getFullYear()} samarammar. All rights reserved.</p>
           </div>
         </footer>
+
       </main>
     </div>
   );

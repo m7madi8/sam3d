@@ -37,7 +37,6 @@ export function ProjectDetailView() {
   const headerRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLElement | null>(null);
   const galleryRef = useRef<HTMLElement | null>(null);
-  const footerRef = useRef<HTMLElement | null>(null);
 
   if (!project) notFound();
 
@@ -51,7 +50,12 @@ export function ProjectDetailView() {
 
   useEffect(() => {
     const stagger = reducedMotion ? 0 : 0.1;
-    const scrubVal = reducedMotion ? 0 : 1.2;
+    const isCoarsePointer = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
+    const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 1024;
+    const useLightParallax = isCoarsePointer || isSmallScreen;
+    const scrubVal = reducedMotion ? 0 : useLightParallax ? 0.42 : 0.62;
+    const parallaxScale = useLightParallax ? 1.045 : 1.075;
+    const parallaxY = useLightParallax ? -8 : -14;
 
     const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     lenis.on("scroll", ScrollTrigger.update);
@@ -71,18 +75,17 @@ export function ProjectDetailView() {
       const header = headerRef.current;
       const content = contentRef.current;
       const gallery = galleryRef.current;
-      const footer = footerRef.current;
 
       if (!hero || !heroImageWrap || !heroOverlay || !heroReveal || !header) return;
 
       gsap.set(header, { autoAlpha: 0 });
-      gsap.set(heroImageWrap, { scale: 1.08 });
+      gsap.set(heroImageWrap, { scale: 1.04, force3D: true, willChange: "transform" });
       gsap.set(heroOverlay, { opacity: 0 });
       gsap.set(heroReveal.querySelectorAll("*"), { y: 28, autoAlpha: 0 });
 
       const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
       heroTl
-        .to(heroImageWrap, { scale: 1, duration: reducedMotion ? 0.01 : 1.1 })
+        .to(heroImageWrap, { scale: 1, duration: reducedMotion ? 0.01 : 0.72 })
         .to(heroOverlay, { opacity: 0.45, duration: reducedMotion ? 0.01 : 0.8 }, 0)
         .to(
           heroReveal.querySelectorAll("*"),
@@ -95,24 +98,30 @@ export function ProjectDetailView() {
 
       if (!reducedMotion) {
         gsap.to(heroImageWrap, {
-          scale: 1.2,
-          y: -40,
+          scale: parallaxScale,
+          y: parallaxY,
+          force3D: true,
+          overwrite: "auto",
           ease: "none",
           scrollTrigger: {
             trigger: hero,
             start: "top top",
             end: "bottom top",
             scrub: scrubVal,
+            fastScrollEnd: true,
+            invalidateOnRefresh: true,
           },
         });
         gsap.to(heroOverlay, {
-          opacity: 0.65,
+          opacity: 0.56,
           ease: "none",
           scrollTrigger: {
             trigger: hero,
             start: "top top",
             end: "bottom top",
             scrub: scrubVal,
+            fastScrollEnd: true,
+            invalidateOnRefresh: true,
           },
         });
       }
@@ -163,24 +172,6 @@ export function ProjectDetailView() {
         }
       }
 
-      if (footer && !reducedMotion) {
-        gsap.fromTo(
-          footer,
-          { autoAlpha: 0 },
-          {
-            autoAlpha: 1,
-            duration: 0.5,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: footer,
-              start: "top 92%",
-              end: "top 70%",
-              toggleActions: "play none none none",
-            },
-          }
-        );
-      }
-
       if (reducedMotion) {
         gsap.set(header, { autoAlpha: 1 });
         gsap.set(heroImageWrap, { scale: 1 });
@@ -190,7 +181,6 @@ export function ProjectDetailView() {
         if (revealEls?.length) gsap.set(revealEls, { y: 0, autoAlpha: 1 });
         const flatItems = gallery?.querySelectorAll("[data-project-flat-item]");
         if (flatItems?.length) gsap.set(flatItems, { scale: 1, autoAlpha: 1 });
-        if (footer) gsap.set(footer, { autoAlpha: 1 });
       }
 
       refreshId = window.setTimeout(() => ScrollTrigger.refresh(), 400);
@@ -312,16 +302,6 @@ export function ProjectDetailView() {
           )}
         </section>
       )}
-
-      <footer ref={footerRef} className={styles.footerStrip} data-project-footer>
-        <Link href="/">Home</Link>
-        {" · "}
-        <Link href="/gallery">Gallery</Link>
-        {" · "}
-        <Link href="/#contact">Contact</Link>
-        {" · "}
-        <span>© {new Date().getFullYear()} samarammar. All rights reserved.</span>
-      </footer>
 
       <div className={styles.mobileBackBar} aria-hidden="false">
         <Link href="/gallery" className={styles.mobileBackBtn} aria-label="Back to gallery">
