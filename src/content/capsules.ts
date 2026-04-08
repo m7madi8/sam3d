@@ -27,4 +27,11 @@ export const services: Service[] = [
       "Bold yet restrained architecture focused on light, shadow, and a deep connection to place.",
     image: "home4.jpg",
   },
+  {
+    id: "commercial",
+    title: "Commercial Design",
+    description:
+      "Functional, brand-forward commercial spaces crafted to elevate customer experience and operational flow.",
+    image: "home4.jpg",
+  },
 ];

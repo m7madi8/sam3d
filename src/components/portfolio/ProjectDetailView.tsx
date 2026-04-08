@@ -140,49 +140,6 @@ export function ProjectDetailView() {
         }
       }
 
-      if (gallery && project.hasFloors && !reducedMotion) {
-        const floorSections = gallery.querySelectorAll<HTMLElement>("[data-project-floor]");
-        const vh = window.innerHeight;
-        const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
-        const firstStrip = floorSections[0]?.querySelector<HTMLElement>(`.${styles.floorGrid}`);
-        const firstStripItems = firstStrip?.querySelectorAll<HTMLElement>(`.${styles.floorGridItem}`);
-        const mobileItemWidth = isMobile && firstStripItems?.length ? (firstStripItems[0].offsetWidth || 0) : 0;
-        const mobileGap = isMobile && firstStripItems && firstStripItems.length >= 2
-          ? Math.max(0, (firstStripItems[1].offsetLeft || 0) - (firstStripItems[0].offsetLeft || 0) - (firstStripItems[0].offsetWidth || 0))
-          : 8;
-        floorSections.forEach((section) => {
-          const strip = section.querySelector<HTMLElement>(`.${styles.floorGrid}`);
-          if (!strip) return;
-          const wrap = strip.parentElement;
-          if (!wrap) return;
-          gsap.set(strip, { x: 0 });
-          const items = strip.querySelectorAll<HTMLElement>(`.${styles.floorGridItem}`);
-          const count = items.length;
-          const phantomSpace = isMobile ? window.innerWidth * 0.15 : 0;
-          const stripWidth = isMobile && mobileItemWidth > 0 && count > 0
-            ? count * mobileItemWidth + Math.max(0, count - 1) * mobileGap + phantomSpace
-            : strip.scrollWidth;
-          const visibleWidth = isMobile && mobileItemWidth > 0
-            ? mobileItemWidth
-            : (isMobile ? window.innerWidth * 0.8 : wrap.clientWidth);
-          const maxScroll = Math.max(0, stripWidth - visibleWidth);
-          if (maxScroll <= 0) return;
-          const scrollDistance = vh;
-          gsap.to(strip, {
-            x: -maxScroll,
-            ease: "none",
-            scrollTrigger: {
-              trigger: section,
-              start: "center center",
-              end: `+=${scrollDistance}`,
-              pin: true,
-              scrub: 1,
-              invalidateOnRefresh: true,
-            },
-          });
-        });
-      }
-
       if (gallery && !project.hasFloors && !reducedMotion) {
         const flatItems = gallery.querySelectorAll<HTMLElement>("[data-project-flat-item]");
         if (flatItems.length) {

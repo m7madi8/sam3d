@@ -217,9 +217,9 @@
   display: grid;
   grid-template-columns: minmax(0, 260px) 1fr;
   gap: 0;
-  align-items: center;
-  min-height: 100vh;
-  min-height: 100dvh;
+  align-items: start;
+  min-height: auto;
+  padding: clamp(0.75rem, 1.8vw, 1rem) 0;
   border-bottom: 1px solid rgb(0 0 0 / 8%);
   background: var(--surface-secondary);
 }
@@ -232,9 +232,9 @@
   .floorSection {
     grid-template-columns: 1fr;
     grid-template-rows: auto auto;
-    align-items: center;
-    min-height: 85vh;
-    min-height: 85dvh;
+    align-items: start;
+    min-height: auto;
+    padding: 0.5rem 0;
   }
 }
 
@@ -296,8 +296,18 @@
 .floorGridWrap {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   background: var(--surface-secondary);
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.floorGridWrap::-webkit-scrollbar {
+  display: none;
 }
 
 @media (max-width: 767px) {
@@ -333,12 +343,14 @@
   position: relative;
   overflow: hidden;
   background: var(--surface-secondary);
+  scroll-snap-align: start;
 }
 
 @media (max-width: 767px) {
   .floorGridItem {
     width: min(80vw, 56.25vh);
     max-height: 100vh;
+    scroll-snap-align: start;
   }
 }
 
@@ -368,7 +380,7 @@
   padding: var(--section-y) var(--section-x);
   overflow-x: auto;
   overflow-y: hidden;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
   scroll-behavior: smooth;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -402,8 +414,7 @@
   .flatGalleryItem {
     width: min(80vw, 56.25vh);
     max-height: 100vh;
-    scroll-snap-align: center;
-    scroll-snap-stop: always;
+    scroll-snap-align: start;
   }
 }
 

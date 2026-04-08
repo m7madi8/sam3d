@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import styles from "./RequestServiceForm.module.css";
-import brandLogo from "../../../white-logo.png";
 
 const BUILDING_OPTIONS = [
   { value: "empty_land", label: "Empty plot" },
@@ -25,6 +24,8 @@ type RequestServiceFormProps = {
 };
 
 export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFormProps) {
+  const EMAIL_RECIPIENT = "sam.ammar1992@gmail.com";
+  const WHATSAPP_RECIPIENT = "972569126200";
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -34,6 +35,7 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
   const [projectType, setProjectType] = useState("");
   const [notes, setNotes] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   useLayoutEffect(() => {
     const root = rootRef.current;
@@ -55,9 +57,45 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
     });
   }, []);
 
+  const buildRequestMessage = () => {
+    return [
+      `Service request: ${serviceTitle}`,
+      "",
+      `Name: ${name}`,
+      `Phone: ${phone}`,
+      `Location: ${location}`,
+      `Building status: ${buildingStatus}`,
+      `Approx. area (m²): ${area}`,
+      `Project type: ${projectType}`,
+      `Service ID: ${serviceId}`,
+      `Notes: ${notes || "-"}`,
+    ].join("\n");
+  };
+
+  const canSend = () => {
+    const form = formRef.current;
+    if (!form) return false;
+    return form.reportValidity();
+  };
+
+  const sendViaEmail = () => {
+    if (!canSend()) return;
+    const subject = encodeURIComponent(`Request ${serviceTitle}`);
+    const body = encodeURIComponent(buildRequestMessage());
+    window.location.href = `mailto:${EMAIL_RECIPIENT}?subject=${subject}&body=${body}`;
+    setSent(true);
+  };
+
+  const sendViaWhatsApp = () => {
+    if (!canSend()) return;
+    const text = encodeURIComponent(buildRequestMessage());
+    window.open(`https://wa.me/${WHATSAPP_RECIPIENT}?text=${text}`, "_blank", "noopener,noreferrer");
+    setSent(true);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    sendViaEmail();
   };
 
   if (sent) {
@@ -83,23 +121,12 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
           ← Home
         </Link>
 
-        <Link href="/" className={styles.pageLogo} aria-label="samarammar home" data-request-entry>
-          <Image
-            src={brandLogo}
-            alt=""
-            width={130}
-            height={52}
-            className={styles.pageLogoImg}
-            quality={100}
-          />
-        </Link>
-
         <header className={styles.formHeader} data-request-entry>
           <p className={styles.formKicker}>Request service</p>
           <h1 className={styles.formTitle}>{serviceTitle}</h1>
         </header>
 
-        <form className={styles.form} onSubmit={handleSubmit} data-request-entry>
+        <form ref={formRef} className={styles.form} onSubmit={handleSubmit} data-request-entry>
           <div className={styles.formGrid}>
             <div className={styles.field}>
               <label htmlFor="name">Name *</label>
@@ -200,8 +227,11 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
           <input type="hidden" name="service" value={serviceId} />
 
           <div className={styles.formActions}>
-            <button type="submit" className={styles.submitButton}>
-              Submit request
+            <button type="button" className={styles.submitButton} onClick={sendViaEmail}>
+              Send by email
+            </button>
+            <button type="button" className={styles.whatsappButton} onClick={sendViaWhatsApp}>
+              Send by WhatsApp
             </button>
             <Link href="/" className={styles.cancelLink}>
               Cancel

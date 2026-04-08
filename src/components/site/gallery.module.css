@@ -761,3 +761,402 @@
 :global(html[data-theme="dark"]) .cardTagCategory {
   background: linear-gradient(135deg, #9d9386, #7a7064);
 }
+
+/* Complete gallery redesign overrides */
+.pageShell {
+  background: linear-gradient(180deg, #f7f5f1, #f2eee7);
+  color: #2b2621;
+}
+
+.pageShell::before {
+  background:
+    radial-gradient(circle at 8% 14%, rgb(173 143 106 / 10%), transparent 30%),
+    radial-gradient(circle at 92% 85%, rgb(173 143 106 / 12%), transparent 34%),
+    linear-gradient(180deg, #f9f7f2 0%, #f3efe8 100%);
+}
+
+.galleryRoot {
+  max-width: 1380px;
+  padding-top: clamp(4.2rem, 8vw, 6rem);
+}
+
+.galleryHeaderBar,
+.galleryTopLogo,
+.galleryTopLogoImg,
+.galleryHeaderBarLeft,
+.galleryKicker,
+.zoomOverlay,
+.detailPanel,
+.cardOverlay,
+.cardLink,
+.cardTags {
+  display: none;
+}
+
+.galleryHeader {
+  margin: 0 0 clamp(1.5rem, 3vw, 2.2rem);
+  border: 1px solid rgb(56 45 33 / 14%);
+  border-radius: 1.2rem;
+  padding: clamp(1.1rem, 2.2vw, 1.6rem);
+  background: rgb(255 255 255 / 75%);
+  backdrop-filter: blur(8px);
+  text-align: left;
+}
+
+.galleryEyebrow {
+  margin: 0 0 0.45rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-size: 0.67rem;
+  color: #8e7253;
+  font-weight: 600;
+}
+
+.galleryTitle {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+  color: #231d18;
+  text-transform: none;
+  max-width: none;
+}
+
+.galleryLead {
+  margin: 0.65rem 0 0;
+  max-width: 56ch;
+  font-size: 0.9rem;
+  color: #6d5e4f;
+}
+
+.headerActions {
+  margin-top: 0.95rem;
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.backLink,
+.ctaLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.2rem;
+  padding: 0.42rem 1rem;
+  border-radius: 999px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 0.66rem;
+  font-weight: 600;
+  border: 1px solid rgb(64 53 42 / 18%);
+  transition: 0.2s ease;
+}
+
+.backLink {
+  color: #2e261f;
+  background: rgb(255 255 255 / 82%);
+}
+
+.ctaLink {
+  color: #fff;
+  border-color: #2d241c;
+  background: #2d241c;
+}
+
+.backLink:hover,
+.ctaLink:hover {
+  transform: translateY(-1px);
+}
+
+.filterBar {
+  margin-bottom: clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.filterList {
+  justify-content: flex-start;
+  gap: 0.55rem;
+}
+
+.filterTab {
+  padding: 0.44rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgb(56 45 33 / 20%);
+  background: rgb(255 255 255 / 70%);
+  color: #6f5d4a;
+  font-size: 0.68rem;
+}
+
+.filterTabActive {
+  background: #2d241c;
+  border-color: #2d241c;
+  color: #fff;
+}
+
+.gallerySection {
+  margin-bottom: clamp(2.2rem, 4vw, 3rem);
+}
+
+.gallerySectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.gallerySectionLabel {
+  margin: 0;
+  color: #2c241d;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+}
+
+.gallerySectionMeta {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b7560;
+}
+
+.cardsGrid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.card {
+  border-radius: 0.9rem;
+  overflow: hidden;
+  border: 1px solid rgb(56 45 33 / 12%);
+  background: rgb(255 255 255 / 82%);
+  box-shadow: 0 8px 18px rgb(30 23 18 / 8%);
+}
+
+.cardMedia {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.cardMedia img {
+  transition: transform 0.45s ease;
+}
+
+.card:hover .cardMedia img {
+  transform: scale(1.05);
+}
+
+.cardCategoryBadge {
+  position: absolute;
+  top: 0.62rem;
+  right: 0.62rem;
+  z-index: 3;
+  padding: 0.3rem 0.58rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 245 230 / 42%);
+  background: rgb(14 11 9 / 58%);
+  color: rgb(255 240 215 / 96%);
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.cardMediaCaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 0.75rem 0.75rem 0.82rem;
+  background: linear-gradient(to top, rgb(16 13 10 / 82%), rgb(16 13 10 / 8%));
+}
+
+.cardMediaSubtitle {
+  margin: 0 0 0.24rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(255 236 205 / 84%);
+}
+
+.cardMediaTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  color: #fffaf2;
+  text-shadow: 0 2px 12px rgb(0 0 0 / 45%);
+}
+
+.cardCopy {
+  position: static;
+  color: #2d241c;
+  text-shadow: none;
+  padding: 0.75rem;
+}
+
+.cardTopLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #907a64;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 0.9rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: #2d241c;
+}
+
+.cardTitle a {
+  color: inherit;
+}
+
+.cardAction {
+  margin-top: 0.62rem;
+  display: inline-flex;
+  padding: 0.34rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgb(64 53 42 / 20%);
+  background: #fff;
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #5f4e3d;
+}
+
+@media (max-width: 1100px) {
+  .cardsGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .galleryRoot {
+    padding-top: 4.8rem;
+  }
+
+  .cardsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .gallerySectionHead {
+    margin-bottom: 0.75rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dark mode for redesigned gallery */
+:global(html[data-theme="dark"]) .pageShell {
+  background: linear-gradient(180deg, #121216, #17171c);
+  color: #ece8df;
+}
+
+:global(html[data-theme="dark"]) .pageShell::before {
+  background:
+    radial-gradient(circle at 8% 14%, rgb(210 165 108 / 12%), transparent 30%),
+    radial-gradient(circle at 92% 85%, rgb(210 165 108 / 10%), transparent 34%),
+    linear-gradient(180deg, #101015 0%, #181821 100%);
+}
+
+:global(html[data-theme="dark"]) .galleryHeader {
+  border-color: rgb(255 255 255 / 12%);
+  background: rgb(26 26 34 / 72%);
+}
+
+:global(html[data-theme="dark"]) .galleryEyebrow {
+  color: #c49e74;
+}
+
+:global(html[data-theme="dark"]) .galleryTitle {
+  color: #f3eee5;
+}
+
+:global(html[data-theme="dark"]) .galleryLead {
+  color: #b8aea0;
+}
+
+:global(html[data-theme="dark"]) .backLink {
+  color: #f0e9dc;
+  border-color: rgb(255 255 255 / 16%);
+  background: rgb(255 255 255 / 6%);
+}
+
+:global(html[data-theme="dark"]) .ctaLink {
+  background: #f0e9dc;
+  border-color: #f0e9dc;
+  color: #1e1a16;
+}
+
+:global(html[data-theme="dark"]) .filterTab {
+  border-color: rgb(255 255 255 / 18%);
+  background: rgb(255 255 255 / 7%);
+  color: #d0c5b6;
+}
+
+:global(html[data-theme="dark"]) .filterTabActive {
+  background: #f0e9dc;
+  border-color: #f0e9dc;
+  color: #1e1a16;
+}
+
+:global(html[data-theme="dark"]) .gallerySectionLabel {
+  color: #f3eee5;
+}
+
+:global(html[data-theme="dark"]) .gallerySectionMeta {
+  color: #bda88f;
+}
+
+:global(html[data-theme="dark"]) .card {
+  border-color: rgb(255 255 255 / 10%);
+  background: rgb(28 28 36 / 82%);
+  box-shadow: 0 8px 20px rgb(0 0 0 / 30%);
+}
+
+:global(html[data-theme="dark"]) .cardMediaCaption {
+  background: linear-gradient(to top, rgb(7 7 10 / 86%), rgb(7 7 10 / 12%));
+}
+
+:global(html[data-theme="dark"]) .cardCategoryBadge {
+  border-color: rgb(255 255 255 / 24%);
+  background: rgb(8 8 12 / 62%);
+  color: rgb(235 216 189 / 96%);
+}
+
+:global(html[data-theme="dark"]) .cardMediaSubtitle {
+  color: rgb(239 214 180 / 86%);
+}
+
+:global(html[data-theme="dark"]) .cardCopy {
+  color: #f0e9dc;
+}
+
+:global(html[data-theme="dark"]) .cardTopLine {
+  color: #c3ae94;
+}
+
+:global(html[data-theme="dark"]) .cardTitle {
+  color: #f3eee5;
+}
+
+:global(html[data-theme="dark"]) .cardAction {
+  border-color: rgb(255 255 255 / 16%);
+  background: rgb(255 255 255 / 8%);
+  color: #d9cdbd;
+}

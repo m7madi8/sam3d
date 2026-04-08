@@ -19,7 +19,6 @@ import {
 import interiorImage from "../../../interior.jpg";
 import landscapeImage from "../../../landscape.jpg";
 import exteriorImage from "../../../exterior.jpg";
-import brandLogo from "../../../white-logo.png";
 
 const projects = buildPortfolioProjects(interiorImage, landscapeImage, exteriorImage);
 const layoutEase = [0.25, 0.46, 0.45, 0.94] as const;
@@ -90,8 +89,6 @@ export function PortfolioGallery() {
       <FullscreenMenu
         brand="SAMARAMMAR"
         items={menuItems}
-        logoSrc={brandLogo.src}
-        logoAlt="samarammar logo"
         showThemeToggle={false}
       />
 

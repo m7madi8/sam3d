@@ -168,6 +168,7 @@ export function NarrativeExperience() {
     interior: serviceImageInterior.src,
     landscape: serviceImageLandscape.src,
     architectural: serviceImageExterior.src,
+    commercial: serviceImageExterior.src,
   };
   const menuItems = [
     { label: "Home", ariaLabel: "Go to home section", link: "#hero" },
@@ -293,8 +294,6 @@ export function NarrativeExperience() {
     }
 
     const ctx = gsap.context(() => {
-      const isLargeDesktop = window.matchMedia("(min-width: 1400px)").matches;
-      const initialDepthScale = isMobile ? 0.78 : isLargeDesktop ? 0.52 : 0.68;
       const sectionScrollSpan = isMobile
         ? window.innerHeight * (cards.length * 0.95)
         : window.innerHeight * (cards.length + 1.5);
@@ -303,8 +302,8 @@ export function NarrativeExperience() {
         gsap.set(card, { zIndex: index + 1 });
         gsap.set(card, { yPercent: index === 0 ? 0 : 108 });
         gsap.set(layers[index], {
-          scale: index === 0 ? initialDepthScale : 1,
-          borderRadius: index === 0 ? (isMobile ? 20 : 28) : 0,
+          scale: 1,
+          borderRadius: 0,
           boxShadow: "0 28px 56px rgb(16 12 9 / 28%)",
         });
         gsap.set(copy[index], { opacity: 0 });
@@ -334,15 +333,6 @@ export function NarrativeExperience() {
 
       cards.forEach((_, index) => {
         if (index === 0) {
-          timeline.to(
-            layers[0],
-            {
-              scale: 1,
-              borderRadius: 0,
-              duration: dScale,
-            },
-            0,
-          );
           timeline.to(copy[0], { opacity: 1, duration: isMobile ? 0.35 : 0.65 }, isMobile ? 0.25 : 0.5);
         }
 
@@ -512,8 +502,6 @@ export function NarrativeExperience() {
         <FullscreenMenu
           brand="SAMARAMMAR"
           items={menuItems}
-          logoSrc={brandLogo.src}
-          logoAlt="samarammar logo"
           controlsVisible={heroControlsVisible}
           showThemeToggle={false}
           theme={theme}
@@ -852,9 +840,6 @@ export function NarrativeExperience() {
         <footer className={styles.siteFooter}>
           <div className={styles.footerInner}>
             <div className={styles.footerBrand}>
-              <div className={styles.footerLogoWrap}>
-                <Image src={brandLogo} alt="samarammar logo" className={styles.footerLogo} quality={100} />
-              </div>
               <p>Executive-led interior and architectural direction by Samar.</p>
             </div>
 

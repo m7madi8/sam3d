@@ -14,7 +14,7 @@ type MenuItem = {
 type FullscreenMenuProps = {
   brand?: string;
   items: MenuItem[];
-  logoSrc: string;
+  logoSrc?: string;
   logoAlt?: string;
   controlsVisible?: boolean;
   showThemeToggle?: boolean;
@@ -159,9 +159,18 @@ export default function FullscreenMenu({
           </span>
           <span className={styles.closeButtonText}>Close</span>
         </button>
-        <div className={styles.overlayBrand}>
-          <Image src={logoSrc} alt={logoAlt} width={120} height={48} className={styles.overlayLogo} quality={100} />
-        </div>
+        {logoSrc ? (
+          <div className={styles.overlayBrand}>
+            <Image
+              src={logoSrc}
+              alt={logoAlt}
+              width={120}
+              height={48}
+              className={styles.overlayLogo}
+              quality={100}
+            />
+          </div>
+        ) : null}
         <nav className={styles.overlayNav} aria-label="Fullscreen menu">
           <div className={styles.overlayNavMain}>
             <ul>

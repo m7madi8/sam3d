@@ -144,6 +144,7 @@
 .formActions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1.75rem;
   padding-top: 1.25rem;
@@ -168,6 +169,27 @@
 .submitButton:focus-visible {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgb(26 26 27 / 28%);
+  outline: none;
+}
+
+.whatsappButton {
+  padding: 0.6rem 1.5rem;
+  border-radius: 999px;
+  border: 1px solid rgb(18 140 126 / 42%);
+  background: linear-gradient(to bottom, rgb(37 211 102 / 96%), rgb(18 140 126 / 96%));
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.whatsappButton:hover,
+.whatsappButton:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgb(18 140 126 / 30%);
   outline: none;
 }
 
@@ -249,4 +271,9 @@
 :global(html[data-theme="dark"]) .submitButton:hover,
 :global(html[data-theme="dark"]) .submitButton:focus-visible {
   box-shadow: 0 8px 20px rgb(0 0 0 / 35%);
+}
+
+:global(html[data-theme="dark"]) .whatsappButton {
+  border-color: rgb(37 211 102 / 48%);
+  background: linear-gradient(to bottom, rgb(37 211 102 / 90%), rgb(11 114 100 / 92%));
 }
