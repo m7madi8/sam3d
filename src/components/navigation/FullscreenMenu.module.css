@@ -28,6 +28,58 @@
   gap: 0.45rem;
 }
 
+.langButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  border: 1px solid rgb(143 134 123 / 52%);
+  border-radius: 999px;
+  padding: 0.32rem 0.55rem 0.32rem 0.38rem;
+  color: var(--color-obsidian);
+  background: linear-gradient(to bottom, rgb(255 255 255 / 97%), rgb(246 244 239 / 94%));
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 10px 24px rgb(0 0 0 / 16%),
+    inset 0 1px 0 rgb(255 255 255 / 72%);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.langIcon {
+  width: 1.62rem;
+  height: 1.62rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--color-obsidian);
+  color: var(--color-ivory);
+}
+
+.langCodes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.18rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.langCode {
+  opacity: 0.6;
+}
+
+.langCodeActive {
+  opacity: 1;
+  font-weight: 700;
+}
+
+.langDivider {
+  opacity: 0.48;
+}
+
 .brand {
   display: none;
 }
@@ -127,7 +179,9 @@
 .menuButton:hover,
 .menuButton:focus-visible,
 .themeButton:hover,
-.themeButton:focus-visible {
+.themeButton:focus-visible,
+.langButton:hover,
+.langButton:focus-visible {
   transform: translateY(-1px) scale(1.02);
   opacity: 1;
   border-color: rgb(143 134 123 / 66%);
@@ -144,6 +198,13 @@
 
 .themeButton:hover,
 .themeButton:focus-visible {
+  box-shadow:
+    0 12px 26px rgb(0 0 0 / 20%),
+    inset 0 1px 0 rgb(255 255 255 / 84%);
+}
+
+.langButton:hover,
+.langButton:focus-visible {
   box-shadow:
     0 12px 26px rgb(0 0 0 / 20%),
     inset 0 1px 0 rgb(255 255 255 / 84%);
@@ -360,7 +421,8 @@
 }
 
 :global(html[data-theme="dark"]) .menuButton,
-:global(html[data-theme="dark"]) .themeButton {
+:global(html[data-theme="dark"]) .themeButton,
+:global(html[data-theme="dark"]) .langButton {
   border-color: rgb(255 255 255 / 20%);
   color: var(--color-white);
   background: linear-gradient(to bottom, rgb(39 39 44 / 95%), rgb(27 27 31 / 93%));
@@ -370,15 +432,18 @@
 }
 
 :global(html[data-theme="dark"]) .menuButtonIcon,
-:global(html[data-theme="dark"]) .themeButtonIcon {
+:global(html[data-theme="dark"]) .themeButtonIcon,
+:global(html[data-theme="dark"]) .langIcon {
   background: rgb(242 235 225 / 94%);
   color: rgb(20 20 22 / 96%);
 }
 
 :global(html[data-theme="dark"]) .menuButton:hover,
 :global(html[data-theme="dark"]) .themeButton:hover,
+:global(html[data-theme="dark"]) .langButton:hover,
 :global(html[data-theme="dark"]) .menuButton:focus-visible,
-:global(html[data-theme="dark"]) .themeButton:focus-visible {
+:global(html[data-theme="dark"]) .themeButton:focus-visible,
+:global(html[data-theme="dark"]) .langButton:focus-visible {
   border-color: rgb(157 147 134 / 72%);
   background: linear-gradient(to bottom, rgb(49 49 56 / 96%), rgb(34 34 40 / 94%));
 }
@@ -391,8 +456,18 @@
 
   .menuButton,
   .themeButton,
+  .langButton,
   .closeButton {
     font-size: 0.65rem;
+  }
+
+  .langButton {
+    padding: 0.26rem 0.46rem 0.26rem 0.28rem;
+  }
+
+  .langIcon {
+    width: 1.38rem;
+    height: 1.38rem;
   }
 
   .menuButton {

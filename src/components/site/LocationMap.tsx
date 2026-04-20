@@ -1,94 +1,161 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { useLanguage } from "./LanguageProvider";
 import styles from "./site.module.css";
 
-const LOCATION = { lat: 31.9032, lng: 35.2048 } as const;
-const COORDINATES_URL = `https://www.google.com/maps?q=${LOCATION.lat},${LOCATION.lng}`;
+const GOOGLE_MAPS =
+  "https://www.google.com/maps/search/?api=1&query=Al+Kulliyah+Al+Ahliyah+Street+Ramallah+Palestine";
+
+function MapPinGlyph({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
 
 export function LocationMap() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<L.Map | null>(null);
+  const { tr } = useLanguage();
+  const [open, setOpen] = useState(false);
+  const closeBtnRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+  const dialogId = useId();
 
-  const icon = L.divIcon({
-    className: styles.locationMarkerIcon,
-    html: `<span class="${styles.locationMarkerPin}" aria-hidden="true"></span>`,
-    iconSize: [32, 42],
-    iconAnchor: [16, 42],
-  });
+  const mapAlt = tr(
+    "Map illustration of Ramallah and the studio area",
+    "رسم خريطة لرام الله ومنطقة المكتب",
+  );
+
+  const openMapsLabel = tr("Open location in Google Maps", "فتح الموقع في خرائط جوجل");
+  const pinLabel = tr("Open studio location details", "عرض تفاصيل موقع المكتب");
+  const closeLabel = tr("Close", "إغلاق");
+  const companyMeta = tr("Studio", "المكتب");
+  const companyTitle = tr("Samar Ammar Interior Design", "سمر عمار — التصميم الداخلي");
+  const streetLine = tr("Al Kulliyah Al Ahliyah Street", "شارع الكلية الأهلية");
+  const cityLine = tr("Ramallah, Palestine", "رام الله، فلسطين");
+  const directionsLabel = tr("Open in Google Maps", "فتح في خرائط جوجل");
+
+  const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    if (mapRef.current) return;
-
-    const map = L.map(container, {
-      center: [LOCATION.lat, LOCATION.lng],
-      zoom: 16,
-      zoomControl: false,
-      attributionControl: false,
-      dragging: false,
-      scrollWheelZoom: false,
-      doubleClickZoom: false,
-      touchZoom: false,
-      boxZoom: false,
-      keyboard: false,
-    });
-    mapRef.current = map;
-
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png", {
-      subdomains: "abcd",
-      maxZoom: 20,
-    }).addTo(map);
-
-    const marker = L.marker([LOCATION.lat, LOCATION.lng], { icon }).addTo(map);
-
-    const popupHtml = `
-      <div class="${styles.locationMapInfoCard}">
-        <p class="${styles.locationMapInfoMeta}">Company</p>
-        <h3 class="${styles.locationMapInfoCardTitle}">Samar Ammar Interior Design</h3>
-        <span class="${styles.locationMapInfoDivider}" aria-hidden="true"></span>
-        <p class="${styles.locationMapInfoAddress}">
-          <span class="${styles.locationMapInfoIcon}" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
-          </span>
-          Al Kulliyah Al Ahliyah Street
-        </p>
-        <p class="${styles.locationMapInfoPlace}">
-          <span class="${styles.locationMapInfoIcon}" aria-hidden="true">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
-          </span>
-          Ramallah, Palestine
-        </p>
-        <a href="${COORDINATES_URL}" target="_blank" rel="noopener noreferrer" class="${styles.locationMapGetDirections}">
-          Open coordinates
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" />
-          </svg>
-        </a>
-      </div>
-    `;
-
-    marker.bindPopup(popupHtml, { className: styles.locationMapPopup, closeButton: true, autoClose: false });
-
-    // Ensure correct sizing after mount
-    const id = window.setTimeout(() => map.invalidateSize(), 50);
-
-    return () => {
-      window.clearTimeout(id);
-      map.remove();
-      mapRef.current = null;
+    if (!open) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    closeBtnRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") close();
     };
-  }, [icon]);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open, close]);
 
   return (
     <div className={styles.locationMapFrame}>
-      <div ref={containerRef} className={styles.locationMapContainer} />
-      <div className={styles.locationMapAttribution}>
-        <span>© OpenStreetMap · © CARTO</span>
+      <div className={styles.locationMapImageWrap}>
+        <a
+          href={GOOGLE_MAPS}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={styles.locationMapImageLink}
+          aria-label={openMapsLabel}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/ramallah_map.svg" alt={mapAlt} className={styles.locationMapImage} loading="lazy" />
+        </a>
+        <button
+          type="button"
+          className={styles.locationMapMarkerBtn}
+          onClick={() => setOpen(true)}
+          aria-label={pinLabel}
+          aria-expanded={open}
+          aria-haspopup="dialog"
+          aria-controls={open ? dialogId : undefined}
+        >
+          <span className={styles.locationMarkerPin} aria-hidden />
+        </button>
       </div>
+
+      {open ? (
+        <>
+          <div className={styles.locationMapDialogBackdrop} onClick={close} aria-hidden />
+          <div
+            id={dialogId}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            className={styles.locationMapDialog}
+          >
+            <button
+              type="button"
+              ref={closeBtnRef}
+              className={styles.locationMapDialogClose}
+              onClick={close}
+              aria-label={closeLabel}
+            >
+              ×
+            </button>
+            <div className={styles.locationMapDialogIconWrap}>
+              <MapPinGlyph className={styles.locationMapDialogIcon} />
+            </div>
+            <div className={styles.locationMapInfoCard}>
+              <p className={styles.locationMapInfoMeta}>{companyMeta}</p>
+              <h3 id={titleId} className={styles.locationMapInfoCardTitle}>
+                {companyTitle}
+              </h3>
+              <span className={styles.locationMapInfoDivider} aria-hidden />
+              <p className={styles.locationMapInfoAddress}>
+                <span className={styles.locationMapInfoIcon} aria-hidden>
+                  <MapPinGlyph />
+                </span>
+                {streetLine}
+              </p>
+              <p className={styles.locationMapInfoPlace}>
+                <span className={styles.locationMapInfoIcon} aria-hidden>
+                  <MapPinGlyph />
+                </span>
+                {cityLine}
+              </p>
+              <a
+                href={GOOGLE_MAPS}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.locationMapGetDirections}
+              >
+                {directionsLabel}
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden
+                >
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                  <polyline points="15 3 21 3 21 9" />
+                  <line x1="10" y1="14" x2="21" y2="3" />
+                </svg>
+              </a>
+            </div>
+          </div>
+        </>
+      ) : null}
     </div>
   );
 }

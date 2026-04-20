@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { useLanguage } from "@/components/site/LanguageProvider";
 import styles from "./FullscreenMenu.module.css";
 
 type MenuItem = {
@@ -17,6 +18,8 @@ type FullscreenMenuProps = {
   logoSrc?: string;
   logoAlt?: string;
   controlsVisible?: boolean;
+  /** When false, hides the fixed header language control (menu stays). */
+  showLangToggle?: boolean;
   showThemeToggle?: boolean;
   theme?: "light" | "dark";
   setTheme?: (t: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
@@ -28,10 +31,12 @@ export default function FullscreenMenu({
   logoSrc,
   logoAlt = "Brand logo",
   controlsVisible = true,
+  showLangToggle = true,
   showThemeToggle = true,
   theme: themeProp,
   setTheme: setThemeProp,
 }: FullscreenMenuProps) {
+  const { lang, toggleLang, tr } = useLanguage();
   const [open, setOpen] = useState(false);
   const [themeInternal, setThemeInternal] = useState<"light" | "dark">("dark");
   const theme = themeProp ?? themeInternal;
@@ -101,16 +106,39 @@ export default function FullscreenMenu({
     <div ref={wrapperRef} className={styles.wrapper} data-open={open || undefined}>
       <header
         className={`${styles.header} ${!controlsVisible ? styles.headerHidden : ""}`}
-        aria-label="Main navigation"
+        aria-label={tr("Main navigation", "التنقل الرئيسي")}
       >
         <span className={styles.brand}>{brand}</span>
         <div className={styles.headerControls}>
+          {showLangToggle ? (
+            <button
+              type="button"
+              className={styles.langButton}
+              onClick={toggleLang}
+              aria-label={tr("Toggle language", "تبديل اللغة")}
+            >
+              <span className={styles.langIcon} aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 5h12M9 3v2M8 13h4M7 10l2 6 2-6M18 10h.01M14 21c4.418 0 8-3.582 8-8s-3.582-8-8-8" />
+                </svg>
+              </span>
+              <span className={styles.langCodes}>
+                <span className={`${styles.langCode} ${lang === "en" ? styles.langCodeActive : ""}`}>EN</span>
+                <span className={styles.langDivider}>/</span>
+                <span className={`${styles.langCode} ${lang === "ar" ? styles.langCodeActive : ""}`}>AR</span>
+              </span>
+            </button>
+          ) : null}
           {showThemeToggle && (
             <button
               type="button"
               className={styles.themeButton}
               onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
-              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={
+                theme === "dark"
+                  ? tr("Switch to light mode", "التبديل للوضع الفاتح")
+                  : tr("Switch to dark mode", "التبديل للوضع الداكن")
+              }
             >
               <span className={styles.themeButtonIcon} aria-hidden="true">
                 {theme === "dark" ? (
@@ -119,7 +147,7 @@ export default function FullscreenMenu({
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 )}
               </span>
-              <span>{theme === "dark" ? "Light" : "Night"}</span>
+              <span>{theme === "dark" ? tr("Light", "فاتح") : tr("Night", "ليلي")}</span>
             </button>
           )}
           <button
@@ -128,9 +156,9 @@ export default function FullscreenMenu({
             onClick={toggleMenu}
             aria-expanded={open}
             aria-controls="fullscreen-menu"
-            aria-label={open ? "Close menu" : "Open menu"}
+            aria-label={open ? tr("Close menu", "إغلاق القائمة") : tr("Open menu", "فتح القائمة")}
           >
-            <span className={styles.menuButtonText}>{open ? "Close" : "Menu"}</span>
+            <span className={styles.menuButtonText}>{open ? tr("Close", "إغلاق") : tr("Menu", "القائمة")}</span>
             <span className={styles.menuButtonIcon} aria-hidden="true">
               {open ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -151,13 +179,13 @@ export default function FullscreenMenu({
           ref={closeButtonRef}
           type="button"
           className={styles.closeButton}
-          aria-label="Close menu"
+          aria-label={tr("Close menu", "إغلاق القائمة")}
           onClick={closeMenu}
         >
           <span className={styles.closeButtonIcon} aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </span>
-          <span className={styles.closeButtonText}>Close</span>
+          <span className={styles.closeButtonText}>{tr("Close", "إغلاق")}</span>
         </button>
         {logoSrc ? (
           <div className={styles.overlayBrand}>
@@ -171,7 +199,7 @@ export default function FullscreenMenu({
             />
           </div>
         ) : null}
-        <nav className={styles.overlayNav} aria-label="Fullscreen menu">
+        <nav className={styles.overlayNav} aria-label={tr("Fullscreen menu", "قائمة كاملة الشاشة")}>
           <div className={styles.overlayNavMain}>
             <ul>
               {items.map((item, index) => (
@@ -192,7 +220,7 @@ export default function FullscreenMenu({
             </ul>
           </div>
           <div className={styles.overlayBottomBar}>
-            <div className={styles.overlaySocial} aria-label="Social links">
+            <div className={styles.overlaySocial} aria-label={tr("Social links", "روابط التواصل")}>
               <a href="https://wa.me/17600000000" target="_blank" rel="noopener noreferrer">
                 WhatsApp
               </a>

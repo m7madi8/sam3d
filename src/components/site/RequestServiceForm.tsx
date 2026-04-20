@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
+import { useLanguage } from "./LanguageProvider";
 import styles from "./RequestServiceForm.module.css";
 
 const BUILDING_OPTIONS = [
@@ -24,6 +24,7 @@ type RequestServiceFormProps = {
 };
 
 export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFormProps) {
+  const { tr } = useLanguage();
   const EMAIL_RECIPIENT = "sam.ammar1992@gmail.com";
   const WHATSAPP_RECIPIENT = "972569126200";
   const [sent, setSent] = useState(false);
@@ -103,10 +104,10 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
       <div className={styles.pageShell} ref={rootRef}>
         <main className={styles.formRoot}>
           <div className={styles.successBlock} data-request-entry>
-            <h1 className={styles.successTitle}>Request sent</h1>
-            <p className={styles.successText}>We will get back to you soon.</p>
+            <h1 className={styles.successTitle}>{tr("Request sent", "تم إرسال الطلب")}</h1>
+            <p className={styles.successText}>{tr("We will get back to you soon.", "سنعود إليك قريبًا.")}</p>
             <Link href="/" className={styles.successLink}>
-              ← Back to home
+              {tr("← Back to home", "← العودة للرئيسية")}
             </Link>
           </div>
         </main>
@@ -118,71 +119,80 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
     <div className={styles.pageShell} ref={rootRef}>
       <main className={styles.formRoot}>
         <Link href="/" className={styles.backLink} data-request-entry>
-          ← Home
+          {tr("← Home", "← الرئيسية")}
         </Link>
 
         <header className={styles.formHeader} data-request-entry>
-          <p className={styles.formKicker}>Request service</p>
+          <p className={styles.formKicker}>{tr("Request service", "طلب خدمة")}</p>
           <h1 className={styles.formTitle}>{serviceTitle}</h1>
         </header>
 
         <form ref={formRef} className={styles.form} onSubmit={handleSubmit} data-request-entry>
           <div className={styles.formGrid}>
             <div className={styles.field}>
-              <label htmlFor="name">Name *</label>
+              <label htmlFor="name">{tr("Name *", "الاسم *")}</label>
               <input
                 id="name"
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Full name"
+                placeholder={tr("Full name", "الاسم الكامل")}
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="phone">Phone *</label>
+              <label htmlFor="phone">{tr("Phone *", "الهاتف *")}</label>
               <input
                 id="phone"
                 type="tel"
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="Mobile or phone number"
+                placeholder={tr("Mobile or phone number", "رقم الجوال أو الهاتف")}
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="location">Location *</label>
+              <label htmlFor="location">{tr("Location *", "الموقع *")}</label>
               <input
                 id="location"
                 type="text"
                 required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="City or area"
+                placeholder={tr("City or area", "المدينة أو المنطقة")}
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="buildingStatus">Building status *</label>
+              <label htmlFor="buildingStatus">{tr("Building status *", "حالة المبنى *")}</label>
               <select
                 id="buildingStatus"
                 required
                 value={buildingStatus}
                 onChange={(e) => setBuildingStatus(e.target.value)}
               >
-                <option value="">Select status</option>
+                <option value="">{tr("Select status", "اختر الحالة")}</option>
                 {BUILDING_OPTIONS.map((opt) => (
                   <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {tr(
+                      opt.label,
+                      opt.value === "empty_land"
+                        ? "أرض فارغة"
+                        : opt.value === "renovation"
+                          ? "ترميم"
+                          : opt.value === "from_scratch"
+                            ? "من الصفر"
+                            : "هيكل خرساني (عظم)",
+                    )}
                   </option>
                 ))}
               </select>
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="area">Approx. area (m²) *</label>
+              <label htmlFor="area">{tr("Approx. area (m²) *", "المساحة التقريبية (م²) *")}</label>
               <input
                 id="area"
                 type="number"
@@ -191,22 +201,22 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
                 step={1}
                 value={area}
                 onChange={(e) => setArea(e.target.value)}
-                placeholder="Square meters"
+                placeholder={tr("Square meters", "عدد الأمتار")}
               />
             </div>
 
             <div className={styles.field}>
-              <label htmlFor="projectType">Project type *</label>
+              <label htmlFor="projectType">{tr("Project type *", "نوع المشروع *")}</label>
               <select
                 id="projectType"
                 required
                 value={projectType}
                 onChange={(e) => setProjectType(e.target.value)}
               >
-                <option value="">Select type</option>
+                <option value="">{tr("Select type", "اختر النوع")}</option>
                 {PROJECT_TYPES.map((opt) => (
                   <option key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {tr(opt.label, opt.value === "residential" ? "سكني" : "تجاري")}
                   </option>
                 ))}
               </select>
@@ -214,12 +224,12 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
           </div>
 
           <div className={styles.field}>
-            <label htmlFor="notes">Additional notes</label>
+            <label htmlFor="notes">{tr("Additional notes", "ملاحظات إضافية")}</label>
             <textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any extra details you’d like to share"
+              placeholder={tr("Any extra details you’d like to share", "أي تفاصيل إضافية تحب مشاركتها")}
               rows={4}
             />
           </div>
@@ -228,13 +238,13 @@ export function RequestServiceForm({ serviceId, serviceTitle }: RequestServiceFo
 
           <div className={styles.formActions}>
             <button type="button" className={styles.submitButton} onClick={sendViaEmail}>
-              Send by email
+              {tr("Send by email", "إرسال عبر البريد")}
             </button>
             <button type="button" className={styles.whatsappButton} onClick={sendViaWhatsApp}>
-              Send by WhatsApp
+              {tr("Send by WhatsApp", "إرسال عبر واتساب")}
             </button>
             <Link href="/" className={styles.cancelLink}>
-              Cancel
+              {tr("Cancel", "إلغاء")}
             </Link>
           </div>
         </form>

@@ -13,21 +13,10 @@ import serviceImageExterior from "../../../exterior.jpg";
 import aboutImage from "../../../sam.jpg";
 import contactImage from "../../../contact.webp";
 import brandLogo from "../../../white-logo.png";
-import dynamic from "next/dynamic";
 import FullscreenMenu from "../navigation/FullscreenMenu";
 import { Loader } from "./Loader";
-
-const LocationMap = dynamic(() => import("./LocationMap").then((m) => m.LocationMap), {
-  ssr: false,
-  loading: () => (
-    <div
-      className={styles.locationMapFrame}
-      style={{ display: "flex", alignItems: "center", justifyContent: "center", background: "var(--surface-secondary)" }}
-    >
-      <span style={{ color: "var(--text-muted)", fontSize: "0.9rem" }}>Loading map…</span>
-    </div>
-  ),
-});
+import { useLanguage } from "./LanguageProvider";
+import { LocationMap } from "./LocationMap";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,19 +30,13 @@ const LOCATION_STATS = {
 } as const;
 
 export function NarrativeExperience() {
+  const { lang, toggleLang, tr } = useLanguage();
   const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const [isMusicMuted, setIsMusicMuted] = useState(false);
   const [heroInView, setHeroInView] = useState(true);
   const [heroControlsVisible, setHeroControlsVisible] = useState(false);
   const [locationNums, setLocationNums] = useState({ total: 0, completed: 0, clients: 0, years: 0 });
   const locationStatsAnimatedRef = useRef(false);
   const locationStatsRef = useRef<HTMLDivElement | null>(null);
-  const backgroundAudioRef = useRef<HTMLAudioElement | null>(null);
-  const musicMutedRef = useRef(false);
-
-  useEffect(() => {
-    musicMutedRef.current = isMusicMuted;
-  }, [isMusicMuted]);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -68,43 +51,7 @@ export function NarrativeExperience() {
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
-  // تشغيل الموسيقى الخلفية (back.mp3) فور فتح الموقع (إلا إذا المستخدم أوقفها)
-  useEffect(() => {
-    if (musicMutedRef.current) return;
-    const audio = backgroundAudioRef.current;
-    if (!audio) return;
-    audio.volume = 0.1;
-    audio.loop = true;
-    audio.play().catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    if (musicMutedRef.current) return;
-    const audio = backgroundAudioRef.current;
-    if (!audio) return;
-    audio.volume = 0.1;
-    audio.loop = true;
-    audio.play().catch(() => {});
-  }, [isMusicMuted]);
-
-  // إيقاف الموسيقى عند مغادرة الصفحة واستئنافها عند العودة (إلا إذا كانت موقوفة)
-  useEffect(() => {
-    const audio = backgroundAudioRef.current;
-    if (!audio) return;
-    const onVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        audio.pause();
-      } else if (!musicMutedRef.current) {
-        audio.volume = 0.1;
-        audio.loop = true;
-        audio.play().catch(() => {});
-      }
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, []);
-
-  // ظهور زر الموسيقى فقط عندما قسم الهيرو ظاهر على الشاشة
+  // لتبديل ظهور زر اللغة في الشريط الثابت عند مغادرة الهيرو
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
@@ -148,35 +95,31 @@ export function NarrativeExperience() {
     return () => obs.disconnect();
   }, []);
 
-  const toggleMusic = () => {
-    const audio = backgroundAudioRef.current;
-    setIsMusicMuted((prev) => {
-      const next = !prev;
-      if (audio) {
-        if (next) audio.pause();
-        else {
-          audio.volume = 0.1;
-          audio.loop = true;
-          audio.play().catch(() => {});
-        }
-      }
-      return next;
-    });
-  };
-
   const serviceImagesById: Record<string, string> = {
     interior: serviceImageInterior.src,
     landscape: serviceImageLandscape.src,
     architectural: serviceImageExterior.src,
     commercial: serviceImageExterior.src,
   };
+  const serviceTitleArById: Record<string, string> = {
+    interior: "التصميم الداخلي",
+    landscape: "اللاندسكيب",
+    architectural: "التصميم المعماري",
+    commercial: "التصميم التجاري",
+  };
+  const serviceDescriptionArById: Record<string, string> = {
+    interior: "مساحات داخلية أنيقة تجمع بين الراحة والهوية الجمالية.",
+    landscape: "تصميم خارجي متوازن يربط الطبيعة بالوظيفة والجمال.",
+    architectural: "حلول معمارية دقيقة تحقق التوازن بين الشكل والاستخدام.",
+    commercial: "مساحات تجارية عملية تعزز تجربة العميل وتدفق العمل.",
+  };
   const menuItems = [
-    { label: "Home", ariaLabel: "Go to home section", link: "#hero" },
-    { label: "Gallery", ariaLabel: "Go to gallery page", link: "/gallery" },
-    { label: "Services", ariaLabel: "Go to services section", link: "#services" },
-    { label: "About", ariaLabel: "Go to about section", link: "#about" },
-    { label: "Location", ariaLabel: "Go to location section", link: "#location" },
-    { label: "Contact", ariaLabel: "Go to contact section", link: "#contact" },
+    { label: tr("Home", "الرئيسية"), ariaLabel: tr("Go to home section", "الذهاب لقسم الرئيسية"), link: "#hero" },
+    { label: tr("Gallery", "المعرض"), ariaLabel: tr("Go to gallery page", "الذهاب لصفحة المعرض"), link: "/gallery" },
+    { label: tr("Services", "الخدمات"), ariaLabel: tr("Go to services section", "الذهاب لقسم الخدمات"), link: "#services" },
+    { label: tr("About", "من نحن"), ariaLabel: tr("Go to about section", "الذهاب لقسم من نحن"), link: "#about" },
+    { label: tr("Location", "الموقع"), ariaLabel: tr("Go to location section", "الذهاب لقسم الموقع"), link: "#location" },
+    { label: tr("Contact", "تواصل"), ariaLabel: tr("Go to contact section", "الذهاب لقسم التواصل"), link: "#contact" },
   ];
 
   const heroRef = useRef<HTMLElement | null>(null);
@@ -490,48 +433,17 @@ export function NarrativeExperience() {
   return (
     <div className={styles.pageShell}>
       <Loader />
-      <audio
-        ref={backgroundAudioRef}
-        src="/back.mp3"
-        loop
-        preload="auto"
-        className={styles.backgroundAudio}
-        aria-hidden
-      />
       <main className={styles.narrativeRoot}>
         <FullscreenMenu
           brand="SAMARAMMAR"
           items={menuItems}
-          controlsVisible={heroControlsVisible}
+          controlsVisible={heroControlsVisible || !heroInView}
+          showLangToggle={heroInView}
           showThemeToggle={false}
           theme={theme}
           setTheme={setTheme}
         />
         <section id="hero" className={`${styles.panel} ${styles.heroPanel}`} ref={heroRef}>
-          {heroInView && heroControlsVisible && (
-            <button
-              type="button"
-              className={styles.heroMusicButton}
-              onClick={toggleMusic}
-              aria-label={isMusicMuted ? "Play music" : "Mute music"}
-            >
-              <span className={styles.heroMusicButtonIcon} aria-hidden="true">
-                {isMusicMuted ? (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                    <line x1="23" y1="9" x2="16" y2="15" />
-                    <line x1="16" y1="9" x2="23" y2="15" />
-                  </svg>
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
-                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
-                  </svg>
-                )}
-              </span>
-              <span>{isMusicMuted ? "Unmute" : "Mute"}</span>
-            </button>
-          )}
           <div className={styles.heroMedia}>
             <Image
               src="/home.jpg"
@@ -546,7 +458,7 @@ export function NarrativeExperience() {
             <div className={styles.heroOverlay} />
           </div>
           <div className={styles.heroScrollHint} aria-hidden="true">
-            <span className={styles.heroScrollHintText}>Scroll to explore</span>
+            <span className={styles.heroScrollHintText}>{tr("Scroll to explore", "مرر للاستكشاف")}</span>
             <span className={styles.heroScrollHintArrow}>↓</span>
           </div>
           <div className={`${styles.panelContent} ${styles.heroContent}`}>
@@ -554,19 +466,32 @@ export function NarrativeExperience() {
               <Image src={brandLogo} alt="samarammar logo" className={styles.heroLogo} quality={100} />
             </div>
             <div className={styles.heroHeadingWrap} data-hero-reveal>
-              <p className={`${styles.kicker} ${styles.heroKicker}`}>Dare To Different</p>
+              <p className={`${styles.kicker} ${styles.heroKicker}`}>{tr("Dare to be different", "تجرأ أن تكون مختلفًا")}</p>
               <span className={styles.heroRule} aria-hidden="true" />
-              <h1 className={`${styles.displayTitle} ${styles.heroTitle}`}>Timeless Design</h1>
+              <h1 className={`${styles.displayTitle} ${styles.heroTitle}`}>{tr("Timeless Design", "تصميم خالد")}</h1>
             </div>
             <p className={`${styles.lead} ${styles.heroLead}`} data-hero-reveal>
-              Interior, landscape, and architectural excellence.
+              {tr("Interior, landscape, and architectural excellence.", "تميز في التصميم الداخلي واللاندسكيب والعمارة.")}
             </p>
             <div className={styles.heroThemeWrap} data-hero-reveal>
               <button
                 type="button"
+                className={styles.heroLangButton}
+                onClick={toggleLang}
+                aria-label={tr("Toggle language", "تبديل اللغة")}
+              >
+                <span className={styles.heroLangLabel}>Language</span>
+                <span className={styles.heroLangCodes}>
+                  <span className={lang === "en" ? styles.heroLangActive : ""}>EN</span>
+                  <span>/</span>
+                  <span className={lang === "ar" ? styles.heroLangActive : ""}>AR</span>
+                </span>
+              </button>
+              <button
+                type="button"
                 className={styles.heroThemeButton}
                 onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
-                aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+                aria-label={theme === "dark" ? tr("Switch to light mode", "التبديل للوضع الفاتح") : tr("Switch to dark mode", "التبديل للوضع الداكن")}
               >
                 <span className={styles.heroThemeButtonIcon} aria-hidden="true">
                   {theme === "dark" ? (
@@ -580,7 +505,7 @@ export function NarrativeExperience() {
                     </svg>
                   )}
                 </span>
-                <span>{theme === "dark" ? "Light" : "Night"}</span>
+                <span>{theme === "dark" ? tr("Light", "فاتح") : tr("Night", "ليلي")}</span>
               </button>
             </div>
           </div>
@@ -589,37 +514,39 @@ export function NarrativeExperience() {
         <section id="about" className={`${styles.panel} ${styles.aboutPanel}`} ref={aboutRef}>
           <div className={styles.panelContent}>
             <div className={styles.aboutNeo}>
-              <aside className={styles.aboutNeoRail} aria-label="About studio note">
-                <p>About</p>
-                <span>Dare To Different</span>
+              <aside className={styles.aboutNeoRail} aria-label={tr("About studio note", "ملاحظة عن الاستوديو")}>
+                <p>{tr("About", "من نحن")}</p>
+                <span>{tr("Dare to be different", "تجرأ أن تكون مختلفًا")}</span>
               </aside>
 
               <div className={styles.aboutNeoMain}>
                 <header className={styles.aboutNeoHeader}>
-                  <p className={styles.kicker}>Samarammar</p>
+                  <p className={styles.kicker}>{tr("Samarammar", "سمر عمار")}</p>
                   <h2 className={styles.sectionTitle}>
-                    Unusual Calm.
+                    {tr("Unusual Calm.", "هدوء مختلف.")}
                     <br />
-                    Precise Interior Character.
+                    {tr("Precise Interior Character.", "هوية داخلية دقيقة.")}
                   </h2>
                   <p className={styles.lead}>
-                    Samar leads a design language where softness meets geometry.
-                    Every space is minimal, elegant, and emotionally memorable.
+                    {tr(
+                      "Samar leads a design language where softness meets geometry. Every space is minimal, elegant, and emotionally memorable.",
+                      "تقود سمر لغة تصميمية تمزج بين النعومة والهندسة. كل مساحة بسيطة وأنيقة وتترك أثرًا عاطفيًا.",
+                    )}
                   </p>
                 </header>
 
                 <div className={styles.aboutNeoGrid}>
                   <article className={styles.aboutNeoCard}>
-                    <h3>Signature</h3>
-                    <p>Interior concepts with a couture-like sense of composition.</p>
+                    <h3>{tr("Signature", "الهوية")}</h3>
+                    <p>{tr("Interior concepts with a couture-like sense of composition.", "مفاهيم داخلية بروح فاخرة ودقة في التكوين.")}</p>
                   </article>
                   <article className={styles.aboutNeoCard}>
-                    <h3>Material Mood</h3>
-                    <p>Warm neutrals, curated textures, and controlled light rhythm.</p>
+                    <h3>{tr("Material Mood", "مزاج الخامات")}</h3>
+                    <p>{tr("Warm neutrals, curated textures, and controlled light rhythm.", "ألوان حيادية دافئة، خامات منتقاة، وإيقاع ضوئي متوازن.")}</p>
                   </article>
                   <article className={styles.aboutNeoCard}>
-                    <h3>Client Story</h3>
-                    <p>Every project feels personal, intentional, and unlike the expected.</p>
+                    <h3>{tr("Client Story", "قصة العميل")}</h3>
+                    <p>{tr("Every project feels personal, intentional, and unlike the expected.", "كل مشروع شخصي ومقصود ويتجاوز المتوقع.")}</p>
                   </article>
                 </div>
               </div>
@@ -635,7 +562,7 @@ export function NarrativeExperience() {
                   />
                 </div>
                 <div className={styles.aboutNeoBadge}>
-                  <span>Interior Design Engineer</span>
+                  <span>{tr("Interior Design Engineer", "مهندسة تصميم داخلي")}</span>
                   <p>Samar</p>
                 </div>
               </div>
@@ -646,11 +573,11 @@ export function NarrativeExperience() {
         <section id="services" className={styles.servicesSection} ref={servicesRef}>
           <div className={styles.servicesStage} ref={servicesStageRef}>
             <div className={styles.servicesHeaderBlock}>
-              <p className={styles.servicesHeading}>Services</p>
+              <p className={styles.servicesHeading}>{tr("Services", "الخدمات")}</p>
             </div>
             <div className={styles.servicesBackdrop} aria-hidden="true">
               <p className={styles.servicesBackdropLine}>
-                DARE TO DIFFERENT • SAMAR AMMAR • INTERIOR • LANDSCAPE • ARCHITECTURE
+                DARE TO BE DIFFERENT • SAMAR AMMAR • INTERIOR • LANDSCAPE • ARCHITECTURE
               </p>
               <p className={`${styles.servicesBackdropLine} ${styles.servicesBackdropLineAlt}`}>
                 SAMAR AMMAR • DESIGN STORY • SPATIAL LUXURY • MODERN CRAFT
@@ -676,7 +603,7 @@ export function NarrativeExperience() {
                     <div className={styles.serviceMedia}>
                       <Image
                                     src={serviceImagesById[service.id] ?? serviceImageInterior}
-                        alt={service.title}
+                        alt={tr(service.title, serviceTitleArById[service.id] ?? service.title)}
                         fill
                         sizes="100vw"
                         priority={index === 0}
@@ -692,19 +619,19 @@ export function NarrativeExperience() {
                       }}
                     >
                       <div className={styles.serviceTopLine}>
-                        <h3 className={styles.serviceTitle}>{service.title}</h3>
-                        <p className={styles.serviceScrollHint}>(Scroll)</p>
+                        <h3 className={styles.serviceTitle}>{tr(service.title, serviceTitleArById[service.id] ?? service.title)}</h3>
+                        <p className={styles.serviceScrollHint}>{tr("(Scroll)", "(مرر)")}</p>
                       </div>
-                      <p className={styles.serviceDescription}>{service.description}</p>
+                      <p className={styles.serviceDescription}>{tr(service.description, serviceDescriptionArById[service.id] ?? service.description)}</p>
                       <div className={styles.serviceActions}>
                         <a
                           href={`/gallery?category=${service.id}`}
                           className={styles.serviceGalleryButton}
                         >
-                          Gallery
+                          {tr("Gallery", "المعرض")}
                         </a>
                         <a href={`/request-service/${service.id}`} className={styles.serviceRequestButton}>
-                          Request {service.title}
+                          {tr("Request", "طلب")} {tr(service.title, serviceTitleArById[service.id] ?? service.title)}
                         </a>
                       </div>
                       <div className={styles.serviceBottomLine}>
@@ -719,24 +646,25 @@ export function NarrativeExperience() {
           </div>
         </section>
 
+        <div className={styles.locationContactRow}>
         <section id="location" className={`${styles.panel} ${styles.locationPanel}`}>
           <div className={styles.panelContent}>
             <div className={styles.locationStats} ref={locationStatsRef}>
               <article className={styles.locationStatCard}>
                 <span className={styles.locationStatNumber}>+{locationNums.total}</span>
-                <span className={styles.locationStatLabel}>Total Projects</span>
+                <span className={styles.locationStatLabel}>{tr("Total Projects", "إجمالي المشاريع")}</span>
               </article>
               <article className={styles.locationStatCard}>
                 <span className={styles.locationStatNumber}>+{locationNums.completed}</span>
-                <span className={styles.locationStatLabel}>Completed Projects</span>
+                <span className={styles.locationStatLabel}>{tr("Completed Projects", "المشاريع المنجزة")}</span>
               </article>
               <article className={styles.locationStatCard}>
                 <span className={styles.locationStatNumber}>+{locationNums.clients}</span>
-                <span className={styles.locationStatLabel}>Happy Clients</span>
+                <span className={styles.locationStatLabel}>{tr("Happy Clients", "عملاء سعداء")}</span>
               </article>
               <article className={styles.locationStatCard}>
                 <span className={styles.locationStatNumber}>+{locationNums.years}</span>
-                <span className={styles.locationStatLabel}>Years of Experience</span>
+                <span className={styles.locationStatLabel}>{tr("Years of Experience", "سنوات الخبرة")}</span>
               </article>
             </div>
             <div className={styles.locationNeo}>
@@ -746,7 +674,7 @@ export function NarrativeExperience() {
               </aside>
 
               <div className={styles.locationNeoMain}>
-                <h2 className={styles.locationSectionTitle}>Our Location</h2>
+                <h2 className={styles.locationSectionTitle}>{tr("Our Location", "موقعنا")}</h2>
                 <span className={styles.locationTitleAccent} aria-hidden="true" />
                 <p className={styles.locationAddressLine}>Al Kulliyah Al Ahliyah Street, Ramallah, Palestine</p>
                 <div className={styles.locationActions}>
@@ -755,9 +683,9 @@ export function NarrativeExperience() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Open Full Map
+                    {tr("Open Full Map", "فتح الخريطة الكاملة")}
                   </a>
-                  <a href="#contact">Request Site Consultation</a>
+                  <a href="#contact">{tr("Request Site Consultation", "طلب استشارة ميدانية")}</a>
                 </div>
               </div>
 
@@ -781,46 +709,46 @@ export function NarrativeExperience() {
             <div className={styles.contactOverlay} />
           </div>
           <div className={styles.panelContent}>
-            <p className={styles.kicker}>Contact</p>
-            <h2 className={styles.sectionTitle}>Start Your Project With Us</h2>
+            <p className={styles.kicker}>{tr("Contact", "تواصل")}</p>
+            <h2 className={styles.sectionTitle}>{tr("Start Your Project With Us", "ابدأ مشروعك معنا")}</h2>
             <div className={styles.contactGrid}>
               <p>
-                For inquiries and collaborations:
+                {tr("For inquiries and collaborations:", "للاستفسارات والتعاون:")}
                 <br />
                 <a href="mailto:sam.ammar1992@gmail.com">sam.ammar1992@gmail.com</a>
                 <br />
                 <a href="tel:+972569126200">+972 56-912-6200</a>
               </p>
 
-              <form className={styles.contactForm} aria-label="Contact form">
+              <form className={styles.contactForm} aria-label={tr("Contact form", "نموذج التواصل")}>
                 <label className={styles.contactField}>
-                  <span>Name</span>
+                  <span>{tr("Name", "الاسم")}</span>
                   <input
                     type="text"
                     name="name"
-                    placeholder="Your name"
+                    placeholder={tr("Your name", "اسمك")}
                     required
                     suppressHydrationWarning
                   />
                 </label>
 
                 <label className={styles.contactField}>
-                  <span>Phone</span>
+                  <span>{tr("Phone", "الهاتف")}</span>
                   <input
                     type="tel"
                     name="phone"
-                    placeholder="+972 56 000 0000"
+                    placeholder={tr("+972 56 000 0000", "+972 56 000 0000")}
                     required
                     suppressHydrationWarning
                   />
                 </label>
 
                 <label className={styles.contactField}>
-                  <span>Message</span>
+                  <span>{tr("Message", "الرسالة")}</span>
                   <textarea
                     name="message"
                     rows={4}
-                    placeholder="Tell us about your project..."
+                    placeholder={tr("Tell us about your project...", "أخبرنا عن مشروعك...")}
                     required
                   />
                 </label>
@@ -830,7 +758,7 @@ export function NarrativeExperience() {
                   className={styles.contactButton}
                   suppressHydrationWarning
                 >
-                  Send Message
+                  {tr("Send Message", "إرسال الرسالة")}
                 </button>
               </form>
             </div>
@@ -843,21 +771,21 @@ export function NarrativeExperience() {
               <div className={styles.footerLogoWrap}>
                 <Image src={brandLogo} alt="samarammar logo" className={styles.footerLogo} quality={100} />
               </div>
-              <p className={styles.footerTagline}>Dare To Different.</p>
+              <p className={styles.footerTagline}>Dare to be different.</p>
             </div>
 
             <div className={styles.footerGrid}>
               <nav className={styles.footerNav} aria-label="Footer navigation">
-                <p className={styles.footerBlockTitle}>Explore</p>
-                <a href="#hero">Home</a>
-                <a href="#about">About</a>
-                <a href="#services">Services</a>
-                <a href="#location">Location</a>
-                <a href="#contact">Contact</a>
+              <p className={styles.footerBlockTitle}>{tr("Explore", "استكشف")}</p>
+                <a href="#hero">{tr("Home", "الرئيسية")}</a>
+                <a href="#about">{tr("About", "من نحن")}</a>
+                <a href="#services">{tr("Services", "الخدمات")}</a>
+                <a href="#location">{tr("Location", "الموقع")}</a>
+                <a href="#contact">{tr("Contact", "تواصل")}</a>
               </nav>
 
               <div className={styles.footerMeta}>
-                <p className={styles.footerBlockTitle}>Contact</p>
+                <p className={styles.footerBlockTitle}>{tr("Contact", "تواصل")}</p>
                 <p>Ramallah, Palestine</p>
                 <p><a href="tel:+972569126200">+972 56-912-6200</a></p>
                 <p><a href="mailto:sam.ammar1992@gmail.com">sam.ammar1992@gmail.com</a></p>
@@ -865,10 +793,11 @@ export function NarrativeExperience() {
             </div>
           </div>
           <div className={styles.footerBottom}>
-            <p>Interior • Landscape • Architectural • Commercial</p>
-            <p className={styles.footerCopy}>© {new Date().getFullYear()} samarammar. All rights reserved.</p>
+            <p>{tr("Interior • Landscape • Architectural • Commercial", "داخلي • لاندسكيب • معماري • تجاري")}</p>
+            <p className={styles.footerCopy}>© {new Date().getFullYear()} samarammar. {tr("All rights reserved.", "جميع الحقوق محفوظة.")}</p>
           </div>
         </footer>
+        </div>
 
       </main>
     </div>

@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
 import { buildGalleryCategories, type GalleryProject } from "@/content/gallery";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
+import { useLanguage } from "@/components/site/LanguageProvider";
 import styles from "./gallery.module.css";
 import interiorImage from "../../../interior.jpg";
 import landscapeImage from "../../../landscape.jpg";
@@ -26,21 +27,18 @@ const menuItems = [
 ];
 
 export function GalleryExperience() {
+  const { tr } = useLanguage();
   const searchParams = useSearchParams();
-  const [activeFilter, setActiveFilter] = useState<string>(ALL_ID);
+  const [activeFilter, setActiveFilter] = useState<string>(() => {
+    const category = searchParams.get("category");
+    return category && VALID_CATEGORY_IDS.has(category) ? category : ALL_ID;
+  });
   const [zoomProject, setZoomProject] = useState<GalleryProject | null>(null);
   const [zoomPanelReady, setZoomPanelReady] = useState(false);
   const [sourceId, setSourceId] = useState<string | null>(null);
   const cardRefs = useRef<Record<string, HTMLElement | null>>({});
   const zoomImageWrapRef = useRef<HTMLDivElement | null>(null);
   const isClosingRef = useRef(false);
-
-  useEffect(() => {
-    const category = searchParams.get("category");
-    if (category && VALID_CATEGORY_IDS.has(category)) {
-      setActiveFilter(category);
-    }
-  }, [searchParams]);
 
   const visibleCategories = useMemo(
     () => (activeFilter === ALL_ID ? categories : categories.filter((c) => c.id === activeFilter)),
@@ -136,25 +134,43 @@ export function GalleryExperience() {
   return (
     <div className={styles.pageShell}>
       <main className={styles.galleryRoot}>
-        <FullscreenMenu brand="SAMARAMMAR" items={menuItems} showThemeToggle={false} />
+        <FullscreenMenu
+          brand="SAMARAMMAR"
+          items={menuItems.map((m) => ({
+            ...m,
+            label:
+              m.label === "Home"
+                ? tr("Home", "الرئيسية")
+                : m.label === "Gallery"
+                  ? tr("Gallery", "المعرض")
+                  : m.label === "Services"
+                    ? tr("Services", "الخدمات")
+                    : m.label === "About"
+                      ? tr("About", "من نحن")
+                      : m.label === "Location"
+                        ? tr("Location", "الموقع")
+                        : tr("Contact", "تواصل"),
+          }))}
+          showThemeToggle={false}
+        />
 
         <header className={styles.galleryHeader}>
           <p className={styles.galleryEyebrow}>SAMAR AMMAR STUDIO</p>
-          <h1 className={styles.galleryTitle}>Design Gallery</h1>
+          <h1 className={styles.galleryTitle}>{tr("Design Gallery", "معرض التصاميم")}</h1>
           <p className={styles.galleryLead}>
             A living library of interiors, landscapes, architecture, and commercial destinations.
           </p>
           <div className={styles.headerActions}>
-            <Link href="/" className={styles.backLink} aria-label="Back to home">
-              Back Home
+            <Link href="/" className={styles.backLink} aria-label={tr("Back to home", "العودة للرئيسية")}>
+              {tr("Back Home", "العودة للرئيسية")}
             </Link>
-            <Link href="/#contact" className={styles.ctaLink} aria-label="Start your project">
-              Start a project
+            <Link href="/#contact" className={styles.ctaLink} aria-label={tr("Start your project", "ابدأ مشروعك")}>
+              {tr("Start a project", "ابدأ مشروعًا")}
             </Link>
           </div>
         </header>
 
-        <nav className={styles.filterBar} aria-label="Filter by category">
+        <nav className={styles.filterBar} aria-label={tr("Filter by category", "تصفية حسب القسم")}>
           <ul className={styles.filterList}>
             <li>
               <button
@@ -163,7 +179,7 @@ export function GalleryExperience() {
                 onClick={() => setFilter(ALL_ID)}
                 aria-pressed={activeFilter === ALL_ID}
               >
-                All
+                {tr("All", "الكل")}
               </button>
             </li>
             {categories.map((cat) => (
@@ -193,7 +209,9 @@ export function GalleryExperience() {
                 <h2 id={`gallery-${category.id}`} className={styles.gallerySectionLabel}>
                   {category.titleEn}
                 </h2>
-                <p className={styles.gallerySectionMeta}>{category.projects.length} projects</p>
+                <p className={styles.gallerySectionMeta}>
+                  {category.projects.length} {tr("projects", "مشروع")}
+                </p>
               </div>
 
               <div className={styles.cardsGrid}>
@@ -222,7 +240,7 @@ export function GalleryExperience() {
                     </div>
                     <div className={styles.cardCopy}>
                       <div className={styles.cardTopLine}>
-                        <span>{project.photosCount ?? 10} photos</span>
+                        <span>{project.photosCount ?? 10} {tr("photos", "صورة")}</span>
                         <span>{project.subtitle ?? category.titleEn}</span>
                       </div>
                       <h3 className={styles.cardTitle}>
@@ -231,7 +249,7 @@ export function GalleryExperience() {
                         </button>
                       </h3>
                       <button type="button" className={styles.cardAction} onClick={() => openQuickView(project)}>
-                        View Project
+                        {tr("View Project", "عرض المشروع")}
                       </button>
                     </div>
                   </article>
@@ -246,7 +264,7 @@ export function GalleryExperience() {
             <button
               type="button"
               className={styles.quickViewBackdrop}
-              aria-label="Close quick view"
+              aria-label={tr("Close quick view", "إغلاق المعاينة السريعة")}
               onClick={closeQuickView}
             />
             <div ref={zoomImageWrapRef} className={styles.quickViewImageWrap}>
@@ -262,18 +280,21 @@ export function GalleryExperience() {
             </div>
             <aside className={`${styles.quickViewPanel} ${zoomPanelReady ? styles.quickViewPanelReady : ""}`}>
               <p className={styles.quickViewKicker}>
-                {zoomProject.subtitle ?? "Project"} · {zoomProject.photosCount ?? 10} photos
+                {zoomProject.subtitle ?? tr("Project", "مشروع")} · {zoomProject.photosCount ?? 10} {tr("photos", "صورة")}
               </p>
               <h2 className={styles.quickViewTitle}>{zoomProject.title}</h2>
               <p className={styles.quickViewBody}>
-                Preview this project, then choose to close or continue to the full project page.
+                {tr(
+                  "Preview this project, then choose to close or continue to the full project page.",
+                  "عاين هذا المشروع ثم اختر الإغلاق أو متابعة صفحة المشروع الكاملة.",
+                )}
               </p>
               <div className={styles.quickViewActions}>
                 <button type="button" onClick={closeQuickView} className={styles.quickViewClose}>
-                  Close
+                  {tr("Close", "إغلاق")}
                 </button>
                 <Link href={`/gallery/${zoomProject.id}`} className={styles.quickViewEnter}>
-                  Enter Project
+                  {tr("Enter Project", "دخول المشروع")}
                 </Link>
               </div>
             </aside>

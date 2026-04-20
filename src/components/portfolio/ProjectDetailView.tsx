@@ -14,6 +14,7 @@ import {
   IMAGES_PER_LEVEL,
   type PortfolioProject,
 } from "@/content/portfolio";
+import { useLanguage } from "@/components/site/LanguageProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import interiorImage from "../../../interior.jpg";
 import landscapeImage from "../../../landscape.jpg";
@@ -25,6 +26,7 @@ gsap.registerPlugin(ScrollTrigger);
 const projects = buildPortfolioProjects(interiorImage, landscapeImage, exteriorImage);
 
 export function ProjectDetailView() {
+  const { tr } = useLanguage();
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
   const project = getProjectById(projects, id);
@@ -199,16 +201,16 @@ export function ProjectDetailView() {
     <div className={styles.page}>
       <header ref={headerRef} className={styles.header}>
         <div className={styles.headerInner}>
-          <Link href="/gallery" className={styles.backBtn} aria-label="Back to gallery">
-            Back
+          <Link href="/gallery" className={styles.backBtn} aria-label={tr("Back to gallery", "العودة للمعرض")}>
+            {tr("Back", "رجوع")}
           </Link>
-          <nav className={styles.nav} aria-label="Project navigation">
-            <Link href="/gallery">Gallery</Link>
+          <nav className={styles.nav} aria-label={tr("Project navigation", "تنقل المشاريع")}>
+            <Link href="/gallery">{tr("Gallery", "المعرض")}</Link>
             {prev && (
-              <Link href={`/gallery/${prev}`}>Prev</Link>
+              <Link href={`/gallery/${prev}`}>{tr("Prev", "السابق")}</Link>
             )}
             {next && (
-              <Link href={`/gallery/${next}`}>Next</Link>
+              <Link href={`/gallery/${next}`}>{tr("Next", "التالي")}</Link>
             )}
           </nav>
         </div>
@@ -258,14 +260,14 @@ export function ProjectDetailView() {
               const isArchitectural = project.category === "architectural";
               const isCommercial = project.category === "commercial";
               const singleGalleryCategory = isLandscape || isArchitectural || isCommercial;
-              const sectionLabel = levelIndex === 0 && singleGalleryCategory ? "Gallery" : levelIndex === 0 ? "Ground" : String(levelIndex).padStart(2, "0");
-              const sectionSubtitle = singleGalleryCategory ? "Photos" : "Floor";
+              const sectionLabel = levelIndex === 0 && singleGalleryCategory ? tr("Gallery", "المعرض") : levelIndex === 0 ? tr("Ground", "الأرضي") : String(levelIndex).padStart(2, "0");
+              const sectionSubtitle = singleGalleryCategory ? tr("Photos", "صور") : tr("Floor", "طابق");
               return (
                 <article key={levelIndex} className={styles.floorSection} data-project-floor>
                   <div className={styles.floorLabel}>
                     <span className={styles.floorNumber}>{sectionLabel}</span>
                     <span className={styles.floorTitle}>{sectionSubtitle}</span>
-                    <span className={styles.floorCount}>{images.length} photos</span>
+                    <span className={styles.floorCount}>{images.length} {tr("photos", "صورة")}</span>
                   </div>
                   <div className={styles.floorGridWrap}>
                     <div className={styles.floorGrid}>
@@ -304,8 +306,8 @@ export function ProjectDetailView() {
       )}
 
       <div className={styles.mobileBackBar} aria-hidden="false">
-        <Link href="/gallery" className={styles.mobileBackBtn} aria-label="Back to gallery">
-          Back to Gallery
+        <Link href="/gallery" className={styles.mobileBackBtn} aria-label={tr("Back to gallery", "العودة للمعرض")}>
+          {tr("Back to Gallery", "العودة للمعرض")}
         </Link>
       </div>
     </div>
