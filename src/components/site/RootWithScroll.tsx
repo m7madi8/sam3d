@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
+import { ScrollProgress } from "@/components/site/ScrollProgress";
 
 type RootWithScrollProps = {
   children: ReactNode;
@@ -9,5 +10,10 @@ type RootWithScrollProps = {
 
 export function RootWithScroll({ children }: RootWithScrollProps) {
   useLenisScroll();
-  return <>{children}</>;
+  return (
+    <>
+      <ScrollProgress />
+      {children}
+    </>
+  );
 }

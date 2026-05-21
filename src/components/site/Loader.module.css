@@ -2,14 +2,16 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
   background:
-    radial-gradient(circle at 18% 16%, rgb(255 255 255 / 12%), transparent 38%),
-    radial-gradient(circle at 82% 78%, rgb(255 255 255 / 8%), transparent 42%),
-    linear-gradient(180deg, #0f1013 0%, #07080a 100%);
-  transition: opacity 0.45s ease, visibility 0.45s ease;
+    radial-gradient(circle at 14% 12%, var(--night-warm-glow), transparent 38%),
+    radial-gradient(circle at 86% 88%, rgb(157 147 134 / 10%), transparent 40%),
+    linear-gradient(165deg, var(--night-base) 0%, var(--night-deep) 62%, #0c0b0a 100%);
+  transition:
+    opacity 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    visibility 0.55s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .overlay[data-fading] {
@@ -18,60 +20,185 @@
   pointer-events: none;
 }
 
-.content {
+.overlay[data-fading] .stage {
+  transform: translateY(-8px) scale(0.985);
+  opacity: 0;
+}
+
+.stage {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.48rem;
-  padding: 0;
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.1rem, 2.8vh, 1.65rem);
+  width: min(100%, 22rem);
+  transition:
+    transform 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.45s ease;
 }
 
-.topRule {
-  width: clamp(110px, 18vw, 180px);
-  height: 1px;
-  margin-bottom: 0.6rem;
-  background: linear-gradient(90deg, transparent, rgb(228 197 154 / 80%), transparent);
-}
-
-.logoWrap {
-  width: clamp(180px, 24vw, 270px);
-  opacity: 0.98;
+.logoMark {
+  display: grid;
+  place-items: center;
 }
 
 .logo {
-  width: 100%;
+  width: clamp(9rem, 40vw, 12.5rem);
   height: auto;
   display: block;
   object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.98;
 }
 
-.percent {
-  margin-top: 0.3rem;
-  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  color: rgb(244 235 218 / 96%);
-  line-height: 1;
+.tagline {
+  composes: motto from global;
+  text-align: center;
+  color: rgb(252 251 249 / 72%);
 }
 
-.label {
-  font-size: clamp(0.6rem, 1.2vw, 0.7rem);
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgb(236 223 199 / 86%);
-  line-height: 1;
+.progressBlock {
+  width: min(100%, 16rem);
+  display: grid;
+  gap: 0.5rem;
 }
 
-.subLabel {
-  margin-top: 0.18rem;
-  font-size: clamp(0.56rem, 1vw, 0.64rem);
-  font-weight: 500;
+.progressMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.progressLabel {
+  font-size: 0.62rem;
+  font-weight: 400;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgb(236 223 199 / 62%);
-  line-height: 1;
+  color: rgb(252 251 249 / 55%);
 }
 
+.progressValue {
+  font-size: 0.72rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  font-variant-numeric: tabular-nums;
+  color: rgb(252 251 249 / 88%);
+}
+
+.progressTrack {
+  position: relative;
+  height: 2px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 10%);
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgb(122 114 104 / 40%),
+    var(--color-warm-cedar) 45%,
+    rgb(235 228 220 / 95%) 100%
+  );
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: loaderProgress 1.65s 0.35s cubic-bezier(0.45, 0, 0.55, 1) forwards;
+}
+
+.stage > [data-loader-entry] {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: loaderEntry 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.stage > [data-loader-entry]:nth-child(1) {
+  animation-delay: 0.12s;
+}
+
+.stage > [data-loader-entry]:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.stage > [data-loader-entry]:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+@keyframes loaderEntry {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loaderProgress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.overlay[data-reduced-motion] [data-loader-entry] {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.overlay[data-reduced-motion] .progressFill {
+  animation: none;
+  transform: scaleX(1);
+}
+
+:global(html[dir="rtl"]) .progressFill {
+  transform-origin: right center;
+}
+
+/* Light theme */
+:global(html[data-theme="light"]) .overlay {
+  background:
+    radial-gradient(circle at 14% 12%, rgb(235 231 224 / 35%), transparent 38%),
+    radial-gradient(circle at 86% 88%, rgb(228 223 215 / 28%), transparent 40%),
+    linear-gradient(165deg, #f9f7f2 0%, #f3efe8 55%, #ebe6de 100%);
+}
+
+:global(html[data-theme="light"]) .logo {
+  filter: brightness(0);
+  opacity: 0.92;
+}
+
+:global(html[data-theme="light"]) .tagline {
+  color: var(--text-muted);
+}
+
+:global(html[data-theme="light"]) .progressLabel {
+  color: var(--text-muted);
+}
+
+:global(html[data-theme="light"]) .progressValue {
+  color: var(--text-primary);
+}
+
+:global(html[data-theme="light"]) .progressTrack {
+  background: rgb(45 42 38 / 12%);
+}
+
+:global(html[data-theme="light"]) .progressFill {
+  background: linear-gradient(
+    90deg,
+    rgb(122 114 104 / 25%),
+    var(--color-warm-cedar) 40%,
+    var(--color-obsidian) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .stage {
+    transition-duration: 0.2s;
+  }
+
+  .progressFill {
+    transform: scaleX(1) !important;
+  }
+}

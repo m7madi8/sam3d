@@ -1,5 +1,5 @@
-import { NarrativeExperience } from "@/components/site/NarrativeExperience";
+import { HomePageClient } from "@/components/site/HomePageClient";
 
 export default function Home() {
-  return <NarrativeExperience />;
+  return <HomePageClient />;
 }

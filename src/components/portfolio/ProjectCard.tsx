@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import { motion, useInView } from "framer-motion";
 import type { PortfolioProject } from "@/content/portfolio";
+import { IMAGE_QUALITY } from "@/lib/imageConfig";
 
 type ProjectCardProps = {
   project: PortfolioProject;
@@ -35,6 +36,7 @@ export function ProjectCard({ project, index, onOpen }: ProjectCardProps) {
           alt=""
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          quality={IMAGE_QUALITY.gallery}
           className="object-cover"
           loading="lazy"
         />

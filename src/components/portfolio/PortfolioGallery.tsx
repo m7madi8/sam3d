@@ -16,23 +16,15 @@ import {
   type PortfolioCategoryId,
   type PortfolioProject,
 } from "@/content/portfolio";
-import interiorImage from "../../../interior.jpg";
-import landscapeImage from "../../../landscape.jpg";
-import exteriorImage from "../../../exterior.jpg";
-
-const projects = buildPortfolioProjects(interiorImage, landscapeImage, exteriorImage);
+const projects = buildPortfolioProjects();
 const layoutEase = [0.25, 0.46, 0.45, 0.94] as const;
 
-const menuItems = [
-  { label: "Home", ariaLabel: "Back to home", link: "/" },
-  { label: "Gallery", ariaLabel: "Gallery page", link: "/gallery" },
-  { label: "Services", ariaLabel: "Services section", link: "/#services" },
-  { label: "About", ariaLabel: "About section", link: "/#about" },
-  { label: "Location", ariaLabel: "Location section", link: "/#location" },
-  { label: "Contact", ariaLabel: "Contact section", link: "/#contact" },
-];
+import { getSiteMenuItems } from "@/content/navigation";
+import { useLanguage } from "@/components/site/LanguageProvider";
 
 export function PortfolioGallery() {
+  const { tr } = useLanguage();
+  const menuItems = getSiteMenuItems(tr);
   const [activeFilter, setActiveFilter] = useState<PortfolioCategoryId | "all">("all");
   const [activeProject, setActiveProject] = useState<PortfolioProject | null>(null);
   const [sourceRect, setSourceRect] = useState<DOMRect | null>(null);
@@ -158,6 +150,7 @@ export function PortfolioGallery() {
                     alt={activeProject.title}
                     fill
                     sizes="100vw"
+                    quality={92}
                     className="h-full w-full object-cover"
                   />
                 </div>

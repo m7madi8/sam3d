@@ -4,9 +4,25 @@
 html,
 body {
   min-height: 100%;
+  width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   scroll-behavior: smooth;
+}
+
+/* Native scrollbar hidden — scroll fill bar is custom (ScrollProgress) */
+html {
+  scrollbar-width: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 body {
@@ -19,6 +35,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html[lang="ar"] {
+  --font-sans: var(--font-arabic-stack);
+  font-optical-sizing: auto;
+  font-variation-settings: "slnt" 0;
+}
+
+html[lang="ar"] .motto {
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -28,4 +55,33 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+/* Shared studio motto typography (hero discipline, about, footer, loader) */
+.motto {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--motto-size);
+  font-weight: var(--motto-weight);
+  font-style: normal;
+  letter-spacing: var(--motto-tracking);
+  line-height: var(--motto-line-height);
+  text-transform: uppercase;
+  color: var(--motto-color);
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+@media (max-width: 767px) {
+  button,
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    touch-action: manipulation;
+  }
 }

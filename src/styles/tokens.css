@@ -1,11 +1,19 @@
 :root {
+  /* Luxury palette — warm obsidian, never pure #000 */
   --color-obsidian: #1c1b19;
   --color-warm-cedar: #7a7268;
   --color-amber-glow: #e8e3da;
   --color-stone-grey: #3a3632;
   --color-ivory: #fcfbf9;
+  --color-editorial-cream: #f8f7f4;
 
-  /* Backward-compatible aliases used across existing styles */
+  --night-base: #161514;
+  --night-elevated: #1e1c1a;
+  --night-deep: #100f0e;
+  --night-soft: #24211e;
+  --night-warm-glow: rgb(157 147 134 / 14%);
+
+  /* Backward-compatible aliases */
   --color-black: var(--color-obsidian);
   --color-white: var(--color-ivory);
   --color-sand: var(--color-warm-cedar);
@@ -15,6 +23,7 @@
 
   --surface-primary: var(--color-beige-light);
   --surface-secondary: var(--color-beige-soft);
+  --surface-elevated: #ffffff;
   --surface-dark: var(--color-obsidian);
   --text-primary: #2d2a26;
   --text-muted: #5c564f;
@@ -27,7 +36,9 @@
   --shadow-soft: 0 18px 42px rgb(28 27 25 / 10%);
 
   --font-sans:
-    "Inter", "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    var(--font-inter), "Inter", "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  --font-arabic-stack: var(--font-arabic), "Cairo", sans-serif;
 
   --display-size: clamp(3.4rem, 9vw, 8.5rem);
   --heading-size: clamp(2rem, 4.1vw, 3.6rem);
@@ -35,6 +46,13 @@
   --label-size: 0.75rem;
   --line-height-body: 1.7;
   --line-height-tight: 1.02;
+
+  /* Studio motto — matches hero discipline ("Dare to be different.") */
+  --motto-size: 0.62rem;
+  --motto-weight: 300;
+  --motto-tracking: 0.14em;
+  --motto-line-height: 1.45;
+  --motto-color: var(--text-muted);
 
   --space-2xs: 0.4rem;
   --space-xs: 0.75rem;
@@ -50,9 +68,23 @@
   --radius-lg: 1.8rem;
 
   --max-content-width: 1280px;
+
+  --touch-target-min: 2.75rem;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
 }
 
-/* Light theme: higher contrast and comfortable reading */
+@media (max-width: 767px) {
+  :root {
+    --display-size: clamp(2.5rem, 11vw, 4rem);
+    --heading-size: clamp(1.65rem, 6vw, 2.5rem);
+    --space-2xl: 4rem;
+    --space-3xl: 5.5rem;
+  }
+}
+
 :root[data-theme="light"] {
   --color-obsidian: #1c1b19;
   --color-warm-cedar: #7a7268;
@@ -65,28 +97,32 @@
 }
 
 :root[data-theme="dark"] {
-  --color-obsidian: #121214;
+  color-scheme: dark;
+
+  --color-obsidian: var(--night-base);
   --color-warm-cedar: #9d9386;
   --color-amber-glow: #2a2622;
   --color-stone-grey: #d6d1c8;
   --color-ivory: #f4efe7;
+  --color-editorial-cream: #f4efe7;
 
-  --color-black: #121214;
-  --color-white: #f4efe7;
+  --color-black: var(--night-base);
+  --color-white: var(--color-ivory);
   --color-sand: #9d9386;
-  --color-beige-light: #171719;
-  --color-beige-soft: #1f1f23;
+  --color-beige-light: var(--night-base);
+  --color-beige-soft: var(--night-elevated);
   --color-charcoal: #ece8e0;
 
-  --surface-primary: #121214;
-  --surface-secondary: #1a1a1d;
-  --surface-dark: #0f0f11;
+  --surface-primary: var(--night-base);
+  --surface-secondary: var(--night-elevated);
+  --surface-elevated: var(--night-soft);
+  --surface-dark: var(--night-deep);
   --text-primary: #ece8e0;
   --text-muted: #b5ad9f;
   --accent-primary: #9d9386;
   --accent-hover: #2a2622;
 
-  --border-light: rgb(255 255 255 / 12%);
-  --border-medium: rgb(255 255 255 / 18%);
-  --shadow-soft: 0 18px 48px rgb(0 0 0 / 42%);
+  --border-light: rgb(244 239 231 / 10%);
+  --border-medium: rgb(244 239 231 / 16%);
+  --shadow-soft: 0 18px 48px rgb(16 15 14 / 55%);
 }

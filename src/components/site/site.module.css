@@ -1,6 +1,9 @@
 .pageShell {
   position: relative;
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
+  overflow-x: clip;
   background: var(--surface-primary);
   color: var(--text-primary);
   isolation: isolate;
@@ -12,9 +15,9 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 12% 10%, rgb(235 231 224 / 32%), transparent 32%),
-    radial-gradient(circle at 88% 82%, rgb(228 223 215 / 24%), transparent 34%),
-    linear-gradient(to bottom, #fdfcfb, #faf9f6 35%, #f6f4f0 100%);
+    radial-gradient(circle at 12% 10%, rgb(235 231 224 / 22%), transparent 34%),
+    radial-gradient(circle at 88% 82%, rgb(228 223 215 / 16%), transparent 36%),
+    var(--surface-primary);
 }
 
 .floatingHeader {
@@ -97,6 +100,8 @@
 .narrativeRoot {
   display: grid;
   gap: 0;
+  width: 100%;
+  max-width: 100%;
   padding: 0;
   overflow-x: clip;
 }
@@ -115,23 +120,20 @@
 
 .panel {
   position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
   min-height: 100vh;
   min-height: 100svh;
   padding: clamp(4.2rem, 7vh, 6rem) clamp(1.2rem, 4vw, 4rem) clamp(2.2rem, 5vw, 3.8rem);
   display: flex;
   align-items: center;
+  overflow-x: clip;
 }
 
 .panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border: 0;
-  border-radius: 0;
-  background:
-    linear-gradient(145deg, rgb(255 255 255 / 96%), rgb(249 248 244 / 82%)),
-    linear-gradient(to bottom, rgb(45 42 38 / 4%), transparent);
-  pointer-events: none;
+  content: none;
+  display: none;
 }
 
 .heroPanel {
@@ -530,8 +532,7 @@
   display: block;
 }
 
-.aboutPanel,
-.contactPanel {
+.aboutPanel {
   min-height: 100vh;
   min-height: 100svh;
 }
@@ -540,183 +541,529 @@
   position: relative;
   z-index: 1;
   min-height: auto;
-  padding-top: clamp(2.8rem, 5vh, 4rem);
-  padding-bottom: clamp(1.6rem, 3vh, 2.4rem);
+  padding-top: clamp(3.5rem, 7vh, 5rem);
+  padding-bottom: clamp(2.5rem, 5vh, 4rem);
   align-items: flex-start;
 }
 
-.contactPanel {
-  overflow: hidden;
+.locationPanel .panelContent {
+  width: min(100%, 1440px);
 }
 
-.contactPanel::before {
-  background: transparent;
+/* —— Contact + Footer (merged) —— */
+.contactFooterPanel {
+  position: relative;
+  z-index: 1;
+  min-height: auto;
+  padding-top: clamp(3.5rem, 7vh, 5rem);
+  padding-bottom: clamp(1.5rem, 3vh, 2.5rem);
+  align-items: flex-start;
 }
 
-.contactPanel .sectionTitle {
-  color: rgb(255 255 255 / 96%);
+.contactFooterPanel::before {
+  content: none;
+  display: none;
 }
 
-.contactMedia {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
+.contactFooterPanel .panelContent {
+  width: min(100%, 1440px);
 }
 
-.contactImage {
-  object-fit: cover;
+.contactFooterSection {
+  display: grid;
+  gap: clamp(2.5rem, 5vh, 3.5rem);
 }
 
-.contactOverlay {
-  position: absolute;
-  inset: 0;
+.contactFooterStage {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr) minmax(0, 0.62fr);
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: stretch;
+  isolation: isolate;
+}
+
+.contactFooterIntro {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+  padding-top: 0.25rem;
+  padding-inline-end: clamp(3rem, 12vw, 6rem);
+}
+
+@media (min-width: 1024px) {
+  .contactFooterIntro {
+    z-index: 3;
+    padding-inline-end: 0;
+    padding-inline-start: clamp(3.5rem, 10vw, 6rem);
+  }
+
+  .contactFooterIntro .panelIndex {
+    inset-inline-end: auto;
+    inset-inline-start: -0.05em;
+    font-size: clamp(3.75rem, 7.5vw, 8rem);
+  }
+
+  .contactFooterIntro > :not(.panelIndex) {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.contactFooterHeadline {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 200;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  max-width: 14ch;
+}
+
+.contactFooterLead {
+  margin: 0;
+  max-width: 36ch;
+  font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.contactChannels {
+  display: grid;
+  gap: 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.contactChannel {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border-light);
+  transition: color 0.25s ease, gap 0.25s ease;
+}
+
+.contactChannel:hover,
+.contactChannel:focus-visible {
+  color: var(--color-warm-cedar);
+  outline: none;
+}
+
+.contactChannelLabel {
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-warm-cedar);
+}
+
+.contactChannel span:last-child {
+  font-size: 0.92rem;
+  font-weight: 300;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
+}
+
+.contactFormPanel {
+  position: relative;
+  z-index: 1;
+  padding: clamp(1.15rem, 2.4vw, 1.65rem);
+  border-radius: 1.2rem;
+  border: 1px solid var(--border-light);
   background:
-    linear-gradient(to top, rgb(16 14 12 / 58%), rgb(16 14 12 / 34%) 42%, rgb(16 14 12 / 20%)),
-    radial-gradient(circle at 12% 14%, rgb(255 255 255 / 10%), transparent 35%);
+    linear-gradient(145deg, rgb(255 255 255 / 6%), transparent 42%),
+    rgb(252 251 249 / 88%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 40%),
+    0 20px 48px rgb(28 27 25 / 8%);
+}
+
+.contactFooterVisual {
+  position: relative;
+  z-index: 0;
+  margin: 0;
+  min-height: 100%;
+}
+
+.contactFooterMat {
+  height: 100%;
+  min-height: clamp(18rem, 38vh, 26rem);
+  padding: clamp(0.5rem, 1vw, 0.75rem);
+  border-radius: 1.2rem;
+  border: 1px solid var(--border-light);
+  background: rgb(38 36 34 / 5%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 12%);
+}
+
+.contactFooterImageWrap {
+  position: relative;
+  height: 100%;
+  min-height: inherit;
+  overflow: hidden;
+  border-radius: 0.85rem;
+}
+
+.contactFooterImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.contactFooterBase {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.8fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 2.5rem);
+  padding-top: clamp(1.75rem, 3vh, 2.25rem);
+  border-top: 1px solid var(--border-light);
+}
+
+.contactFooterBrand {
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.contactFooterNav {
+  display: grid;
+  gap: 0.35rem;
+  align-content: start;
+}
+
+.contactFooterNav a {
+  width: fit-content;
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color 0.25s ease, gap 0.25s ease;
+}
+
+.contactFooterNav a:hover,
+.contactFooterNav a:focus-visible {
+  color: var(--color-warm-cedar);
+  outline: none;
+}
+
+.contactFooterMeta {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.86rem;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--text-muted);
+}
+
+.contactFooterLegal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding-top: 1rem;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--border-light);
+  font-size: 0.68rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .aboutPanel::before {
-  background:
-    linear-gradient(145deg, rgb(255 255 255 / 98%), rgb(250 248 244 / 88%)),
-    linear-gradient(to right, var(--border-light) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--border-light) 1px, transparent 1px);
-  background-size: auto, 40px 40px, 40px 40px;
+  content: none;
+  display: none;
 }
 
-.aboutNeo {
+.aboutPanel .panelContent {
+  width: min(100%, 1440px);
+}
+
+/* —— About — editorial chapter —— */
+.aboutSection {
   position: relative;
   display: grid;
-  grid-template-columns: 92px 1fr 0.78fr;
-  gap: 0.9rem;
-  align-items: stretch;
-  padding: clamp(0.7rem, 1.4vw, 1rem);
-  border: 1px solid var(--border-light);
-  border-radius: 1.15rem;
-  background:
-    radial-gradient(circle at 86% 10%, rgb(235 231 224 / 28%), transparent 32%),
-    linear-gradient(140deg, rgb(255 255 255 / 94%), rgb(250 248 244 / 88%));
+  gap: clamp(2rem, 4vh, 3.25rem);
 }
 
-.aboutNeoRail {
-  border: 1px solid var(--border-light);
-  border-radius: 0.95rem;
-  background: rgb(255 253 250 / 88%);
+.panelIndex {
+  position: absolute;
+  top: -0.2em;
+  inset-inline-end: 0;
+  z-index: 2;
+  max-width: min(48%, 9rem);
+  font-size: clamp(5rem, 14vw, 11rem);
+  font-weight: 200;
+  line-height: 0.85;
+  letter-spacing: -0.06em;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(122 114 104 / 28%);
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
+}
+
+.aboutIndex {
+  composes: panelIndex;
+}
+
+.aboutStage {
+  position: relative;
+  z-index: 1;
   display: grid;
-  align-content: space-between;
-  justify-items: center;
-  padding: 0.9rem 0.45rem;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.88fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: start;
 }
 
-.aboutNeoRail p {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  font-size: 0.66rem;
-  color: var(--text-muted);
+.aboutIntro {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: clamp(1.75rem, 3.5vh, 2.75rem);
+  padding-top: clamp(0.5rem, 2vh, 1.5rem);
+  padding-inline-end: clamp(3rem, 12vw, 6rem);
 }
 
-.aboutNeoRail span {
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+.aboutHeader {
+  display: grid;
+  gap: 1rem;
+  max-width: 38rem;
+}
+
+.aboutHeadline {
+  margin: 0;
+  display: grid;
+  gap: 0.12em;
+  font-size: clamp(2.35rem, 5.8vw, 4.25rem);
+  font-weight: 200;
+  line-height: 1.02;
+  letter-spacing: -0.035em;
   color: var(--text-primary);
 }
 
-.aboutNeoMain {
+.aboutHeadline span {
+  display: block;
+}
+
+.aboutLead {
+  margin: 0;
+  max-width: 42ch;
+  font-size: clamp(0.95rem, 1.2vw, 1.08rem);
+  font-weight: 300;
+  line-height: 1.68;
+  color: var(--text-muted);
+}
+
+.aboutPillars {
+  margin: 0;
+  padding: 0;
+  list-style: none;
   display: grid;
-  align-content: center;
+  border-top: 1px solid var(--border-light);
+}
+
+.aboutPillar {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  gap: clamp(0.85rem, 2vw, 1.35rem);
+  align-items: start;
+  padding: clamp(1rem, 2.2vh, 1.35rem) 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.aboutPillarIndex {
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color-warm-cedar);
+  will-change: transform, opacity;
+}
+
+.aboutPillarTitle,
+.aboutPillarText {
+  will-change: transform, opacity, filter;
+}
+
+.aboutPillarBody {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.aboutPillarTitle {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+}
+
+.aboutPillarText {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 0.88rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.aboutMotto {
+  composes: motto from global;
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.aboutFigure {
+  position: relative;
+  z-index: 1;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  display: grid;
   gap: 0.85rem;
-  padding: clamp(0.4rem, 1vw, 0.75rem);
+  align-content: start;
+  will-change: transform, opacity;
 }
 
-.aboutNeoHeader {
-  display: grid;
-  gap: 0.65rem;
-}
-
-.aboutNeoHeader .sectionTitle {
-  max-width: 15ch;
-}
-
-.aboutNeoHeader .lead {
-  max-width: 48ch;
-}
-
-.aboutNeoGrid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(130px, 1fr));
-  gap: 0.55rem;
-}
-
-.aboutNeoCard {
-  border: 1px solid var(--border-medium);
-  border-radius: 0.9rem;
-  background: rgb(252 251 248 / 95%);
-  padding: 0.8rem 0.85rem;
-}
-
-.aboutNeoCard h3 {
-  font-size: 0.78rem;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: var(--text-primary);
-}
-
-.aboutNeoCard p {
-  margin-top: 0.35rem;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-.aboutNeoVisual {
-  display: grid;
-  grid-template-rows: 1fr auto;
-  gap: 0.7rem;
+.aboutMat {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: clamp(0.55rem, 1.2vw, 0.85rem);
+  border-radius: 1.35rem;
+  border: 1px solid var(--border-light);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 6%), transparent 42%),
+    rgb(38 36 34 / 5%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 12%),
+    0 28px 64px rgb(28 27 25 / 12%);
 }
 
 .aboutPortrait {
   position: relative;
-  min-height: 460px;
-  aspect-ratio: 3 / 4;
-  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 0;
+  aspect-ratio: 4 / 5;
+  max-height: min(72vh, 34rem);
   overflow: hidden;
-  border: 1px solid var(--border-light);
-  box-shadow: var(--shadow-light);
-  background: rgb(250 249 246 / 80%);
+  border-radius: 0.95rem;
+  background: rgb(30 28 26 / 8%);
+  transform-origin: center center;
+  will-change: transform, opacity;
+}
+
+/* Next/Image fill wrapper */
+.aboutPortrait > span {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  display: block !important;
+}
+
+.aboutPortrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(28 27 25 / 48%) 0%,
+    rgb(28 27 25 / 12%) 32%,
+    transparent 58%
+  );
 }
 
 .aboutPortrait img {
-  object-fit: contain;
-  object-position: center center;
-  transform: scale(0.92);
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center 18%;
   transform-origin: center center;
 }
 
-.aboutNeoBadge {
+.aboutCaption {
+  position: absolute;
+  inset-inline-start: clamp(1rem, 2vw, 1.35rem);
+  bottom: clamp(0.85rem, 1.6vw, 1.15rem);
+  z-index: 2;
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 300;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgb(252 251 249 / 88%);
+  text-shadow: 0 1px 12px rgb(0 0 0 / 35%);
+  pointer-events: none;
+}
+
+.aboutBadge {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.5rem 1rem;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border-radius: 999px;
   border: 1px solid var(--border-light);
-  background: rgb(255 253 250 / 90%);
-  border-radius: var(--radius-md);
-  padding: 0.68rem 0.88rem;
+  background: rgb(252 251 249 / 72%);
+  backdrop-filter: blur(10px);
 }
 
-.aboutNeoBadge span {
+.aboutBadgeName {
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+  text-align: end;
+}
+
+.aboutBadgeRole {
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  font-size: 0.7rem;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
 }
 
-.aboutNeoBadge p {
-  font-size: 1.05rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+:global(html[data-theme="dark"]) .panelIndex,
+:global(html[data-theme="dark"]) .aboutIndex {
+  -webkit-text-stroke-color: rgb(157 147 134 / 24%);
+}
+
+:global(html[data-theme="dark"]) .aboutMat {
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 5%), transparent 40%),
+    rgb(255 255 255 / 3%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 8%),
+    0 32px 72px rgb(0 0 0 / 32%);
+}
+
+:global(html[data-theme="dark"]) .aboutBadge {
+  background: rgb(30 28 26 / 72%);
+  border-color: rgb(255 255 255 / 10%);
+}
+
+:global(html[data-theme="dark"]) .aboutPillarIndex {
+  color: var(--color-warm-cedar);
 }
 
 .servicesSection {
@@ -725,10 +1072,7 @@
   min-height: 100vh;
   min-height: 100svh;
   padding: 0;
-  background:
-    radial-gradient(circle at 10% 8%, rgb(238 234 227 / 30%), transparent 42%),
-    radial-gradient(circle at 90% 86%, rgb(230 225 218 / 26%), transparent 44%),
-    linear-gradient(165deg, #fdfcfb, #f9f8f5 40%, #f5f3ef 100%);
+  background: transparent;
 }
 
 .servicesStage {
@@ -740,10 +1084,7 @@
   border-radius: 0;
   border: 0;
   box-shadow: none;
-  background:
-    radial-gradient(circle at 8% 0%, rgb(235 231 224 / 28%), transparent 38%),
-    radial-gradient(circle at 92% 100%, rgb(235 231 224 / 24%), transparent 42%),
-    linear-gradient(165deg, #fefdfb, #f9f8f5 50%, #f5f3ef);
+  background: transparent;
   overflow: hidden;
   padding: 0;
 }
@@ -883,151 +1224,173 @@
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(to top, rgb(18 14 11 / 64%), rgb(18 14 11 / 22%) 48%, rgb(18 14 11 / 4%)),
-    radial-gradient(circle at 80% 12%, rgb(255 245 231 / 34%), transparent 36%),
-    radial-gradient(circle at 50% 112%, rgb(0 0 0 / 18%), transparent 54%);
+    linear-gradient(to top, rgb(22 20 18 / 72%) 0%, rgb(22 20 18 / 28%) 42%, rgb(22 20 18 / 8%) 68%),
+    radial-gradient(circle at 78% 14%, rgb(157 147 134 / 16%), transparent 38%);
 }
 
 .serviceCopy {
   position: absolute;
-  left: clamp(0.85rem, 2.8vw, 1.8rem);
-  right: clamp(0.85rem, 2.8vw, 1.8rem);
-  bottom: clamp(0.85rem, 3vw, 1.5rem);
-  z-index: 3;
-  display: grid;
-  gap: 0.6rem;
-  padding: clamp(0.9rem, 2.2vw, 1.2rem);
-  border-radius: 1.1rem;
-  border: 1px solid rgb(255 253 249 / 40%);
-  background:
-    linear-gradient(to bottom, rgb(12 9 7 / 82%), rgb(10 7 5 / 94%));
-  backdrop-filter: blur(22px) saturate(130%);
-  text-align: left;
-  color: rgb(255 249 241 / 96%);
+  inset-inline: clamp(1rem, 3.5vw, 2.5rem);
+  bottom: clamp(1rem, 3.5vh, 2rem);
   z-index: 6;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  max-width: min(36rem, 92vw);
   transform: translateZ(0);
+  pointer-events: none;
 }
 
-.serviceTopLine {
+.servicePanel {
+  pointer-events: auto;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  display: grid;
+  gap: clamp(0.85rem, 2vh, 1.15rem);
+  padding: clamp(1.15rem, 2.4vw, 1.65rem);
+  border-radius: 1.2rem;
+  border: 1px solid rgb(255 255 255 / 14%);
+  background:
+    linear-gradient(145deg, rgb(38 36 34 / 42%), rgb(22 20 18 / 78%)),
+    rgb(18 16 14 / 82%);
+  backdrop-filter: blur(18px) saturate(120%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    0 24px 56px rgb(0 0 0 / 28%);
+  color: rgb(252 251 249 / 96%);
+}
+
+.servicePanelHead {
   display: flex;
-  align-items: baseline;
+  align-items: flex-end;
   justify-content: space-between;
-  gap: 0.9rem;
-  padding-bottom: 0.4rem;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid rgb(255 255 255 / 12%);
 }
 
 .serviceTitle {
-  font-size: clamp(1.28rem, 3.1vw, 3.15rem);
-  margin-bottom: 0;
-  letter-spacing: -0.01em;
-  line-height: 1;
-  text-transform: uppercase;
-  text-shadow: 0 8px 28px rgb(0 0 0 / 34%);
+  margin: 0;
+  font-size: clamp(1.65rem, 3.8vw, 2.85rem);
+  font-weight: 200;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-transform: none;
+  text-shadow: none;
 }
 
 .serviceScrollHint {
   margin: 0;
-  color: rgb(255 255 255 / 82%);
-  font-size: 0.8rem;
+  flex-shrink: 1;
+  min-width: 0;
+  font-size: 0.68rem;
+  font-weight: 300;
   letter-spacing: 0.14em;
-  white-space: nowrap;
+  text-transform: uppercase;
+  color: rgb(200 192 182 / 88%);
+  white-space: normal;
+  text-align: end;
 }
 
 .serviceDescription {
   margin: 0;
-  max-width: 62ch;
-  font-size: clamp(0.9rem, 1.2vw, 1.03rem);
-  line-height: 1.62;
-  color: rgb(255 242 229 / 94%);
-  text-shadow: 0 4px 18px rgb(0 0 0 / 30%);
+  max-width: 36ch;
+  font-size: clamp(0.88rem, 1.1vw, 1rem);
+  font-weight: 300;
+  line-height: 1.68;
+  color: rgb(232 228 222 / 92%);
 }
 
 .serviceActions {
   display: flex;
-  align-items: center;
-  gap: 0.6rem;
   flex-wrap: wrap;
-  margin-top: 0.2rem;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
 }
 
 .serviceGalleryButton,
 .serviceRequestButton {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  min-height: 2.15rem;
-  padding: 0.38rem 0.88rem;
-  border-radius: 999px;
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
+  gap: 0.4rem;
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease;
+    color 0.25s ease,
+    gap 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .serviceGalleryButton {
-  border: 1px solid rgb(255 250 244 / 48%);
-  color: rgb(255 248 239 / 92%);
-  background: rgb(20 16 13 / 26%);
+  color: rgb(232 228 222 / 88%);
 }
 
 .serviceRequestButton {
-  border: 1px solid rgb(255 253 249 / 72%);
-  color: rgb(33 28 24 / 94%);
-  background: linear-gradient(to bottom, rgb(255 255 255 / 97%), rgb(246 244 239 / 95%));
-  box-shadow:
-    0 8px 18px rgb(0 0 0 / 18%),
-    inset 0 1px 0 rgb(255 255 255 / 86%);
-}
-
-.serviceGalleryButton:hover,
-.serviceGalleryButton:focus-visible,
-.serviceRequestButton:hover,
-.serviceRequestButton:focus-visible {
-  transform: translateY(-1px);
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgb(255 255 255 / 22%);
+  color: var(--color-obsidian);
+  background: linear-gradient(to bottom, rgb(252 251 249 / 98%), rgb(240 237 232 / 96%));
+  box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
 }
 
 .serviceGalleryButton:hover,
 .serviceGalleryButton:focus-visible {
-  border-color: rgb(255 250 244 / 74%);
-  background: rgb(20 16 13 / 40%);
+  color: rgb(252 251 249 / 100%);
+  gap: 0.58rem;
+  outline: none;
 }
 
 .serviceRequestButton:hover,
 .serviceRequestButton:focus-visible {
-  border-color: rgb(166 124 82 / 72%);
-  color: rgb(44 35 28 / 96%);
-  background: linear-gradient(to bottom, rgb(252 251 247 / 97%), rgb(243 240 234 / 96%));
+  border-color: rgb(157 147 134 / 55%);
+  color: var(--color-obsidian);
+  gap: 0.58rem;
+  outline: none;
 }
 
-.serviceBottomLine {
+.serviceIndex {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  margin-top: 0.1rem;
+  gap: 0.75rem;
+  padding-top: 0.15rem;
 }
 
-.serviceBottomLine span {
-  font-size: 0.74rem;
-  letter-spacing: 0.18em;
-  color: rgb(255 250 244 / 72%);
+.serviceIndex span {
+  font-size: clamp(1.75rem, 3.5vw, 2.65rem);
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: rgb(252 251 249 / 92%);
 }
 
-.serviceBottomLine i {
+.serviceIndex i {
   display: block;
-  width: clamp(52px, 10vw, 110px);
+  flex: 1;
+  max-width: 8rem;
   height: 1px;
-  background: linear-gradient(to right, rgb(255 250 244 / 76%), transparent);
+  background: linear-gradient(to right, rgb(157 147 134 / 72%), transparent);
+}
+
+[dir="rtl"] .serviceIndex i {
+  background: linear-gradient(to left, rgb(157 147 134 / 72%), transparent);
+}
+
+[dir="rtl"] .serviceCopy {
+  justify-content: flex-end;
 }
 
 .panelContent {
   position: relative;
   z-index: 1;
-  width: min(95%, var(--max-content-width));
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--max-content-width);
+  min-width: 0;
   margin-inline: auto;
   display: grid;
   gap: 1rem;
@@ -1061,8 +1424,7 @@
   opacity: 0.9;
 }
 
-.mapCard,
-.contactGrid {
+.mapCard {
   max-width: 760px;
   padding: var(--space-lg);
   border-radius: var(--radius-lg);
@@ -1071,11 +1433,6 @@
   display: grid;
   gap: var(--space-md);
   box-shadow: var(--shadow-soft);
-}
-
-.contactGrid {
-  color: var(--text-primary);
-  background: rgb(255 254 252 / 92%);
 }
 
 .contactForm {
@@ -1119,530 +1476,582 @@
   box-shadow: 0 0 0 2px rgb(122 114 104 / 16%);
 }
 
-/* إحصائيات الموقع — مشاريع، عملاء، سنوات خبرة */
-.locationStats {
+/* —— Location (aligned with hero editorial system) —— */
+.locationSection {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.9rem;
-  margin-bottom: 1.5rem;
+  gap: clamp(2rem, 4vh, 3rem);
 }
 
-.locationStatCard {
-  padding: 1.25rem 1rem;
-  border-radius: var(--radius-md);
-  border: 1px solid rgb(122 114 104 / 22%);
-  background: rgb(255 254 252 / 98%);
-  text-align: center;
+.locationHeader {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  gap: 0.85rem;
+  max-width: 52ch;
+  padding-inline-end: clamp(3rem, 12vw, 6rem);
+}
+
+.locationHeadline {
+  margin: 0;
+  font-size: clamp(2.25rem, 5.5vw, 3.75rem);
+  font-weight: 200;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.locationLead {
+  margin: 0;
+  max-width: 48ch;
+  color: var(--text-muted);
+  line-height: 1.65;
+  font-size: clamp(0.92rem, 1.15vw, 1.05rem);
+  font-weight: 300;
+}
+
+.locationStatsBand {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.locationStat {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  padding: clamp(1.1rem, 2.5vh, 1.65rem) clamp(0.75rem, 2vw, 1.5rem);
 }
 
-.locationStatNumber {
-  font-size: clamp(1.75rem, 3.5vw, 2.25rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--color-warm-cedar);
-  line-height: 1.1;
+.locationStat:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 22%;
+  inset-inline-end: 0;
+  width: 1px;
+  height: 56%;
+  background: var(--border-light);
 }
 
-.locationStatLabel {
-  font-size: 0.7rem;
-  font-weight: 500;
+.locationStatPrefix {
+  font-size: 0.62rem;
+  font-weight: 300;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
-.locationNeo {
-  position: relative;
+.locationStatValue {
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 200;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--text-primary);
+}
+
+.locationStatValuePhrase {
+  font-size: clamp(1.2rem, 2.8vw, 1.85rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.locationStatLabel {
+  font-size: 0.65rem;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.locationStatDivider {
+  display: none;
+}
+
+.locationStage {
   display: grid;
-  grid-template-columns: 92px 1fr 0.82fr;
-  gap: 0.9rem;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 0.58fr);
+  gap: clamp(1.5rem, 4vw, 3rem);
   align-items: stretch;
-  padding: clamp(0.55rem, 1vw, 0.8rem);
-  border: 1px solid var(--border-light);
-  border-radius: 1.15rem;
-  background:
-    radial-gradient(circle at 86% 10%, rgb(235 231 224 / 24%), transparent 30%),
-    linear-gradient(140deg, rgb(255 255 255 / 94%), rgb(250 248 244 / 86%));
 }
 
-.locationNeoRail {
-  border: 1px solid var(--border-light);
-  border-radius: 0.95rem;
-  background: rgb(255 253 250 / 88%);
+.locationCopy {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: clamp(0.25rem, 1vh, 0.75rem) 0;
+}
+
+.locationCity {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-warm-cedar);
+}
+
+.locationAddress {
+  margin: 0;
+  font-style: normal;
+  font-size: clamp(1.35rem, 2.5vw, 1.85rem);
+  font-weight: 300;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.locationHours {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+}
+
+.locationLinks {
   display: grid;
-  align-content: space-between;
-  justify-items: center;
-  padding: 0.9rem 0.45rem;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
 }
 
-.locationNeoRail p {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
+.locationCta,
+.locationCtaSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  font-size: 0.9rem;
+  font-weight: 300;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.3s ease, gap 0.3s ease;
+}
+
+.locationCta {
+  color: var(--text-primary);
+}
+
+.locationCtaSecondary {
+  color: var(--text-muted);
+}
+
+.locationCta:hover,
+.locationCta:focus-visible,
+.locationCtaSecondary:hover,
+.locationCtaSecondary:focus-visible {
+  color: var(--color-warm-cedar);
+  gap: 0.65rem;
+}
+
+.locationMapWrap {
+  min-height: clamp(22rem, 48vh, 32rem);
+  display: grid;
+  align-items: stretch;
+}
+
+/* —— Map — soft editorial frame —— */
+.locationMapFrame {
+  position: relative;
+  height: 100%;
+  min-height: clamp(22rem, 48vh, 32rem);
+  min-width: 0;
+  margin: 0;
+}
+
+.locationMapMat {
+  position: relative;
+  height: 100%;
+  min-height: inherit;
+  padding: clamp(0.55rem, 1.2vw, 0.85rem);
+  border-radius: 1.35rem;
+  border: 1px solid var(--border-light);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 5%), transparent 42%),
+    rgb(38 36 34 / 6%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 14%),
+    0 24px 56px rgb(28 27 25 / 10%);
+}
+
+.locationMapViewport {
+  position: relative;
+  height: 100%;
+  min-height: calc(clamp(22rem, 48vh, 32rem) - 1.7rem);
+  overflow: hidden;
+  border-radius: 0.95rem;
+  isolation: isolate;
+}
+
+.locationMapVignette {
+  position: absolute;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgb(28 27 25 / 18%) 0%, transparent 22%, transparent 72%, rgb(28 27 25 / 22%) 100%),
+    radial-gradient(ellipse 85% 70% at 50% 50%, transparent 42%, rgb(28 27 25 / 14%) 100%);
+}
+
+.locationMapCaption {
+  position: absolute;
+  left: clamp(1rem, 2.2vw, 1.35rem);
+  bottom: clamp(0.65rem, 1.4vw, 0.9rem);
+  z-index: 2;
+  margin: 0;
+  font-size: 0.62rem;
+  font-weight: 300;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  font-size: 0.66rem;
   color: var(--text-muted);
+  pointer-events: none;
 }
 
-.locationNeoRail span {
-  font-size: 0.62rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--text-primary);
-}
-
-.locationNeoMain {
-  display: grid;
-  align-content: center;
-  gap: 0.7rem;
-  padding: clamp(0.4rem, 1vw, 0.75rem);
-}
-
-.locationNeoVisual {
-  display: grid;
-  align-content: stretch;
-  min-height: 0;
-}
-
-.locationLead {
-  max-width: 64ch;
-  color: var(--text-muted);
-  line-height: 1.72;
-}
-
-.locationSectionTitle {
-  margin: 0 0 0.5rem;
-  font-size: clamp(1.5rem, 3.2vw, 2rem);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-primary);
-}
-
-.locationTitleAccent {
-  display: block;
-  width: 3rem;
-  height: 3px;
-  margin-bottom: 1rem;
-  background: var(--color-warm-cedar);
-  border-radius: 2px;
-}
-
-.locationAddressLine {
-  margin: 0 0 1rem;
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-/* إطار الخريطة — مظهر احترافي عالمي */
-.locationMapFrame {
-  --location-pin-x: 50%;
-  --location-pin-y: 50%;
-  position: relative;
-  height: clamp(360px, 52vh, 480px);
-  min-height: clamp(360px, 52vh, 480px);
-  min-width: 0;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgb(0 0 0 / 6%);
-  background: #fcfcfb;
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 4%),
-    0 8px 24px rgb(0 0 0 / 6%);
+[dir="rtl"] .locationMapCaption {
+  left: auto;
+  right: clamp(1rem, 2.2vw, 1.35rem);
 }
 
 .locationMapContainer {
   width: 100%;
   height: 100%;
   min-height: inherit;
-  border-radius: inherit;
   z-index: 0;
-  background: #fcfcfb;
+  background: var(--color-editorial-cream);
+  touch-action: manipulation;
 }
 
-.locationMapImageWrap {
-  position: relative;
-  display: block;
+.locationMapContainer :global(.leaflet-container) {
+  touch-action: manipulation;
+  cursor: default;
+}
+
+.locationMapContainer :global(.leaflet-grab),
+.locationMapContainer :global(.leaflet-dragging) {
+  cursor: default !important;
+}
+
+.locationMapContainer :global(.leaflet-marker-icon) {
+  cursor: pointer;
+}
+
+.locationMapContainer :global(.leaflet-popup-content) a {
+  touch-action: manipulation;
+}
+
+.locationMapSkeleton {
   width: 100%;
   height: 100%;
   min-height: inherit;
-  border-radius: inherit;
-  color: inherit;
-  text-decoration: none;
+  border-radius: 0.95rem;
+  background:
+    linear-gradient(110deg, rgb(45 42 38 / 4%) 8%, rgb(45 42 38 / 8%) 18%, rgb(45 42 38 / 4%) 33%),
+    var(--color-editorial-cream);
+  background-size: 200% 100%;
+  animation: locationMapShimmer 2s ease-in-out infinite;
 }
 
-.locationMapImageLink:focus-visible {
-  outline: 2px solid var(--color-warm-cedar);
-  outline-offset: 2px;
-  border-radius: 4px;
+@keyframes locationMapShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
 }
 
-.locationMapImageLink {
-  display: block;
-  width: 100%;
-  height: 100%;
-  color: inherit;
-  text-decoration: none;
+@media (prefers-reduced-motion: reduce) {
+  .locationMapSkeleton {
+    animation: none;
+  }
 }
 
-.locationMapImage {
-  position: relative;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+.locationMapContainer :global(.leaflet-tile-pane) {
+  filter: saturate(0.58) sepia(0.14) brightness(1.02) contrast(0.96);
 }
 
-/* زر الدبوس — أطراف الدبوس عند (x,y) من حاوية الخريطة */
-.locationMapMarkerBtn {
-  position: absolute;
-  left: var(--location-pin-x);
-  top: var(--location-pin-y);
-  z-index: 3;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  width: 44px;
-  height: 48px;
-  margin: 0;
-  padding: 0;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transform: translate(
-    calc(-50% + var(--location-pin-nudge-x, 0px)),
-    calc(-100% + var(--location-pin-nudge-y, 0px))
-  );
-  filter: drop-shadow(0 3px 10px rgb(0 0 0 / 22%));
-}
-
-.locationMapMarkerBtn:focus-visible {
-  outline: 2px solid var(--color-warm-cedar);
-  outline-offset: 3px;
-  border-radius: 4px;
-}
-
-.locationMapDialogBackdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  border: none;
-  padding: 0;
-  margin: 0;
-  background: rgb(12 14 18 / 42%);
-  backdrop-filter: blur(3px);
-  cursor: pointer;
-}
-
-.locationMapDialog {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  z-index: 2001;
-  width: min(92vw, 360px);
-  max-height: min(88vh, 520px);
-  overflow: auto;
-  margin: 0;
-  padding: 1.35rem 1.2rem 1.15rem;
-  border-radius: 16px;
-  border: 1px solid rgb(0 0 0 / 8%);
-  background: linear-gradient(180deg, #fff 0%, #fdfcfa 100%);
+:global(html[data-theme="dark"]) .locationMapMat {
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 4%), transparent 40%),
+    rgb(255 255 255 / 3%);
   box-shadow:
-    0 0 0 1px rgb(255 255 255 / 60%) inset,
-    0 2px 4px rgb(0 0 0 / 4%),
-    0 12px 40px rgb(0 0 0 / 12%),
-    0 24px 80px rgb(0 0 0 / 10%);
-  color: var(--text-primary);
-  transform: translate(-50%, -50%);
+    inset 0 1px 0 rgb(255 255 255 / 6%),
+    0 28px 64px rgb(0 0 0 / 28%);
 }
 
-.locationMapDialogClose {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  margin: 0;
-  padding: 0;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.35rem;
-  line-height: 1;
-  font-weight: 300;
-  color: #8a8580;
-  background: transparent;
-  cursor: pointer;
-  transition: color 0.2s ease, background 0.2s ease;
+:global(html[data-theme="dark"]) .locationMapContainer {
+  background: var(--night-elevated);
 }
 
-.locationMapDialogClose:hover,
-.locationMapDialogClose:focus-visible {
-  color: #2d2a26;
-  background: rgb(0 0 0 / 5%);
-  outline: none;
+:global(html[data-theme="dark"]) .locationMapContainer :global(.leaflet-tile-pane) {
+  filter: saturate(0.42) sepia(0.1) brightness(0.88) contrast(1.02);
 }
 
-.locationMapDialogIconWrap {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.35rem 0 0.85rem;
-  color: var(--color-warm-cedar);
+:global(html[data-theme="dark"]) .locationMapVignette {
+  background:
+    linear-gradient(180deg, rgb(8 7 7 / 32%) 0%, transparent 24%, transparent 70%, rgb(8 7 7 / 36%) 100%),
+    radial-gradient(ellipse 88% 72% at 50% 50%, transparent 40%, rgb(8 7 7 / 22%) 100%);
 }
 
-.locationMapDialogIcon {
-  width: 52px;
-  height: 52px;
+:global(html[data-theme="dark"]) .locationMapSkeleton {
+  background:
+    linear-gradient(110deg, rgb(255 255 255 / 3%) 8%, rgb(255 255 255 / 6%) 18%, rgb(255 255 255 / 3%) 33%),
+    var(--night-elevated);
+  background-size: 200% 100%;
 }
 
 .locationMapAttribution {
   position: absolute;
-  right: 10px;
-  bottom: 8px;
-  z-index: 5;
-  padding: 4px 8px;
-  font-size: 10px;
-  letter-spacing: 0.04em;
+  right: clamp(0.85rem, 2vw, 1.15rem);
+  bottom: clamp(0.55rem, 1.2vw, 0.75rem);
+  z-index: 500;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.58rem;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   color: var(--text-muted);
-  background: rgb(255 255 255 / 92%);
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+  background: rgb(252 251 249 / 72%);
+  border: 1px solid rgb(45 42 38 / 8%);
+  border-radius: 999px;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
 }
 
 .locationMapFrame :global(.leaflet-control-attribution) {
   display: none;
 }
 
-/* أزرار التكبير — مينيمال */
+/* Zoom — floating glass pill */
+.locationMapFrame :global(.leaflet-bottom.leaflet-right) {
+  bottom: 1rem;
+  right: 1rem;
+}
+
 .locationMapFrame :global(.leaflet-control-zoom) {
-  border: none !important;
-  box-shadow: 0 2px 8px rgb(0 0 0 / 10%);
+  margin: 0 !important;
+  border: 1px solid rgb(45 42 38 / 10%) !important;
+  border-radius: 999px !important;
   overflow: hidden;
-  border-radius: 6px;
+  box-shadow: 0 8px 24px rgb(28 27 25 / 10%) !important;
+  backdrop-filter: blur(12px);
 }
 
 .locationMapFrame :global(.leaflet-control-zoom a) {
-  width: 32px !important;
-  height: 32px !important;
-  line-height: 32px !important;
-  font-size: 18px !important;
-  font-weight: 300 !important;
-  color: #2d2a26 !important;
-  background: #fff !important;
+  width: 2.15rem !important;
+  height: 2.15rem !important;
+  line-height: 2.15rem !important;
+  font-size: 1.05rem !important;
+  font-weight: 200 !important;
+  color: var(--text-primary) !important;
+  background: rgb(252 251 249 / 82%) !important;
   border: none !important;
   border-radius: 0 !important;
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
 }
 
 .locationMapFrame :global(.leaflet-control-zoom a:first-child) {
-  border-radius: 6px 6px 0 0 !important;
-  border-bottom: 1px solid rgb(0 0 0 / 6%) !important;
-}
-
-.locationMapFrame :global(.leaflet-control-zoom a:last-child) {
-  border-radius: 0 0 6px 6px !important;
+  border-bottom: 1px solid rgb(45 42 38 / 8%) !important;
 }
 
 .locationMapFrame :global(.leaflet-control-zoom a:hover) {
-  background: #f5f5f3 !important;
+  background: var(--color-amber-glow) !important;
+  color: var(--color-warm-cedar) !important;
 }
 
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-control-zoom) {
+  border-color: rgb(255 255 255 / 10%) !important;
+  box-shadow: 0 10px 28px rgb(0 0 0 / 32%) !important;
+}
+
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-control-zoom a) {
+  background: rgb(30 28 26 / 78%) !important;
+  color: var(--color-ivory) !important;
+}
+
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-control-zoom a:first-child) {
+  border-bottom-color: rgb(255 255 255 / 10%) !important;
+}
+
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-control-zoom a:hover) {
+  background: rgb(48 44 40 / 88%) !important;
+  color: var(--color-warm-cedar) !important;
+}
+
+/* Marker — soft pulse */
 .locationMarkerIcon {
   background: none !important;
   border: none !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-/* علامة الموقع — دبوس أنيق */
-.locationMarkerPin {
+.locationMarker {
   position: relative;
-  width: 26px;
-  height: 36px;
-  background: var(--color-obsidian);
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  box-shadow: 0 3px 12px rgb(0 0 0 / 18%);
   display: block;
+  width: 52px;
+  height: 52px;
 }
 
-.locationMarkerPin::after {
-  content: "";
+.locationMarkerPulse {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
-  background: #fff;
+  inset: 8px;
   border-radius: 50%;
-  transform: rotate(45deg);
+  background: rgb(122 114 104 / 22%);
+  animation: locationMarkerPulse 2.8s ease-out infinite;
 }
 
-.locationMapFrame iframe {
-  width: 100%;
-  height: 100%;
-  border: 0;
-  filter: saturate(0.75) contrast(1.02) brightness(0.98);
-}
-
-/* نافذة Popup — أنيقة وراقية */
-.locationMapPopup.leaflet-popup-content-wrapper {
-  border-radius: 16px;
-  border: 1px solid rgb(0 0 0 / 6%);
+.locationMarkerCore {
+  position: absolute;
+  inset: 17px;
+  border-radius: 50%;
+  background: var(--color-obsidian);
+  border: 2px solid rgb(252 251 249 / 92%);
   box-shadow:
-    0 0 0 1px rgb(255 255 255 / 60%) inset,
-    0 2px 4px rgb(0 0 0 / 4%),
-    0 12px 40px rgb(0 0 0 / 10%),
-    0 24px 80px rgb(0 0 0 / 8%);
+    0 4px 16px rgb(28 27 25 / 22%),
+    0 0 0 6px rgb(122 114 104 / 18%);
+}
+
+@keyframes locationMarkerPulse {
+  0% {
+    transform: scale(0.72);
+    opacity: 0.55;
+  }
+
+  70% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .locationMarkerPulse {
+    animation: none;
+    opacity: 0.35;
+    transform: scale(1);
+  }
+}
+
+:global(html[data-theme="dark"]) .locationMarkerCore {
+  background: var(--color-warm-cedar);
+  border-color: rgb(22 21 20 / 88%);
+  box-shadow:
+    0 4px 18px rgb(0 0 0 / 36%),
+    0 0 0 6px rgb(157 147 134 / 22%);
+}
+
+:global(html[data-theme="dark"]) .locationMarkerPulse {
+  background: rgb(157 147 134 / 28%);
+}
+
+/* Popup — soft glass card */
+.locationMapFrame :global(.leaflet-popup-content-wrapper) {
+  border-radius: 1rem;
+  border: 1px solid rgb(45 42 38 / 10%);
+  box-shadow: 0 20px 48px rgb(28 27 25 / 14%);
   padding: 0;
   overflow: hidden;
-  background: linear-gradient(180deg, #fff 0%, #fdfcfa 100%);
+  background: rgb(252 251 249 / 94%);
+  backdrop-filter: blur(14px);
 }
 
-.locationMapPopup .leaflet-popup-content {
+.locationMapFrame :global(.leaflet-popup-content) {
   margin: 0;
-  min-width: 280px;
+  min-width: min(260px, calc(100vw - 2.5rem));
+  max-width: calc(100vw - 2.5rem);
 }
 
-.locationMapPopup .leaflet-popup-tip {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
+.locationMapFrame :global(.leaflet-popup-tip-container) {
+  margin-top: -1px;
 }
 
-.locationMapPopup .leaflet-popup-close-button {
-  font-size: 20px !important;
-  color: #8a8580 !important;
-  padding: 10px 14px !important;
-  right: 2px !important;
-  top: 2px !important;
-  transition: color 0.2s ease;
-}
-
-.locationMapPopup .leaflet-popup-close-button:hover {
-  color: #2d2a26 !important;
-}
-
-.locationMapPopup .locationMapInfoCard {
-  position: static;
-  left: auto;
-  bottom: auto;
-  z-index: auto;
-  max-width: 100%;
-  border: none;
-  border-radius: 0;
+.locationMapFrame :global(.leaflet-popup-tip) {
+  background: rgb(252 251 249 / 94%);
   box-shadow: none;
-  backdrop-filter: none;
+}
+
+.locationMapFrame :global(.leaflet-popup-close-button) {
+  font-size: 1.25rem !important;
+  font-weight: 300 !important;
+  color: var(--text-muted) !important;
+  padding: 0.65rem 0.75rem !important;
+  width: auto !important;
+  height: auto !important;
+  transition: color 0.25s ease;
+}
+
+.locationMapFrame :global(.leaflet-popup-close-button:hover) {
+  color: var(--text-primary) !important;
 }
 
 .locationMapInfoCard {
-  padding: 0.9rem 1rem 0.9rem;
-  background: transparent;
+  padding: 1.1rem 1.15rem 1.15rem;
   color: var(--text-primary);
   display: grid;
-  gap: 0;
+  gap: 0.35rem;
 }
 
 .locationMapInfoMeta {
-  margin: 0 0 0.5rem;
+  margin: 0;
   font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.28em;
+  font-weight: 400;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #4a4a4a;
-  opacity: 1;
+  color: var(--color-warm-cedar);
 }
 
 .locationMapInfoCardTitle {
-  margin: 0 0 0.5rem;
-  font-size: 0.96rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.4;
-  color: #0b1118;
-  font-family: var(--font-sans);
-  text-shadow: 0 1px 0 rgb(255 255 255 / 35%);
-}
-
-.locationMapInfoDivider {
-  display: block;
-  width: 2.5rem;
-  height: 2px;
-  margin: 0 0 0.7rem;
-  background: linear-gradient(90deg, var(--color-warm-cedar), rgb(122 114 104 / 0.4));
-  border-radius: 1px;
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  color: var(--text-primary);
 }
 
 .locationMapInfoAddress,
 .locationMapInfoPlace {
   margin: 0;
-  font-size: 0.76rem;
-  color: #2f2f2f;
-  line-height: 1.6;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-}
-
-.locationMapInfoAddress {
-  margin-bottom: 0.35rem;
-}
-
-.locationMapInfoIcon {
-  flex-shrink: 0;
-  margin-top: 0.2rem;
-  color: #4b4b4b;
-  opacity: 1;
-}
-
-.locationMapInfoIcon svg {
-  display: block;
-  width: 14px;
-  height: 14px;
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.55;
 }
 
 .locationMapGetDirections {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  margin-top: 0.65rem;
-  padding: 0.52rem 0.9rem;
-  font-size: 0.66rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
+  gap: 0.4rem;
+  width: fit-content;
+  margin-top: 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fff;
-  background: #0c121a;
-  border: none;
-  border-radius: 999px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow: 0 2px 12px rgb(28 27 25 / 20%);
+  color: var(--text-primary);
+  transition:
+    color 0.25s ease,
+    gap 0.25s ease;
 }
 
 .locationMapGetDirections:hover,
 .locationMapGetDirections:focus-visible {
-  background: #182230;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgb(28 27 25 / 28%);
+  color: var(--color-warm-cedar);
+  gap: 0.6rem;
   outline: none;
-}
-
-.locationMapGetDirections:active {
-  transform: translateY(0);
-}
-
-.locationMapGetDirections svg {
-  flex-shrink: 0;
-  opacity: 0.9;
 }
 
 .locationMapFrame > .locationMapInfoCard {
@@ -1707,55 +2116,37 @@
 .mapCard a,
 .contactButton {
   justify-self: start;
-  border: 1px solid var(--accent-primary);
+  margin-top: 0.35rem;
+  border: 1px solid var(--color-obsidian);
   border-radius: 999px;
-  padding: 0.8rem 1.5rem;
-  background: rgb(245 245 240 / 82%);
-  color: var(--color-obsidian);
+  padding: 0.75rem 1.45rem;
+  background: var(--color-obsidian);
+  color: var(--color-ivory);
   text-transform: uppercase;
-  letter-spacing: 0.16em;
-  font-size: var(--label-size);
+  letter-spacing: 0.12em;
+  font-size: 0.72rem;
+  font-weight: 400;
+  cursor: pointer;
   transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 160ms ease;
+    background-color 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.25s ease;
 }
 
 .mapCard a:hover,
 .mapCard a:focus-visible,
 .contactButton:hover,
 .contactButton:focus-visible {
-  background: var(--accent-hover);
-  color: var(--color-obsidian);
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--color-warm-cedar);
   transform: translateY(-1px);
-}
-
-.siteFooter {
-  padding: clamp(1.6rem, 3vw, 2.2rem) clamp(1.1rem, 2.4vw, 2.4rem)
-    calc(1rem + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid rgb(42 39 37 / 12%);
-  background: linear-gradient(to top, rgb(246 244 240 / 92%), rgb(252 251 248 / 78%));
-}
-
-.footerInner {
-  width: min(100%, var(--max-content-width));
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(0.9rem, 2.2vw, 1.6rem);
-  align-items: start;
-}
-
-.footerBrand p {
-  color: #3f3a34;
-  max-width: 30ch;
-  line-height: 1.45;
+  outline: none;
 }
 
 .footerTagline {
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  composes: motto from global;
 }
 
 .footerLogoWrap {
@@ -1774,59 +2165,12 @@
   opacity: 0.86;
 }
 
-.footerGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(0.8rem, 2vw, 1.4rem);
-}
-
 .footerBlockTitle {
   color: var(--text-primary);
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   margin-bottom: 0.38rem;
-}
-
-.footerNav {
-  display: grid;
-  gap: 0.32rem;
-}
-
-.footerNav a {
-  color: #3f3a34;
-  transition: color 160ms ease;
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
-  font-size: 0.72rem;
-}
-
-.footerNav a:hover,
-.footerNav a:focus-visible {
-  color: #23201d;
-}
-
-.footerMeta {
-  display: grid;
-  gap: 0.28rem;
-  color: #3f3a34;
-  font-size: 0.82rem;
-}
-
-.footerBottom {
-  width: min(100%, var(--max-content-width));
-  margin: 0.95rem auto 0;
-  padding-top: 0.65rem;
-  border-top: 1px solid rgb(42 39 37 / 10%);
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  color: #3f3a34;
-  font-size: 0.74rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .footerCopy {
@@ -1839,107 +2183,88 @@
 
 :global(html[data-theme="dark"]) .pageShell::before {
   background:
-    radial-gradient(circle at 12% 10%, rgb(157 147 134 / 14%), transparent 28%),
-    radial-gradient(circle at 88% 82%, rgb(157 147 134 / 12%), transparent 30%),
-    linear-gradient(to bottom, #101012, #151518 40%, #19191d 100%);
-}
-
-:global(html[data-theme="dark"]) .panel::before {
-  background:
-    linear-gradient(145deg, rgb(22 22 25 / 92%), rgb(18 18 21 / 72%)),
-    linear-gradient(to bottom, rgb(255 255 255 / 5%), transparent);
+    radial-gradient(circle at 12% 10%, var(--night-warm-glow), transparent 30%),
+    radial-gradient(circle at 88% 82%, rgb(157 147 134 / 8%), transparent 34%),
+    var(--night-base);
 }
 
 :global(html[data-theme="dark"]) .aboutPanel::before,
 :global(html[data-theme="dark"]) .servicesSection,
-:global(html[data-theme="dark"]) .servicesStage,
-:global(html[data-theme="dark"]) .aboutNeo,
-:global(html[data-theme="dark"]) .locationNeo,
-:global(html[data-theme="dark"]) .siteFooter {
-  background: linear-gradient(160deg, rgb(20 20 24 / 95%), rgb(27 27 31 / 92%));
+:global(html[data-theme="dark"]) .servicesStage {
+  background: transparent;
 }
 
-:global(html[data-theme="dark"]) .locationStatCard {
-  border-color: rgb(255 255 255 / 12%);
-  background-color: rgb(26 26 30 / 72%);
-}
-
-:global(html[data-theme="dark"]) .locationStatNumber {
-  color: var(--color-warm-cedar);
-}
-
-:global(html[data-theme="dark"]) .locationStatLabel {
-  color: var(--text-muted);
-}
-
-:global(html[data-theme="dark"]) .aboutNeo,
-:global(html[data-theme="dark"]) .locationNeo,
 :global(html[data-theme="dark"]) .servicesStage,
 :global(html[data-theme="dark"]) .serviceLayer,
-:global(html[data-theme="dark"]) .aboutNeoRail,
-:global(html[data-theme="dark"]) .locationNeoRail,
-:global(html[data-theme="dark"]) .aboutNeoCard,
 :global(html[data-theme="dark"]) .locationInfoCards article,
-:global(html[data-theme="dark"]) .aboutNeoBadge,
-:global(html[data-theme="dark"]) .locationMapInfoCard,
 :global(html[data-theme="dark"]) .mapCard,
-:global(html[data-theme="dark"]) .contactGrid,
+:global(html[data-theme="dark"]) .contactFormPanel,
 :global(html[data-theme="dark"]) .contactField input,
-:global(html[data-theme="dark"]) .contactField textarea,
-:global(html[data-theme="dark"]) .footerBottom {
+:global(html[data-theme="dark"]) .contactField textarea {
   border-color: rgb(255 255 255 / 12%);
-  background-color: rgb(26 26 30 / 72%);
+  background-color: rgb(30 28 26 / 72%);
   color: var(--text-primary);
 }
 
-:global(html[data-theme="dark"]) .aboutNeoCard p,
+:global(html[data-theme="dark"]) .contactFormPanel {
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 5%), transparent 40%),
+    rgb(22 21 20 / 88%);
+}
+
+:global(html[data-theme="dark"]) .contactFooterMat {
+  background: rgb(255 255 255 / 4%);
+}
+
+:global(html[data-theme="dark"]) .aboutLead,
+:global(html[data-theme="dark"]) .aboutPillarText,
 :global(html[data-theme="dark"]) .locationLead,
-:global(html[data-theme="dark"]) .locationAddressLine,
+:global(html[data-theme="dark"]) .locationAddress,
 :global(html[data-theme="dark"]) .locationInfoCards p,
 :global(html[data-theme="dark"]) .contactField span,
-:global(html[data-theme="dark"]) .footerBrand p,
-:global(html[data-theme="dark"]) .footerNav a,
-:global(html[data-theme="dark"]) .footerMeta,
-:global(html[data-theme="dark"]) .footerBottom,
+:global(html[data-theme="dark"]) .contactFooterLead,
+:global(html[data-theme="dark"]) .contactFooterMeta,
+:global(html[data-theme="dark"]) .contactFooterNav a,
+:global(html[data-theme="dark"]) .contactFooterLegal,
 :global(html[data-theme="dark"]) .footerCopy {
   color: var(--text-muted);
 }
 
-:global(html[data-theme="dark"]) .locationSectionTitle,
-:global(html[data-theme="dark"]) .aboutNeoCard h3,
+:global(html[data-theme="dark"]) .locationHeadline,
+:global(html[data-theme="dark"]) .aboutHeadline,
+:global(html[data-theme="dark"]) .aboutPillarTitle,
+:global(html[data-theme="dark"]) .aboutBadgeName,
+:global(html[data-theme="dark"]) .contactFooterHeadline,
 :global(html[data-theme="dark"]) .locationInfoCards h3,
-:global(html[data-theme="dark"]) .aboutNeoBadge p,
-:global(html[data-theme="dark"]) .locationActions a,
-:global(html[data-theme="dark"]) .contactGrid,
-:global(html[data-theme="dark"]) .footerBlockTitle {
+:global(html[data-theme="dark"]) .locationCta,
+:global(html[data-theme="dark"]) .locationCtaSecondary,
+:global(html[data-theme="dark"]) .footerBlockTitle,
+:global(html[data-theme="dark"]) .contactChannel span:last-child {
   color: var(--text-primary);
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoCardTitle {
-  color: #0b1118;
-  text-shadow: none;
+  color: var(--color-ivory);
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoAddress,
 :global(html[data-theme="dark"]) .locationMapInfoPlace {
-  color: #2f2f2f;
+  color: rgb(232 228 222 / 88%);
 }
 
-:global(html[data-theme="dark"]) .locationMapPopup.leaflet-popup-content-wrapper {
-  background: linear-gradient(180deg, #f5f5f5 0%, #ebebeb 100%);
-  border-color: rgb(0 0 0 / 14%);
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 55%) inset,
-    0 6px 24px rgb(0 0 0 / 24%),
-    0 18px 48px rgb(0 0 0 / 18%);
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-popup-content-wrapper) {
+  background: rgb(30 28 26 / 90%);
+  border-color: rgb(255 255 255 / 10%);
+  box-shadow: 0 22px 52px rgb(0 0 0 / 34%);
+  backdrop-filter: blur(16px);
 }
 
-:global(html[data-theme="dark"]) .locationMapPopup .leaflet-popup-close-button {
-  color: #4a4a4a !important;
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-popup-close-button) {
+  color: rgb(178 173 166 / 90%) !important;
 }
 
-:global(html[data-theme="dark"]) .locationMapPopup .leaflet-popup-close-button:hover {
-  color: #111111 !important;
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-popup-close-button:hover) {
+  color: var(--color-ivory) !important;
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoCard {
@@ -1947,104 +2272,78 @@
 }
 
 :global(html[data-theme="dark"]) .locationMapInfoMeta {
-  color: #4a4a4a;
+  color: var(--color-warm-cedar);
 }
 
-:global(html[data-theme="dark"]) .locationMapInfoIcon {
-  color: #4b4b4b;
-  opacity: 1;
-}
-
-:global(html[data-theme="dark"]) .locationMapInfoDivider {
-  background: linear-gradient(90deg, #0c121a, rgb(12 18 26 / 32%));
+:global(html[data-theme="dark"]) .locationMapFrame :global(.leaflet-popup-tip) {
+  background: rgb(30 28 26 / 88%);
 }
 
 :global(html[data-theme="dark"]) .locationMapAttribution {
-  background: rgb(28 27 25 / 88%);
-  color: var(--text-muted);
+  background: rgb(22 21 20 / 78%);
+  color: rgb(190 185 176 / 82%);
+  border: 1px solid rgb(255 255 255 / 8%);
 }
 
 :global(html[data-theme="dark"]) .locationMapGetDirections {
-  background: #0c121a;
-  border-color: #0c121a;
-  color: #ffffff;
+  color: var(--color-ivory);
 }
 
 :global(html[data-theme="dark"]) .locationMapGetDirections:hover,
 :global(html[data-theme="dark"]) .locationMapGetDirections:focus-visible {
-  background: #182230;
-  border-color: #182230;
-  color: #ffffff;
-}
-
-:global(html[data-theme="dark"]) .locationMapDialog {
-  background: linear-gradient(180deg, rgb(34 34 38) 0%, rgb(26 26 30) 100%);
-  border-color: rgb(255 255 255 / 12%);
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 6%) inset,
-    0 8px 32px rgb(0 0 0 / 45%),
-    0 20px 64px rgb(0 0 0 / 35%);
-}
-
-:global(html[data-theme="dark"]) .locationMapDialogBackdrop {
-  background: rgb(0 0 0 / 58%);
-}
-
-:global(html[data-theme="dark"]) .locationMapDialogClose {
-  color: rgb(168 165 160);
-}
-
-:global(html[data-theme="dark"]) .locationMapDialogClose:hover,
-:global(html[data-theme="dark"]) .locationMapDialogClose:focus-visible {
-  color: var(--text-primary);
-  background: rgb(255 255 255 / 8%);
-}
-
-:global(html[data-theme="dark"]) .locationMapDialogIconWrap {
   color: var(--color-warm-cedar);
 }
 
-:global(html[data-theme="dark"]) .locationMapDialog .locationMapInfoCardTitle {
-  color: var(--text-primary);
-  text-shadow: none;
+:global(html[data-theme="dark"]) .servicePanel {
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 6%), rgb(22 21 20 / 88%)),
+    rgb(16 15 14 / 90%);
+  border-color: rgb(255 255 255 / 10%);
 }
 
-:global(html[data-theme="dark"]) .locationMapDialog .locationMapInfoMeta {
-  color: var(--text-muted);
+:global(html[data-theme="dark"]) .serviceGalleryButton {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: rgb(232 228 222 / 86%);
 }
 
-:global(html[data-theme="dark"]) .locationMapDialog .locationMapInfoAddress,
-:global(html[data-theme="dark"]) .locationMapDialog .locationMapInfoPlace {
-  color: var(--text-muted);
-}
-
-:global(html[data-theme="dark"]) .locationMapDialog .locationMapInfoIcon {
-  color: var(--text-muted);
-}
-
-:global(html[data-theme="dark"]) .locationActions a,
-:global(html[data-theme="dark"]) .mapCard a,
-:global(html[data-theme="dark"]) .contactButton,
-:global(html[data-theme="dark"]) .serviceGalleryButton,
-:global(html[data-theme="dark"]) .serviceRequestButton {
-  background: linear-gradient(to bottom, rgb(42 42 48 / 94%), rgb(30 30 35 / 92%));
-  border-color: rgb(255 255 255 / 18%);
-  color: var(--color-white);
-}
-
-:global(html[data-theme="dark"]) .locationActions a:hover,
-:global(html[data-theme="dark"]) .mapCard a:hover,
-:global(html[data-theme="dark"]) .contactButton:hover,
 :global(html[data-theme="dark"]) .serviceGalleryButton:hover,
+:global(html[data-theme="dark"]) .serviceGalleryButton:focus-visible {
+  color: var(--color-warm-cedar);
+}
+
+:global(html[data-theme="dark"]) .serviceRequestButton {
+  background: linear-gradient(to bottom, rgb(252 251 249 / 96%), rgb(232 228 222 / 92%));
+  border-color: rgb(255 255 255 / 20%);
+  color: var(--color-obsidian);
+}
+
 :global(html[data-theme="dark"]) .serviceRequestButton:hover,
-:global(html[data-theme="dark"]) .locationActions a:focus-visible,
-:global(html[data-theme="dark"]) .mapCard a:focus-visible,
-:global(html[data-theme="dark"]) .contactButton:focus-visible,
-:global(html[data-theme="dark"]) .serviceGalleryButton:focus-visible,
 :global(html[data-theme="dark"]) .serviceRequestButton:focus-visible {
+  border-color: var(--color-warm-cedar);
+  color: var(--color-obsidian);
+}
+
+:global(html[data-theme="dark"]) .mapCard a,
+:global(html[data-theme="dark"]) .contactButton {
+  background: var(--color-ivory);
+  border-color: rgb(255 255 255 / 18%);
+  color: var(--color-obsidian);
+}
+
+:global(html[data-theme="dark"]) .mapCard a:hover,
+:global(html[data-theme="dark"]) .mapCard a:focus-visible {
   background: linear-gradient(to bottom, rgb(56 56 64 / 96%), rgb(37 37 42 / 95%));
   border-color: rgb(157 147 134 / 66%);
   color: var(--color-white);
+}
+
+:global(html[data-theme="dark"]) .contactButton:hover,
+:global(html[data-theme="dark"]) .contactButton:focus-visible {
+  background: transparent;
+  border-color: var(--color-warm-cedar);
+  color: var(--color-ivory);
 }
 
 :global(html[data-theme="dark"]) .heroLead {
@@ -2119,74 +2418,99 @@
     align-content: end;
   }
 
-  .aboutNeo {
+  .aboutStage {
     grid-template-columns: 1fr;
-    padding: 0.85rem;
+    gap: 2rem;
   }
 
-  .aboutNeoRail {
-    display: none;
+  .aboutFigure {
+    order: -1;
+    width: 100%;
+    max-width: min(100%, 26rem);
+    margin-inline: auto;
+    justify-self: center;
   }
 
   .aboutPortrait {
-    min-height: 320px;
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 4 / 5;
+    max-height: min(58vh, 30rem);
   }
 
-  .aboutNeoGrid {
+  .aboutPortrait img {
+    object-position: center 22%;
+  }
+
+  .aboutIntro {
+    padding-inline-end: clamp(2.5rem, 16vw, 4rem);
+  }
+
+  .panelIndex,
+  .aboutIndex {
+    font-size: clamp(2.5rem, 13vw, 5rem);
+    top: -0.1em;
+    inset-inline-end: 0;
+    max-width: min(40%, 7.5rem);
+  }
+
+  .locationHeader,
+  .contactFooterIntro {
+    padding-inline-end: clamp(3.25rem, 20vw, 5rem);
+  }
+
+  .aboutPillar {
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+  }
+
+  .locationStage {
     grid-template-columns: 1fr;
   }
 
-  .locationStats {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.7rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .locationStatCard {
-    padding: 1rem 0.75rem;
-  }
-
-  .locationStatNumber {
-    font-size: 1.5rem;
-  }
-
-  .locationStatLabel {
-    font-size: 0.62rem;
-  }
-
-  .locationNeo {
-    grid-template-columns: 1fr;
-    padding: 0.7rem;
-  }
-
-  .locationNeoRail {
-    display: none;
+  .locationMapWrap {
+    order: -1;
+    min-height: 52vh;
   }
 
   .locationMapFrame {
-    min-height: 280px;
+    min-height: 52vh;
+  }
+
+  .locationMapViewport {
+    min-height: calc(52vh - 1.5rem);
+  }
+
+  .locationMapMat {
+    border-radius: 1.1rem;
+  }
+
+  .locationStatsBand {
+    grid-template-columns: 1fr;
+  }
+
+  .locationStat:not(:last-child) {
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .locationStat:not(:last-child)::after {
+    display: none;
+  }
+
+  .locationStatValue {
+    font-size: clamp(1.85rem, 8vw, 2.5rem);
   }
 
   .locationMapInfoCard {
-    left: 0.75rem;
-    bottom: 0.75rem;
-    right: 0.75rem;
-    max-width: none;
-    padding: 0.85rem 1rem;
+    padding: 0.95rem 1rem 1rem;
   }
 
   .locationMapInfoCardTitle {
-    font-size: 0.82rem;
+    font-size: 0.95rem;
   }
 
-  .locationMapInfoAddress,
-  .locationMapInfoPlace {
-    font-size: 0.75rem;
-  }
-
-  .locationMapGetDirections {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.68rem;
+  .locationMapFrame :global(.leaflet-bottom.leaflet-right) {
+    bottom: 0.75rem;
+    right: 0.75rem;
   }
 
   .locationActions {
@@ -2217,12 +2541,15 @@
   }
 
   .serviceCopy {
-    left: 0.7rem;
-    right: 0.7rem;
-    padding: 0.74rem 0.75rem;
-    border-radius: 0.8rem;
-    gap: 0.4rem;
+    inset-inline: 0.7rem;
     bottom: 0.85rem;
+    max-width: none;
+  }
+
+  .servicePanel {
+    padding: 0.95rem 1rem;
+    gap: 0.65rem;
+    border-radius: 1rem;
   }
 
   .serviceDescription {
@@ -2234,28 +2561,51 @@
     gap: 0.45rem;
   }
 
-  .serviceGalleryButton,
-  .serviceRequestButton {
-    min-height: 2rem;
-    font-size: 0.61rem;
-    letter-spacing: 0.1em;
-    padding: 0.34rem 0.72rem;
-  }
-
-  .footerInner {
+  .contactFooterStage {
     grid-template-columns: 1fr;
   }
 
-  .footerGrid {
-    grid-template-columns: 1fr 1fr;
+  .contactFooterVisual {
+    display: none;
   }
 
-  .footerBottom {
-    flex-wrap: wrap;
+  .contactFooterBase {
+    grid-template-columns: 1fr;
+  }
+
+  .serviceGalleryButton,
+  .serviceRequestButton {
+    min-height: var(--touch-target-min);
+    font-size: 0.68rem;
+    padding: 0.5rem 0.85rem;
   }
 }
 
 @media (max-width: 767px) {
+  .panel {
+    min-height: auto;
+    padding: calc(clamp(4.5rem, 12vw, 5.5rem) + var(--safe-top))
+      max(1rem, var(--safe-left))
+      calc(clamp(2rem, 5vw, 3rem) + var(--safe-bottom))
+      max(1rem, var(--safe-right));
+  }
+
+  .panelContent {
+    width: 100%;
+  }
+
+  .aboutIntro,
+  .locationHeader,
+  .contactFooterIntro {
+    padding-inline-end: clamp(1.5rem, 10vw, 2.5rem);
+  }
+
+  .panelIndex,
+  .aboutIndex {
+    font-size: clamp(2.15rem, 14vw, 3.75rem);
+    max-width: min(38%, 5.5rem);
+  }
+
   .heroMedia img,
   .heroImage {
     object-position: 40% center;
@@ -2271,19 +2621,22 @@
     letter-spacing: 0.11em;
   }
 
-  .contactPanel {
-    min-height: 100vh;
-    min-height: 100svh;
+  .contactFooterStage {
+    grid-template-columns: 1fr;
   }
 
-  .contactMedia {
-    inset: 0;
+  .contactFooterVisual {
+    display: none;
   }
 
-  .contactImage {
-    object-fit: cover;
-    object-position: center center;
-    transform: scale(1.06);
+  .contactFooterBase {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .contactFooterLegal {
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .servicesSection {
@@ -2319,9 +2672,16 @@
   }
 
   .serviceCopy {
-    left: 0.55rem;
-    right: 0.55rem;
-    bottom: 0.7rem;
+    inset-inline: 0.55rem;
+    bottom: calc(0.7rem + var(--safe-bottom));
+  }
+
+  .servicePanel {
+    padding: 0.85rem 0.9rem;
+  }
+
+  .serviceIndex span {
+    font-size: 1.55rem;
   }
 
   .serviceTitle {
@@ -2341,29 +2701,12 @@
   .serviceGalleryButton,
   .serviceRequestButton {
     width: 100%;
-    min-height: 1.95rem;
-    font-size: 0.58rem;
+    min-height: var(--touch-target-min);
+    font-size: 0.68rem;
     letter-spacing: 0.09em;
+    padding: 0.5rem 0.85rem;
   }
 
-  .footerInner {
-    grid-template-columns: 1fr;
-  }
-
-  .footerGrid {
-    grid-template-columns: 1fr;
-    gap: 0.75rem;
-  }
-
-  .footerBottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-  }
-
-  .footerCopy {
-    font-size: 0.76rem;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -2399,51 +2742,185 @@
     border-left-color: rgb(255 255 255 / 38%);
   }
 
-  .contactImage {
-    object-position: center 72%;
-  }
-
-  .siteFooter {
-    padding: clamp(2.8rem, 5vw, 4.2rem) clamp(1.8rem, 3.2vw, 3.2rem) 1.35rem;
-  }
-
-  .footerInner {
-    grid-template-columns: 1.1fr 1.25fr;
-    gap: clamp(1.2rem, 2.4vw, 2rem);
-  }
-
   .footerLogoWrap {
-    width: min(220px, 72%);
-    margin-bottom: 0.65rem;
+    width: min(200px, 68%);
   }
 
-  .footerBrand p {
-    font-size: 0.98rem;
-  }
-
-  .footerBlockTitle {
-    font-size: 0.72rem;
-  }
-
-  .footerNav a {
-    font-size: 0.78rem;
-  }
-
-  .footerMeta {
-    font-size: 0.96rem;
-  }
-
-  .footerBottom {
-    margin-top: 1.45rem;
-    padding-top: 1rem;
-    font-size: 0.9rem;
-  }
-
-  .aboutNeoHeader .lead,
+  .aboutLead,
   .serviceDescription,
   .mapInfoPanel p,
-  .contactGrid p {
+  .contactFooterLead {
     font-size: 0.95rem;
     line-height: 1.6;
+  }
+}
+
+/* —— Mobile overflow: keep all content inside the viewport —— */
+@media (max-width: 1023px) {
+  .aboutSection,
+  .aboutStage,
+  .aboutIntro,
+  .aboutFigure,
+  .locationSection,
+  .locationStage,
+  .contactFooterSection,
+  .contactFooterStage,
+  .contactFooterIntro,
+  .contactFormPanel,
+  .contactFooterBase,
+  .contactFooterBrand,
+  .contactFooterNav,
+  .servicesSection,
+  .servicesStage,
+  .servicesStack {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .aboutStage > *,
+  .locationStage > *,
+  .contactFooterStage > *,
+  .contactFooterBase > * {
+    min-width: 0;
+  }
+
+  .panelIndex,
+  .aboutIndex {
+    max-width: min(40%, 7.5rem);
+    font-size: clamp(2.5rem, 13vw, 5rem);
+  }
+
+  .aboutIntro,
+  .locationHeader,
+  .contactFooterIntro {
+    padding-inline-end: clamp(3.25rem, 20vw, 5rem);
+  }
+
+  .contactFooterHeadline {
+    max-width: none;
+  }
+
+  .contactFormPanel {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .servicesBackdropLine,
+  .servicesBackdropLineAlt {
+    animation: none;
+    transform: none;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-inline: 1rem;
+  }
+
+  .servicePanelHead {
+    flex-wrap: wrap;
+  }
+
+  .serviceTitle {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .serviceCopy {
+    inset-inline: max(0.75rem, var(--safe-left)) max(0.75rem, var(--safe-right));
+    max-width: 100%;
+  }
+
+  .locationMapFrame :global(.leaflet-popup-content) {
+    min-width: 0;
+    max-width: min(280px, 100%);
+  }
+}
+
+@media (max-width: 767px) {
+  .panel {
+    padding-inline: max(1rem, var(--safe-left)) max(1rem, var(--safe-right));
+  }
+
+  .panelIndex,
+  .aboutIndex {
+    max-width: min(38%, 5.5rem);
+    font-size: clamp(2.15rem, 14vw, 3.75rem);
+  }
+
+  .aboutIntro,
+  .locationHeader,
+  .contactFooterIntro {
+    padding-inline-end: clamp(2.75rem, 22vw, 4rem);
+  }
+
+  .aboutHeadline {
+    overflow-wrap: anywhere;
+  }
+
+  .aboutFigure {
+    max-width: 100%;
+  }
+
+  .aboutPortrait {
+    aspect-ratio: 3 / 4;
+    max-height: min(52vh, 24rem);
+  }
+
+  .aboutPortrait img {
+    object-position: center 20%;
+  }
+
+  .aboutMat {
+    padding: 0.5rem;
+    border-radius: 1.1rem;
+  }
+
+  .aboutBadge {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    border-radius: 1rem;
+    text-align: center;
+  }
+
+  .aboutBadgeRole,
+  .aboutBadgeName {
+    width: 100%;
+    text-align: center;
+  }
+
+  .contactFooterMeta,
+  .contactFooterLegal {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .locationActions {
+    width: 100%;
+  }
+
+  .locationActions a {
+    justify-content: center;
+    text-align: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .aboutFigure {
+    max-width: 100%;
+  }
+
+  .aboutPortrait {
+    aspect-ratio: 4 / 5;
+    max-height: min(48vh, 20rem);
+  }
+
+  .aboutBadge {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .aboutBadgeName {
+    font-size: clamp(0.82rem, 3.8vw, 0.92rem);
+    letter-spacing: 0.05em;
   }
 }

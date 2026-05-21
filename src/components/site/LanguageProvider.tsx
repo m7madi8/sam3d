@@ -31,6 +31,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
   }, [lang]);
 
+  useEffect(() => {
+    const onStorage = (event: StorageEvent) => {
+      if (event.key !== LANGUAGE_STORAGE_KEY) return;
+      if (event.newValue === "ar" || event.newValue === "en") {
+        setLang(event.newValue);
+      }
+    };
+
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   const toggleLang = useCallback(() => {
     setLang((prev) => (prev === "en" ? "ar" : "en"));
   }, []);

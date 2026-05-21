@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,52 +12,97 @@ import {
   getProjectById,
   getPrevNextIds,
   IMAGES_PER_LEVEL,
-  type PortfolioProject,
 } from "@/content/portfolio";
+import { getProjectDisplayLabels } from "@/content/projectDisplay";
+import { getSiteMenuItems } from "@/content/navigation";
+import FullscreenMenu from "@/components/navigation/FullscreenMenu";
 import { useLanguage } from "@/components/site/LanguageProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import interiorImage from "../../../interior.jpg";
-import landscapeImage from "../../../landscape.jpg";
-import exteriorImage from "../../../exterior.jpg";
+import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
+import brandLogo from "../../../white-logo.png";
 import styles from "./project-detail.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const projects = buildPortfolioProjects(interiorImage, landscapeImage, exteriorImage);
+const THEME_STORAGE_KEY = "sam3d-theme";
+const projects = buildPortfolioProjects();
+
+const STATUS_AR: Record<string, string> = {
+  Completed: "مكتمل",
+};
 
 export function ProjectDetailView() {
   const { tr } = useLanguage();
+  const reducedMotion = useReducedMotion();
   const params = useParams();
   const id = typeof params.id === "string" ? params.id : "";
   const project = getProjectById(projects, id);
-  const reducedMotion = useReducedMotion();
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  const heroRef = useRef<HTMLElement | null>(null);
-  const heroImageWrapRef = useRef<HTMLDivElement | null>(null);
-  const heroOverlayRef = useRef<HTMLDivElement | null>(null);
-  const heroRevealRef = useRef<HTMLDivElement | null>(null);
-  const headerRef = useRef<HTMLElement | null>(null);
-  const contentRef = useRef<HTMLElement | null>(null);
-  const galleryRef = useRef<HTMLElement | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
 
   if (!project) notFound();
 
+  const display = getProjectDisplayLabels(project.id);
+  const title = display?.titleEn
+    ? tr(display.titleEn, display.titleAr ?? project.title)
+    : project.title;
+  const categoryLabel = display?.categoryEn
+    ? tr(display.categoryEn, display.categoryAr ?? project.categoryLabel)
+    : project.categoryLabel;
+
+  const projectIndex = String(projects.findIndex((p) => p.id === id) + 1).padStart(2, "0");
   const { prev, next } = getPrevNextIds(projects, id);
   const year = project.year ?? "—";
-  const locationLine = `${project.location}${year !== "—" ? ` (${year})` : ""}`;
+  const photoTotal = project.photosCount ?? project.gallery.length;
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (stored === "dark" || stored === "light") {
+      const frame = requestAnimationFrame(() => setTheme(stored));
+      return () => cancelAnimationFrame(frame);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  }, [theme]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [id]);
 
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root || reducedMotion) return;
+    gsap.set(root.querySelectorAll("[data-project-entry]"), { opacity: 0, y: 18 });
+  }, [id, reducedMotion]);
+
   useEffect(() => {
-    const stagger = reducedMotion ? 0 : 0.1;
-    const isCoarsePointer = typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches;
-    const isSmallScreen = typeof window !== "undefined" && window.innerWidth < 1024;
+    const root = rootRef.current;
+    if (!root) return;
+
+    if (reducedMotion) {
+      root.querySelectorAll<HTMLElement>("[data-project-entry]").forEach((el) => {
+        el.style.opacity = "1";
+        el.style.transform = "none";
+      });
+    } else {
+      gsap.to(root.querySelectorAll("[data-project-entry]"), {
+        opacity: 1,
+        y: 0,
+        duration: 0.55,
+        stagger: 0.07,
+        ease: "power3.out",
+        delay: 0.1,
+      });
+    }
+
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const isSmallScreen = window.innerWidth < 1024;
     const useLightParallax = isCoarsePointer || isSmallScreen;
     const scrubVal = reducedMotion ? 0 : useLightParallax ? 0.42 : 0.62;
-    const parallaxScale = useLightParallax ? 1.045 : 1.075;
-    const parallaxY = useLightParallax ? -8 : -14;
 
     const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     lenis.on("scroll", ScrollTrigger.update);
@@ -70,123 +115,51 @@ export function ProjectDetailView() {
 
     let refreshId: number | undefined;
     const ctx = gsap.context(() => {
-      const hero = heroRef.current;
-      const heroImageWrap = heroImageWrapRef.current;
-      const heroOverlay = heroOverlayRef.current;
-      const heroReveal = heroRevealRef.current;
-      const header = headerRef.current;
-      const content = contentRef.current;
-      const gallery = galleryRef.current;
+      const heroMat = root.querySelector<HTMLElement>(`.${styles.heroMat}`);
+      const heroImage = root.querySelector<HTMLElement>(`.${styles.heroImageWrap}`);
 
-      if (!hero || !heroImageWrap || !heroOverlay || !heroReveal || !header) return;
+      if (heroMat && heroImage && !reducedMotion) {
+        gsap.set(heroImage, { scale: 1.05, force3D: true });
+        gsap.to(heroImage, {
+          scale: 1,
+          duration: 0.85,
+          ease: "power3.out",
+        });
+        gsap.to(heroImage, {
+          scale: useLightParallax ? 1.04 : 1.07,
+          y: useLightParallax ? -6 : -12,
+          ease: "none",
+          scrollTrigger: {
+            trigger: heroMat,
+            start: "top top",
+            end: "bottom top",
+            scrub: scrubVal,
+          },
+        });
+      }
 
-      gsap.set(header, { autoAlpha: 0 });
-      gsap.set(heroImageWrap, { scale: 1.04, force3D: true, willChange: "transform" });
-      gsap.set(heroOverlay, { opacity: 0 });
-      gsap.set(heroReveal.querySelectorAll("*"), { y: 28, autoAlpha: 0 });
-
-      const heroTl = gsap.timeline({ defaults: { ease: "power2.out" } });
-      heroTl
-        .to(heroImageWrap, { scale: 1, duration: reducedMotion ? 0.01 : 0.72 })
-        .to(heroOverlay, { opacity: 0.45, duration: reducedMotion ? 0.01 : 0.8 }, 0)
-        .to(
-          heroReveal.querySelectorAll("*"),
-          { y: 0, autoAlpha: 1, duration: reducedMotion ? 0.01 : 0.85, stagger, ease: "power3.out" },
-          reducedMotion ? 0 : 0.25
+      const revealEls = root.querySelectorAll("[data-project-reveal]");
+      if (revealEls.length && !reducedMotion) {
+        gsap.fromTo(
+          revealEls,
+          { y: 28, autoAlpha: 0 },
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 0.65,
+            stagger: 0.06,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: revealEls[0],
+              start: "top 88%",
+              toggleActions: "play none none none",
+            },
+          },
         );
-      heroTl.add(() => {
-        gsap.to(header, { autoAlpha: 1, duration: reducedMotion ? 0.01 : 0.5, ease: "power2.out" });
-      }, reducedMotion ? 0 : 1);
-
-      if (!reducedMotion) {
-        gsap.to(heroImageWrap, {
-          scale: parallaxScale,
-          y: parallaxY,
-          force3D: true,
-          overwrite: "auto",
-          ease: "none",
-          scrollTrigger: {
-            trigger: hero,
-            start: "top top",
-            end: "bottom top",
-            scrub: scrubVal,
-            fastScrollEnd: true,
-            invalidateOnRefresh: true,
-          },
-        });
-        gsap.to(heroOverlay, {
-          opacity: 0.56,
-          ease: "none",
-          scrollTrigger: {
-            trigger: hero,
-            start: "top top",
-            end: "bottom top",
-            scrub: scrubVal,
-            fastScrollEnd: true,
-            invalidateOnRefresh: true,
-          },
-        });
       }
 
-      if (content && !reducedMotion) {
-        const revealEls = content.querySelectorAll("[data-project-reveal]");
-        if (revealEls.length) {
-          gsap.fromTo(
-            revealEls,
-            { y: 32, autoAlpha: 0 },
-            {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.7,
-              stagger: 0.08,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: content,
-                start: "top 82%",
-                end: "top 50%",
-                toggleActions: "play none none none",
-              },
-            }
-          );
-        }
-      }
-
-      if (gallery && !project.hasFloors && !reducedMotion) {
-        const flatItems = gallery.querySelectorAll<HTMLElement>("[data-project-flat-item]");
-        if (flatItems.length) {
-          gsap.fromTo(
-            flatItems,
-            { scale: 0.96, autoAlpha: 0 },
-            {
-              scale: 1,
-              autoAlpha: 1,
-              duration: 0.5,
-              stagger: 0.04,
-              ease: "power2.out",
-              scrollTrigger: {
-                trigger: gallery,
-                start: "top 85%",
-                end: "top 40%",
-                toggleActions: "play none none none",
-              },
-            }
-          );
-        }
-      }
-
-      if (reducedMotion) {
-        gsap.set(header, { autoAlpha: 1 });
-        gsap.set(heroImageWrap, { scale: 1 });
-        gsap.set(heroOverlay, { opacity: 0.45 });
-        gsap.set(heroReveal?.querySelectorAll("*") ?? [], { y: 0, autoAlpha: 1 });
-        const revealEls = content?.querySelectorAll("[data-project-reveal]");
-        if (revealEls?.length) gsap.set(revealEls, { y: 0, autoAlpha: 1 });
-        const flatItems = gallery?.querySelectorAll("[data-project-flat-item]");
-        if (flatItems?.length) gsap.set(flatItems, { scale: 1, autoAlpha: 1 });
-      }
-
-      refreshId = window.setTimeout(() => ScrollTrigger.refresh(), 400);
-    });
+      refreshId = window.setTimeout(() => ScrollTrigger.refresh(), 450);
+    }, root);
 
     return () => {
       if (refreshId != null) clearTimeout(refreshId);
@@ -195,119 +168,235 @@ export function ProjectDetailView() {
       lenis.destroy();
       cancelAnimationFrame(rafId);
     };
-  }, [project?.id, project?.hasFloors, reducedMotion]);
+  }, [project.id, project.hasFloors, reducedMotion, id]);
+
+  const menuItems = getSiteMenuItems(tr);
 
   return (
-    <div className={styles.page}>
-      <header ref={headerRef} className={styles.header}>
-        <div className={styles.headerInner}>
-          <Link href="/gallery" className={styles.backBtn} aria-label={tr("Back to gallery", "العودة للمعرض")}>
-            {tr("Back", "رجوع")}
-          </Link>
-          <nav className={styles.nav} aria-label={tr("Project navigation", "تنقل المشاريع")}>
-            <Link href="/gallery">{tr("Gallery", "المعرض")}</Link>
-            {prev && (
-              <Link href={`/gallery/${prev}`}>{tr("Prev", "السابق")}</Link>
+    <div ref={rootRef} className={styles.pageShell}>
+      <FullscreenMenu
+        brand="SAMARAMMAR"
+        logoSrc={brandLogo}
+        logoAlt="samarammar"
+        items={menuItems}
+        showLangToggle
+        showThemeToggle
+        theme={theme}
+        setTheme={setTheme}
+      />
+
+      <main className={styles.projectRoot}>
+        <div className={styles.projectStage} data-project-entry>
+          <div className={styles.projectIntro}>
+            <span className={styles.projectIndex} aria-hidden>
+              {projectIndex}
+            </span>
+            <p className={styles.projectKicker}>
+              {categoryLabel} · {tr("Project", "مشروع")}
+            </p>
+            <h1 className={styles.projectTitle}>{title}</h1>
+            <p className={styles.projectMeta}>
+              {project.location}
+              {year !== "—" ? ` · ${year}` : ""}
+            </p>
+            <div className={styles.projectActions}>
+              <Link href="/gallery" className={styles.backLink}>
+                <span>{tr("← Gallery", "← المعرض")}</span>
+              </Link>
+              <Link href="/#contact" className={styles.ctaLink} scroll={false}>
+                <span>{tr("Start a project", "ابدأ مشروعًا")}</span>
+                <span aria-hidden="true">→</span>
+              </Link>
+            </div>
+          </div>
+
+          <figure className={styles.heroMat}>
+              <div className={styles.heroMatFrame}>
+                <div className={styles.heroImageWrap}>
+                  <Image
+                    src={project.thumbnail}
+                    alt={title}
+                    fill
+                    sizes={IMAGE_SIZES.galleryHero}
+                    quality={IMAGE_QUALITY.hero}
+                    className={styles.heroImage}
+                    priority
+                  />
+                </div>
+                <figcaption className={styles.heroCaption}>
+                  {photoTotal} {tr("photos", "صورة")}
+                </figcaption>
+              </div>
+          </figure>
+        </div>
+
+        <section className={styles.briefSection} data-project-entry>
+          <div className={styles.briefPanel} data-project-reveal>
+            <p className={styles.briefLabel}>{tr("Project brief", "ملخص المشروع")}</p>
+            <p className={styles.briefText}>{project.description}</p>
+            {project.descriptionSecondary ? (
+              <p className={styles.briefTextMuted}>{project.descriptionSecondary}</p>
+            ) : null}
+          </div>
+
+          <ul className={styles.specGrid} data-project-reveal>
+            {project.status ? (
+              <li className={styles.specItem}>
+                <span className={styles.specKey}>{tr("Status", "الحالة")}</span>
+                <span className={styles.specValue}>
+                  {tr(project.status, STATUS_AR[project.status] ?? project.status)}
+                </span>
+              </li>
+            ) : null}
+            {project.area ? (
+              <li className={styles.specItem}>
+                <span className={styles.specKey}>{tr("Area", "المساحة")}</span>
+                <span className={styles.specValue}>{project.area}</span>
+              </li>
+            ) : null}
+            {project.client ? (
+              <li className={styles.specItem}>
+                <span className={styles.specKey}>{tr("Client", "العميل")}</span>
+                <span className={styles.specValue}>{project.client}</span>
+              </li>
+            ) : null}
+            {project.materials ? (
+              <li className={styles.specItem}>
+                <span className={styles.specKey}>{tr("Materials", "المواد")}</span>
+                <span className={styles.specValue}>{project.materials}</span>
+              </li>
+            ) : null}
+            {project.services && project.services.length > 0 ? (
+              <li className={`${styles.specItem} ${styles.specItemWide}`}>
+                <span className={styles.specKey}>{tr("Scope", "النطاق")}</span>
+                <span className={styles.specValue}>{project.services.join(" · ")}</span>
+              </li>
+            ) : null}
+          </ul>
+        </section>
+
+        {project.gallery.length > 0 ? (
+          <section className={styles.gallerySection} aria-label={tr("Project gallery", "معرض المشروع")}>
+            <div className={styles.gallerySectionHead} data-project-entry>
+              <div className={styles.gallerySectionTitleWrap}>
+                <span className={styles.gallerySectionIndex} aria-hidden>
+                  {projectIndex}
+                </span>
+                <h2 className={styles.gallerySectionTitle}>{tr("Visual story", "القصة البصرية")}</h2>
+              </div>
+              <p className={styles.gallerySectionMeta}>
+                {photoTotal} {tr("frames", "إطار")}
+              </p>
+            </div>
+
+            {project.hasFloors ? (
+              chunkBy(project.gallery, IMAGES_PER_LEVEL).map((images, levelIndex) => {
+                const isLandscape = project.category === "landscape";
+                const isArchitectural = project.category === "architectural";
+                const isCommercial = project.category === "commercial";
+                const singleGalleryCategory = isLandscape || isArchitectural || isCommercial;
+                const sectionLabel =
+                  levelIndex === 0 && singleGalleryCategory
+                    ? tr("Gallery", "المعرض")
+                    : levelIndex === 0
+                      ? tr("Ground", "الأرضي")
+                      : String(levelIndex).padStart(2, "0");
+                const sectionSubtitle = singleGalleryCategory ? tr("Photos", "صور") : tr("Floor", "طابق");
+
+                return (
+                  <article key={levelIndex} className={styles.floorBlock} data-project-entry>
+                    <div className={styles.floorHead}>
+                      <span className={styles.floorIndex}>{String(levelIndex + 1).padStart(2, "0")}</span>
+                      <div className={styles.floorTitles}>
+                        <h3 className={styles.floorTitle}>{sectionLabel}</h3>
+                        <p className={styles.floorSubtitle}>{sectionSubtitle}</p>
+                      </div>
+                      <span className={styles.floorCount}>
+                        {images.length} {tr("photos", "صورة")}
+                      </span>
+                    </div>
+                    <div className={styles.stripWrap}>
+                      <div className={styles.photoStrip}>
+                        {images.map((img, i) => (
+                          <div key={i} className={styles.stripItem}>
+                            <div className={styles.stripMat}>
+                              <Image
+                                src={img}
+                                alt={`${title} — ${sectionLabel}, ${i + 1}`}
+                                fill
+                                sizes={IMAGE_SIZES.projectStoryItem}
+                                quality={IMAGE_QUALITY.gallery}
+                                className={styles.stripImage}
+                              />
+                              <span className={styles.stripIndex} aria-hidden>
+                                {String(i + 1).padStart(2, "0")}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })
+            ) : (
+              <div className={styles.stripWrap} data-project-entry>
+                <div className={styles.photoStrip}>
+                  {project.gallery.map((img, i) => (
+                    <div key={i} className={styles.stripItem} data-project-reveal>
+                      <div className={styles.stripMat}>
+                        <Image
+                          src={img}
+                          alt={`${title} — ${i + 1}`}
+                          fill
+                          sizes={IMAGE_SIZES.projectStoryItem}
+                          quality={IMAGE_QUALITY.gallery}
+                          className={styles.stripImage}
+                        />
+                        <span className={styles.stripIndex} aria-hidden>
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
-            {next && (
-              <Link href={`/gallery/${next}`}>{tr("Next", "التالي")}</Link>
+          </section>
+        ) : null}
+
+        <footer className={styles.projectFooter} data-project-entry>
+          <nav className={styles.projectNav} aria-label={tr("Project navigation", "تنقل المشاريع")}>
+            {prev ? (
+              <Link href={`/gallery/${prev}`} className={styles.navLink}>
+                <span className={styles.navDirection}>{tr("Previous", "السابق")}</span>
+                <span className={styles.navHint} aria-hidden>
+                  ←
+                </span>
+              </Link>
+            ) : (
+              <span className={styles.navPlaceholder} />
+            )}
+            <Link href="/gallery" className={styles.navCenter}>
+              {tr("All projects", "كل المشاريع")}
+            </Link>
+            {next ? (
+              <Link href={`/gallery/${next}`} className={`${styles.navLink} ${styles.navLinkNext}`}>
+                <span className={styles.navDirection}>{tr("Next", "التالي")}</span>
+                <span className={styles.navHint} aria-hidden>
+                  →
+                </span>
+              </Link>
+            ) : (
+              <span className={styles.navPlaceholder} />
             )}
           </nav>
-        </div>
-      </header>
+        </footer>
+      </main>
 
-      <section ref={heroRef} className={styles.hero}>
-        <div ref={heroImageWrapRef} className={styles.heroImageWrap}>
-          <Image
-            src={project.thumbnail}
-            alt=""
-            fill
-            sizes="100vw"
-            className={styles.heroImage}
-            priority
-          />
-        </div>
-        <div ref={heroOverlayRef} className={styles.heroOverlay} />
-        <div className={styles.heroTitleBlock} ref={heroRevealRef} data-project-hero-reveal>
-          <h1 className={styles.heroTitle}>{project.title}</h1>
-          <p className={styles.heroMeta}>{locationLine}</p>
-        </div>
-      </section>
-
-      <section ref={contentRef} className={styles.content}>
-        <div className={styles.twoCol}>
-          <div className={styles.colLeft} data-project-reveal>
-            <p className={styles.descriptionShort}>{project.description}</p>
-          </div>
-          <div className={styles.colRight} data-project-reveal>
-            <div className={styles.specCompact}>
-              <span className={styles.specCompactItem}>{project.categoryLabel}</span>
-              {project.status && <span className={styles.specCompactDot} aria-hidden="true">·</span>}
-              {project.status && <span className={styles.specCompactItem}>{project.status}</span>}
-            </div>
-            {project.services && project.services.length > 0 && (
-              <p className={styles.specServicesLine}>{project.services.join(" · ")}</p>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {project.gallery.length > 0 && (
-        <section ref={galleryRef} className={styles.gallery}>
-          {project.hasFloors ? (
-            chunkBy(project.gallery, IMAGES_PER_LEVEL).map((images, levelIndex) => {
-              const isLandscape = project.category === "landscape";
-              const isArchitectural = project.category === "architectural";
-              const isCommercial = project.category === "commercial";
-              const singleGalleryCategory = isLandscape || isArchitectural || isCommercial;
-              const sectionLabel = levelIndex === 0 && singleGalleryCategory ? tr("Gallery", "المعرض") : levelIndex === 0 ? tr("Ground", "الأرضي") : String(levelIndex).padStart(2, "0");
-              const sectionSubtitle = singleGalleryCategory ? tr("Photos", "صور") : tr("Floor", "طابق");
-              return (
-                <article key={levelIndex} className={styles.floorSection} data-project-floor>
-                  <div className={styles.floorLabel}>
-                    <span className={styles.floorNumber}>{sectionLabel}</span>
-                    <span className={styles.floorTitle}>{sectionSubtitle}</span>
-                    <span className={styles.floorCount}>{images.length} {tr("photos", "صورة")}</span>
-                  </div>
-                  <div className={styles.floorGridWrap}>
-                    <div className={styles.floorGrid}>
-                      {images.map((img, i) => (
-                        <div key={i} className={styles.floorGridItem}>
-                          <Image
-                            src={img}
-                            alt={`${project.title} — ${sectionLabel}, image ${i + 1}`}
-                            fill
-                            sizes="(max-width: 767px) 50vw, 12vw"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </article>
-              );
-            })
-          ) : (
-            <div className={styles.flatGallery}>
-              <div className={styles.flatGalleryGrid}>
-                {project.gallery.map((img, i) => (
-                  <div key={i} className={styles.flatGalleryItem} data-project-flat-item>
-                    <Image
-                      src={img}
-                      alt={`${project.title} — image ${i + 1}`}
-                      fill
-                      sizes="(max-width: 767px) 50vw, 20vw"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-      )}
-
-      <div className={styles.mobileBackBar} aria-hidden="false">
-        <Link href="/gallery" className={styles.mobileBackBtn} aria-label={tr("Back to gallery", "العودة للمعرض")}>
-          {tr("Back to Gallery", "العودة للمعرض")}
+      <div className={styles.mobileBar}>
+        <Link href="/gallery" className={styles.mobileBarBtn}>
+          {tr("← Gallery", "← المعرض")}
         </Link>
       </div>
     </div>
