@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import brandLogo from "../../../white-logo.png";
 import styles from "./UnderDevelopment.module.css";
 
@@ -13,7 +12,7 @@ export function UnderDevelopment() {
       <div className={styles.grid} aria-hidden />
 
       <header className={styles.logoStage}>
-        <Link href="/" className={styles.logoLink} aria-label="samarammar — home">
+        <div className={styles.logoLink} aria-label="samarammar">
           <Image
             src={brandLogo}
             alt=""
@@ -23,7 +22,7 @@ export function UnderDevelopment() {
             priority
             sizes="(max-width: 768px) 92vw, 48rem"
           />
-        </Link>
+        </div>
         <p className={styles.motto}>Dare to be different.</p>
       </header>
 

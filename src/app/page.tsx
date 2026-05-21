@@ -1,5 +1,32 @@
+import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { HomePageClient } from "@/components/site/HomePageClient";
+import { UnderDevelopment } from "@/components/site/UnderDevelopment";
+import { createPageMetadata } from "@/lib/siteMetadata";
+import { isUnderDevelopmentSite } from "@/lib/siteMode";
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  const host = (await headers()).get("host");
+  if (!isUnderDevelopmentSite(host)) return {};
+
+  return {
+    ...createPageMetadata({
+      title: "Under Development | samarammar",
+      description:
+        "The samarammar website is currently under development. A refined digital experience is coming soon.",
+      path: "/",
+      imageAlt: "samarammar — website under development",
+    }),
+    robots: { index: false, follow: false },
+  };
+}
+
+export default async function Home() {
+  const host = (await headers()).get("host");
+
+  if (isUnderDevelopmentSite(host)) {
+    return <UnderDevelopment />;
+  }
+
   return <HomePageClient />;
 }
