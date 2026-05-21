@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import brandLogo from "../../../white-logo.png";
 import styles from "./UnderDevelopment.module.css";
 
@@ -76,7 +77,12 @@ export function UnderDevelopment() {
       </section>
 
       <footer className={styles.footer}>
-        © {new Date().getFullYear()} samarammar. All rights reserved.
+        <Link href="/preview" className={styles.teamAccess}>
+          Team access
+        </Link>
+        <span className={styles.footerCopy}>
+          © {new Date().getFullYear()} samarammar. All rights reserved.
+        </span>
       </footer>
     </main>
   );

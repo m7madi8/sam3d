@@ -1,9 +1,29 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { isUnderDevelopmentSite } from "@/lib/siteMode";
+import {
+  hasPreviewAccessFromRequest,
+  isUnderDevelopmentSite,
+  setPreviewCookie,
+  verifyPreviewToken,
+} from "@/lib/siteMode";
 
-export function middleware(request: NextRequest) {
+const ALLOWED_WHEN_GATED = new Set(["/", "/preview"]);
+
+export async function middleware(request: NextRequest) {
   if (!isUnderDevelopmentSite(request.headers.get("host"))) {
+    return NextResponse.next();
+  }
+
+  const previewToken = request.nextUrl.searchParams.get("preview");
+  if (previewToken && verifyPreviewToken(previewToken)) {
+    const clean = request.nextUrl.clone();
+    clean.searchParams.delete("preview");
+    const redirect = NextResponse.redirect(clean);
+    await setPreviewCookie(redirect);
+    return redirect;
+  }
+
+  if (await hasPreviewAccessFromRequest(request)) {
     return NextResponse.next();
   }
 
@@ -17,7 +37,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (pathname === "/") {
+  if (ALLOWED_WHEN_GATED.has(pathname)) {
     return NextResponse.next();
   }
 

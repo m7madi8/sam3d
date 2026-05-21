@@ -34,7 +34,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-md);
-  min-height: min(48vh, 26rem);
+  min-height: min(42vh, 22rem);
   padding: calc(var(--safe-top) + var(--space-lg)) clamp(1rem, 4vw, 2.5rem) var(--space-lg);
   text-align: center;
 }
@@ -44,17 +44,17 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  max-width: min(88vw, 40rem);
+  max-width: min(80vw, 32rem);
   opacity: 0;
   animation: rise 1s cubic-bezier(0.22, 1, 0.36, 1) 0.08s forwards;
 }
 
 .logo {
   display: block;
-  width: min(88vw, 40rem);
+  width: min(80vw, 32rem);
   height: auto;
-  max-height: min(40vh, 14rem);
-  min-height: clamp(4.5rem, 22vw, 9rem);
+  max-height: min(34vh, 11rem);
+  min-height: clamp(3.5rem, 18vw, 7rem);
   object-fit: contain;
   object-position: center;
 }
@@ -277,14 +277,36 @@
 .footer {
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
   padding: var(--space-md) var(--space-lg) calc(var(--safe-bottom) + var(--space-md));
   text-align: center;
+  opacity: 0;
+  animation: rise 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
+}
+
+.teamAccess {
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+  opacity: 0.55;
+  transition: opacity 0.25s ease, color 0.25s ease;
+}
+
+.teamAccess:hover {
+  opacity: 1;
+  color: var(--text-primary);
+}
+
+.footerCopy {
   font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-muted);
-  opacity: 0;
-  animation: rise 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.8s forwards;
 }
 
 @keyframes rise {
@@ -326,12 +348,12 @@
 
 @media (min-width: 768px) {
   .logo {
-    max-height: min(44vh, 15rem);
-    min-height: clamp(5.5rem, 16vw, 10rem);
+    max-height: min(38vh, 12rem);
+    min-height: clamp(4.25rem, 14vw, 8rem);
   }
 
   .logoStage {
-    min-height: min(52vh, 28rem);
+    min-height: min(46vh, 24rem);
   }
 
   .contactCard {
@@ -354,8 +376,8 @@
   }
 
   .logo {
-    min-height: clamp(4rem, 24vw, 8rem);
-    max-height: min(36vh, 11rem);
+    min-height: clamp(3.25rem, 20vw, 6.5rem);
+    max-height: min(30vh, 9rem);
   }
 }
 

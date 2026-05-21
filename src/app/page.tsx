@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { HomePageClient } from "@/components/site/HomePageClient";
 import { UnderDevelopment } from "@/components/site/UnderDevelopment";
 import { createPageMetadata } from "@/lib/siteMetadata";
-import { isUnderDevelopmentSite } from "@/lib/siteMode";
+import { isPublicSiteGated, PREVIEW_COOKIE } from "@/lib/siteMode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const host = (await headers()).get("host");
-  if (!isUnderDevelopmentSite(host)) return {};
+  const previewCookie = (await cookies()).get(PREVIEW_COOKIE)?.value;
+  if (!(await isPublicSiteGated(host, previewCookie))) return {};
 
   return {
     ...createPageMetadata({
@@ -23,8 +24,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Home() {
   const host = (await headers()).get("host");
+  const previewCookie = (await cookies()).get(PREVIEW_COOKIE)?.value;
 
-  if (isUnderDevelopmentSite(host)) {
+  if (await isPublicSiteGated(host, previewCookie)) {
     return <UnderDevelopment />;
   }
 
