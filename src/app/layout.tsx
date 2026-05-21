@@ -1,4 +1,4 @@
-import type { Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Cairo, Inter } from "next/font/google";
 import { RootWithScroll } from "@/components/site/RootWithScroll";
@@ -8,7 +8,14 @@ import { rootMetadata } from "@/lib/siteMetadata";
 import brandLogo from "../../white-logo.png";
 import "./globals.css";
 
-export const metadata = rootMetadata;
+export const metadata: Metadata = {
+  ...rootMetadata,
+  icons: {
+    icon: [{ url: brandLogo.src, type: "image/png" }],
+    shortcut: [{ url: brandLogo.src }],
+    apple: [{ url: brandLogo.src, type: "image/png" }],
+  },
+};
 
 const inter = Inter({
   variable: "--font-inter",
