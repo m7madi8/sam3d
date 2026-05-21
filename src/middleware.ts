@@ -9,7 +9,16 @@ import {
 
 const ALLOWED_WHEN_GATED = new Set(["/", "/preview"]);
 
+/** Next.js metadata icon routes + common favicon paths — must not redirect when gated */
+const ICON_PATHS = new Set(["/icon", "/apple-icon", "/favicon.ico", "/icon.png"]);
+
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  if (pathname === "/favicon.ico") {
+    return NextResponse.rewrite(new URL("/icon.png", request.url));
+  }
+
   if (!isUnderDevelopmentSite(request.headers.get("host"))) {
     return NextResponse.next();
   }
@@ -27,9 +36,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const { pathname } = request.nextUrl;
-
   if (
+    ICON_PATHS.has(pathname) ||
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     /\.(?:ico|png|jpe?g|webp|svg|gif|woff2?|css|js|map)$/i.test(pathname)

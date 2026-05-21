@@ -11,9 +11,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   ...rootMetadata,
   icons: {
-    icon: [{ url: brandLogo.src, type: "image/png" }],
-    shortcut: [{ url: brandLogo.src }],
-    apple: [{ url: brandLogo.src, type: "image/png" }],
+    icon: [
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+      { url: "/icon.png", type: "image/png", sizes: "32x32" },
+    ],
+    shortcut: [{ url: "/icon.png", type: "image/png" }],
+    apple: [{ url: "/icon.png", type: "image/png" }],
   },
 };
 
@@ -43,6 +46,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <link rel="icon" href="/icon.png" type="image/png" sizes="any" />
+        <link rel="shortcut icon" href="/icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="preload" href={brandLogo.src} as="image" type="image/png" />
       </head>
       <body className={`${inter.variable} ${cairo.variable}`} suppressHydrationWarning>

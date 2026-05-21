@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const SITE_NAME = "samarammar";
 
-const DEFAULT_SITE_URL = "https://sam3d-sage.vercel.app";
+const DEFAULT_SITE_URL = "https://samarammar.com";
 
 /** Public site URL — set NEXT_PUBLIC_SITE_URL in Vercel for custom domains. */
 export const siteUrl = new URL(
