@@ -166,10 +166,21 @@
   overflow: hidden;
   border-radius: 0.85rem;
   border: 1px solid var(--border-light);
+  transform: none;
+  transition: none;
+}
+
+.heroImageWrap > span {
+  transform: none !important;
+  transition: none !important;
 }
 
 .heroImage {
   object-fit: cover;
+  transform: none !important;
+  transition: none !important;
+  pointer-events: none;
+  touch-action: none;
 }
 
 .heroCaption {

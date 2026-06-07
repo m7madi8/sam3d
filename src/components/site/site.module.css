@@ -576,7 +576,7 @@
 
 .contactFooterStage {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr) minmax(0, 0.62fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   gap: clamp(1.25rem, 3vw, 2rem);
   align-items: stretch;
   isolation: isolate;
@@ -681,6 +681,7 @@
 }
 
 .contactFooterVisual {
+  display: none;
   position: relative;
   z-index: 0;
   margin: 0;
@@ -953,8 +954,8 @@
   max-width: 100%;
   min-width: 0;
   min-height: 0;
-  aspect-ratio: 4 / 5;
-  max-height: min(72vh, 34rem);
+  aspect-ratio: 2 / 3;
+  max-height: min(82vh, 40rem);
   overflow: hidden;
   border-radius: 0.95rem;
   background: rgb(30 28 26 / 8%);
@@ -989,7 +990,7 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 35%;
   transform-origin: center center;
 }
 
@@ -2434,12 +2435,12 @@
   .aboutPortrait {
     width: 100%;
     min-height: 0;
-    aspect-ratio: 4 / 5;
-    max-height: min(58vh, 30rem);
+    aspect-ratio: 2 / 3;
+    max-height: min(72vh, 36rem);
   }
 
   .aboutPortrait img {
-    object-position: center 22%;
+    object-position: center 35%;
   }
 
   .aboutIntro {
@@ -2861,12 +2862,12 @@
   }
 
   .aboutPortrait {
-    aspect-ratio: 3 / 4;
-    max-height: min(52vh, 24rem);
+    aspect-ratio: 2 / 3;
+    max-height: min(68vh, 32rem);
   }
 
   .aboutPortrait img {
-    object-position: center 20%;
+    object-position: center 35%;
   }
 
   .aboutMat {
@@ -2911,8 +2912,8 @@
   }
 
   .aboutPortrait {
-    aspect-ratio: 4 / 5;
-    max-height: min(48vh, 20rem);
+    aspect-ratio: 2 / 3;
+    max-height: min(64vh, 28rem);
   }
 
   .aboutBadge {

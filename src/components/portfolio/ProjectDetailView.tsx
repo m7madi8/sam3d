@@ -99,11 +99,6 @@ export function ProjectDetailView() {
       });
     }
 
-    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
-    const isSmallScreen = window.innerWidth < 1024;
-    const useLightParallax = isCoarsePointer || isSmallScreen;
-    const scrubVal = reducedMotion ? 0 : useLightParallax ? 0.42 : 0.62;
-
     const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
     lenis.on("scroll", ScrollTrigger.update);
     let rafId = 0;
@@ -115,29 +110,6 @@ export function ProjectDetailView() {
 
     let refreshId: number | undefined;
     const ctx = gsap.context(() => {
-      const heroMat = root.querySelector<HTMLElement>(`.${styles.heroMat}`);
-      const heroImage = root.querySelector<HTMLElement>(`.${styles.heroImageWrap}`);
-
-      if (heroMat && heroImage && !reducedMotion) {
-        gsap.set(heroImage, { scale: 1.05, force3D: true });
-        gsap.to(heroImage, {
-          scale: 1,
-          duration: 0.85,
-          ease: "power3.out",
-        });
-        gsap.to(heroImage, {
-          scale: useLightParallax ? 1.04 : 1.07,
-          y: useLightParallax ? -6 : -12,
-          ease: "none",
-          scrollTrigger: {
-            trigger: heroMat,
-            start: "top top",
-            end: "bottom top",
-            scrub: scrubVal,
-          },
-        });
-      }
-
       const revealEls = root.querySelectorAll("[data-project-reveal]");
       if (revealEls.length && !reducedMotion) {
         gsap.fromTo(

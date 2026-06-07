@@ -7,11 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { services } from "@/content/capsules";
 import styles from "./site.module.css";
-import serviceImageInterior from "../../../interior.jpg";
-import serviceImageLandscape from "../../../landscape.jpg";
-import serviceImageExterior from "../../../exterior.jpg";
-import aboutImage from "../../../sam.jpg";
-import contactImage from "../../../contact.webp";
+import aboutImage from "../../../samarr.jpeg";
 import brandLogo from "../../../white-logo.png";
 import FullscreenMenu from "../navigation/FullscreenMenu";
 import { useLanguage } from "./LanguageProvider";
@@ -86,10 +82,12 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
   }, []);
 
   const serviceImagesById: Record<string, string> = {
-    interior: serviceImageInterior.src,
-    landscape: serviceImageLandscape.src,
-    architectural: serviceImageExterior.src,
-    commercial: "/Commercial%20Design.jpg",
+    interior: "/interior/download%20(2).jpg",
+    landscape:
+      "/landscape/Modern%20Mansion%20Garden%20with%20Luxury%20Landscaping%20_%20Luxury%20Modern%20Mansion%20Garden%20That%20People%20Love%20it.jpg",
+    architectural:
+      "/exterior/Sleek%20black%20modern%20villa%20with%20minimal%20design%20Wallpaper.jpg",
+    commercial: "/commercial/download.jpg",
   };
   const serviceTitleArById: Record<string, string> = {
     interior: "التصميم الداخلي",
@@ -576,17 +574,23 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                     <div className={styles.aboutPortrait}>
                       <Image
                         src={aboutImage}
-                        alt="Samar, interior design engineer"
+                        alt={tr(
+                          "Samarammar — Interior Design Engineer and Executive Director",
+                          "سمر عمار — مهندسة تصميم داخلي والرئيسة التنفيذية",
+                        )}
                         fill
                         sizes={IMAGE_SIZES.aboutPortrait}
                         quality={IMAGE_QUALITY.hero}
                       />
                     </div>
-                    <figcaption className={styles.aboutCaption}>Samar</figcaption>
+                    <figcaption className={styles.aboutCaption}>Samarammar</figcaption>
                   </div>
                   <div className={styles.aboutBadge}>
                     <span className={styles.aboutBadgeRole}>
-                      {tr("Interior Design Engineer", "مهندسة تصميم داخلي")}
+                      {tr(
+                        "Interior Design Engineer · Executive Director",
+                        "مهندسة تصميم داخلي · الرئيسة التنفيذية",
+                      )}
                     </span>
                     <span className={styles.aboutBadgeName}>Samarammar</span>
                   </div>
@@ -628,7 +632,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                   >
                     <div className={styles.serviceMedia}>
                       <Image
-                        src={serviceImagesById[service.id] ?? serviceImageInterior}
+                        src={serviceImagesById[service.id] ?? serviceImagesById.interior}
                         alt={tr(service.title, serviceTitleArById[service.id] ?? service.title)}
                         fill
                         sizes={IMAGE_SIZES.servicePanel}
@@ -832,21 +836,6 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                     </button>
                   </form>
                 </div>
-
-                <figure className={styles.contactFooterVisual} aria-hidden>
-                  <div className={styles.contactFooterMat}>
-                    <div className={styles.contactFooterImageWrap}>
-                      <Image
-                        src={contactImage}
-                        alt=""
-                        className={styles.contactFooterImage}
-                        fill
-                        sizes={IMAGE_SIZES.desktopOnlyColumn}
-                        quality={IMAGE_QUALITY.editorial}
-                      />
-                    </div>
-                  </div>
-                </figure>
               </div>
 
               <footer className={styles.contactFooterBase}>
