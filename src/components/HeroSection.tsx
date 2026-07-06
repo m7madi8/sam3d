@@ -1,81 +1,59 @@
 "use client";
 
-import Image, { type StaticImageData } from "next/image";
-import Link from "next/link";
-import { forwardRef, useEffect, useLayoutEffect, useRef } from "react";
+import Image from "next/image";
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLanguage } from "@/components/site/LanguageProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
 import styles from "./HeroSection.module.css";
 
-export interface HeroStat {
-  label: string;
-  value: string;
-  prefix?: string;
-  display?: "numeric" | "phrase";
-}
+gsap.registerPlugin(ScrollTrigger);
 
 export interface HeroProps {
-  brand: string;
-  logoSrc: string | StaticImageData;
-  logoAlt: string;
   discipline: string;
-  /** Caption on the hero image; defaults to discipline when omitted. */
-  imageCaption?: string;
-  headline: string[];
-  subline: string;
-  ctaText: string;
-  ctaHref: string;
   imageSrc: string;
   imageAlt: string;
-  stats: HeroStat[];
-  accentLineIndex?: number;
   /** When false, hero stays hidden until loader finishes. Defaults to true. */
   introReady?: boolean;
 }
 
-function HeadlineLine({
-  line,
-  accent,
-}: {
-  line: string;
-  accent: boolean;
-}) {
-  const words = line.split(/\s+/).filter(Boolean);
+function primeScrollTargets(root: HTMLElement) {
+  const zoom = root.querySelector<HTMLElement>("[data-hero-scroll='zoom']");
+  const motto = root.querySelector<HTMLElement>("[data-hero-scroll='motto']");
+  const hint = root.querySelector<HTMLElement>("[data-hero-scroll='hint']");
+  const words = root.querySelectorAll<HTMLElement>("[data-hero-scroll='word']");
 
-  return (
-    <span className={`${styles.headlineLine} ${accent ? styles.headlineAccent : ""}`}>
-      {words.map((word, index) => (
-        <span key={`${word}-${index}`} className={styles.headlineWord} data-hero-intro="headline">
-          {word}
-        </span>
-      ))}
-    </span>
-  );
+  if (!zoom || !motto || !hint) return null;
+
+  gsap.set(zoom, { scale: 1, force3D: true });
+  gsap.set(motto, {
+    scale: 1,
+    z: 0,
+    y: 0,
+    rotationX: 0,
+    autoAlpha: 1,
+    transformPerspective: 1400,
+    transformOrigin: "50% 50%",
+    force3D: true,
+  });
+  gsap.set(words, { z: 0, rotationY: 0, y: 0, force3D: true });
+  gsap.set(hint, { autoAlpha: 1, y: 0 });
+
+  return { zoom, motto, hint, words };
 }
 
 export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSection(
-  {
-    brand,
-    logoSrc,
-    logoAlt,
-    discipline,
-    imageCaption,
-    headline,
-    subline,
-    ctaText,
-    ctaHref,
-    imageSrc,
-    imageAlt,
-    stats,
-    accentLineIndex = 1,
-    introReady = true,
-  },
+  { discipline, imageSrc, imageAlt, introReady = true },
   ref,
 ) {
+  const { tr } = useLanguage();
   const reducedMotion = useReducedMotion();
   const heroRef = useRef<HTMLElement | null>(null);
   const introPlayedRef = useRef(false);
+  const [scrollReady, setScrollReady] = useState(false);
+  const mottoWords = discipline.split(/\s+/).filter(Boolean);
 
   const setRefs = (node: HTMLElement | null) => {
     heroRef.current = node;
@@ -83,34 +61,16 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
     else if (ref) ref.current = node;
   };
 
-  const ctaLabel = ctaText.replace(/\s*→\s*$/, "");
-  const captionText = imageCaption ?? discipline;
   const pendingIntro = !introReady && !reducedMotion;
 
   useLayoutEffect(() => {
     const root = heroRef.current;
     if (!root || reducedMotion || introReady) return;
 
-    gsap.set(root.querySelector("[data-hero-intro='grid']"), { opacity: 0 });
-    gsap.set(root.querySelector("[data-hero-intro='watermark']"), {
-      autoAlpha: 0,
-      y: 28,
-    });
-    gsap.set(root.querySelector("[data-hero-intro='logo']"), { autoAlpha: 0, y: -18 });
-    gsap.set(root.querySelector("[data-hero-intro='rail']"), { autoAlpha: 0, y: 20 });
-    gsap.set(root.querySelector("[data-hero-intro='eyebrow']"), { autoAlpha: 0, y: 22 });
-    gsap.set(root.querySelectorAll("[data-hero-intro='headline']"), {
-      autoAlpha: 0,
-      y: 36,
-    });
-    gsap.set(root.querySelector("[data-hero-intro='cta']"), { autoAlpha: 0, y: 24 });
-    gsap.set(root.querySelector("[data-hero-intro='visual']"), { autoAlpha: 0, y: 32 });
-    gsap.set(root.querySelector("[data-hero-intro='image']"), {
-      scale: 1.08,
-      autoAlpha: 0.92,
-    });
-    gsap.set(root.querySelector("[data-hero-intro='caption']"), { autoAlpha: 0, y: 14 });
-    gsap.set(root.querySelectorAll("[data-hero-intro='stat']"), { autoAlpha: 0, y: 20 });
+    gsap.set(root.querySelector("[data-hero-intro='bg']"), { autoAlpha: 0 });
+    gsap.set(root.querySelector("[data-hero-intro='zoom']"), { scale: 1.06 });
+    gsap.set(root.querySelector("[data-hero-scroll='motto']"), { autoAlpha: 0, y: 28 });
+    gsap.set(root.querySelector("[data-hero-intro='hint']"), { autoAlpha: 0, y: 12 });
   }, [introReady, reducedMotion]);
 
   useEffect(() => {
@@ -121,54 +81,110 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
 
     if (reducedMotion) {
       gsap.set(root.querySelectorAll("[data-hero-intro]"), { clearProps: "all" });
-      return;
+      primeScrollTargets(root);
+      const id = requestAnimationFrame(() => setScrollReady(true));
+      return () => cancelAnimationFrame(id);
     }
 
     const ctx = gsap.context(() => {
-      const grid = root.querySelector("[data-hero-intro='grid']");
-      const watermark = root.querySelector("[data-hero-intro='watermark']");
-      const logo = root.querySelector("[data-hero-intro='logo']");
-      const rail = root.querySelector("[data-hero-intro='rail']");
-      const eyebrow = root.querySelector("[data-hero-intro='eyebrow']");
-      const headlineWords = root.querySelectorAll("[data-hero-intro='headline']");
-      const cta = root.querySelector("[data-hero-intro='cta']");
-      const visual = root.querySelector("[data-hero-intro='visual']");
-      const image = root.querySelector("[data-hero-intro='image']");
-      const caption = root.querySelector("[data-hero-intro='caption']");
-      const statItems = root.querySelectorAll("[data-hero-intro='stat']");
+      const bg = root.querySelector("[data-hero-intro='bg']");
+      const zoom = root.querySelector("[data-hero-intro='zoom']");
+      const motto = root.querySelector("[data-hero-scroll='motto']");
+      const hint = root.querySelector("[data-hero-intro='hint']");
 
       const tl = gsap.timeline({
         defaults: { ease: "power3.out" },
         delay: 0.08,
+        onComplete: () => {
+          primeScrollTargets(root);
+          requestAnimationFrame(() => {
+            ScrollTrigger.refresh();
+            setScrollReady(true);
+          });
+        },
       });
 
-      tl.to(grid, { opacity: 1, duration: 1.1 }, 0);
-      tl.to(watermark, { autoAlpha: 1, y: 0, duration: 1.05 }, 0.05);
-      tl.to(logo, { autoAlpha: 1, y: 0, duration: 0.72 }, 0.12);
-      tl.to(rail, { autoAlpha: 1, y: 0, duration: 0.78 }, 0.2);
-      tl.to(eyebrow, { autoAlpha: 1, y: 0, duration: 0.72 }, 0.3);
-      tl.to(
-        headlineWords,
-        { autoAlpha: 1, y: 0, duration: 0.82, stagger: 0.055 },
-        0.38,
-      );
-      tl.to(cta, { autoAlpha: 1, y: 0, duration: 0.78 }, 0.58);
-      tl.to(visual, { autoAlpha: 1, y: 0, duration: 0.88 }, 0.52);
-      tl.to(
-        image,
-        { scale: 1, autoAlpha: 1, duration: 1.65, ease: "power2.out" },
-        0.62,
-      );
-      tl.to(caption, { autoAlpha: 1, y: 0, duration: 0.68 }, 0.78);
-      tl.to(
-        statItems,
-        { autoAlpha: 1, y: 0, duration: 0.72, stagger: 0.09 },
-        0.86,
-      );
+      tl.to(bg, { autoAlpha: 1, duration: 1.2 }, 0);
+      tl.to(zoom, { scale: 1, duration: 1.8, ease: "power2.out" }, 0);
+      tl.to(motto, { autoAlpha: 1, y: 0, duration: 0.9 }, 0.35);
+      tl.to(hint, { autoAlpha: 1, y: 0, duration: 0.72 }, 0.72);
     }, root);
 
     return () => ctx.revert();
   }, [introReady, reducedMotion]);
+
+  useEffect(() => {
+    const root = heroRef.current;
+    if (!root || !scrollReady || reducedMotion) return;
+
+    const targets = primeScrollTargets(root);
+    if (!targets) return;
+
+    const { zoom, motto, hint, words } = targets;
+    const isMobile = window.matchMedia("(max-width: 767px)").matches;
+    const zoomScale = isMobile ? 1.24 : 1.38;
+    const mottoEnd = {
+      scale: isMobile ? 5.2 : 6.8,
+      z: isMobile ? 560 : 860,
+      y: isMobile ? "-5vh" : "-7vh",
+      rotationX: isMobile ? -26 : -32,
+      autoAlpha: 0,
+      transformPerspective: 1400,
+      force3D: true,
+    };
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { ease: "none", overwrite: "auto" },
+        scrollTrigger: {
+          trigger: root,
+          start: "top top",
+          end: "bottom top",
+          scrub: 1.15,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      tl.fromTo(hint, { autoAlpha: 1, y: 0 }, { autoAlpha: 0, y: 12, duration: 0.08 }, 0);
+      tl.fromTo(
+        motto,
+        {
+          scale: 1,
+          z: 0,
+          y: 0,
+          rotationX: 0,
+          autoAlpha: 1,
+          transformPerspective: 1400,
+          force3D: true,
+        },
+        { ...mottoEnd, duration: 1, ease: "power1.inOut" },
+        0,
+      );
+
+      if (words.length) {
+        tl.fromTo(
+          words,
+          { z: 0, rotationY: 0, force3D: true },
+          {
+            z: (index) => (index - (words.length - 1) / 2) * (isMobile ? 36 : 52),
+            rotationY: (index) => (index - (words.length - 1) / 2) * (isMobile ? 5 : 7),
+            duration: 1,
+            force3D: true,
+          },
+          0,
+        );
+      }
+
+      tl.fromTo(zoom, { scale: 1 }, { scale: zoomScale, duration: 1, ease: "power1.inOut" }, 0);
+    }, root);
+
+    const refreshId = window.setTimeout(() => ScrollTrigger.refresh(), 80);
+
+    return () => {
+      window.clearTimeout(refreshId);
+      ctx.revert();
+    };
+  }, [scrollReady, reducedMotion]);
 
   return (
     <section
@@ -178,106 +194,34 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
       data-intro-pending={pendingIntro || undefined}
       aria-label="Introduction"
     >
-      <div className={styles.archGrid} aria-hidden="true" data-hero-intro="grid" />
-
-      <span className={styles.watermark} aria-hidden="true" data-hero-intro="watermark">
-        {stats[0]?.value ?? ""}
-      </span>
-
-      <div className={styles.heroTop} data-hero-intro="logo">
-        <Link href="/" className={styles.heroLogoLink} aria-label={logoAlt}>
+      <div className={styles.bg} data-hero-intro="bg" aria-hidden="true">
+        <div className={styles.bgZoom} data-hero-intro="zoom" data-hero-scroll="zoom">
           <Image
-            src={logoSrc}
+            src={imageSrc}
             alt=""
-            className={styles.heroLogo}
+            fill
             priority
-            sizes="200px"
+            sizes={IMAGE_SIZES.fullViewport}
+            quality={IMAGE_QUALITY.hero}
+            className={styles.bgImage}
           />
-        </Link>
+        </div>
       </div>
 
       <div className={styles.shell}>
-        <aside className={styles.rail} data-hero-intro="rail">
-          <span className={styles.railBrand}>{brand}</span>
-          <span className={styles.railLine} aria-hidden="true" />
-          <span className={styles.railDiscipline}>{discipline}</span>
-        </aside>
-
-        <div className={styles.stage}>
-          <div className={styles.copy}>
-            <p className={styles.eyebrow} data-hero-intro="eyebrow">
-              {discipline}
-            </p>
-
-            <h1 className={styles.headline}>
-              {headline.map((line, lineIndex) => (
-                <HeadlineLine
-                  key={`${line}-${lineIndex}`}
-                  line={line}
-                  accent={lineIndex === accentLineIndex}
-                />
-              ))}
-            </h1>
-
-            <div className={styles.ctaBlock} data-hero-intro="cta">
-              <Link href={ctaHref} className={styles.cta} aria-label={ctaText}>
-                <span className={styles.ctaText}>{ctaLabel}</span>
-                <span className={styles.ctaArrow} aria-hidden="true">
-                  →
-                </span>
-              </Link>
-              <p className={styles.subline}>{subline}</p>
-            </div>
-          </div>
-
-          <div className={styles.visual} data-hero-intro="visual">
-            <div className={styles.imageComposition}>
-              <div className={styles.imagePlinth} aria-hidden="true" />
-              <span className={styles.imageAccent} aria-hidden="true" />
-              <figure className={styles.imageMat}>
-                <div className={styles.imageSurface} data-hero-intro="image">
-                  <Image
-                    src={imageSrc}
-                    alt={imageAlt}
-                    fill
-                    priority
-                    sizes={IMAGE_SIZES.heroMat}
-                    quality={IMAGE_QUALITY.hero}
-                    className={styles.image}
-                  />
-                </div>
-                <figcaption className={styles.imageCaption} data-hero-intro="caption">
-                  <span>{captionText}</span>
-                  <span>01</span>
-                </figcaption>
-              </figure>
-            </div>
-          </div>
-        </div>
-
-        <ul className={styles.statsBand} aria-label="Studio credentials">
-          {stats.map((stat) => (
-            <li
-              key={`${stat.value}-${stat.label}`}
-              className={`${styles.stat} ${stat.display === "phrase" ? styles.statPhrase : ""}`}
-              data-hero-intro="stat"
-            >
-              {stat.prefix ? <span className={styles.statPrefix}>{stat.prefix}</span> : null}
-              <span
-                className={
-                  stat.display === "phrase" ? styles.statValuePhrase : styles.statValue
-                }
-              >
-                {stat.value}
-              </span>
-              {stat.label ? (
-                <span className={styles.statMeta}>
-                  <span className={styles.statLabel}>{stat.label}</span>
-                </span>
-              ) : null}
-            </li>
+        <h1 className={styles.motto} data-hero-scroll="motto">
+          {mottoWords.map((word, index) => (
+            <span key={`${word}-${index}`} className={styles.mottoWord} data-hero-scroll="word">
+              {word}
+            </span>
           ))}
-        </ul>
+        </h1>
+        <span className={styles.srOnly}>{imageAlt}</span>
+      </div>
+
+      <div className={styles.scrollHint} data-hero-intro="hint" data-hero-scroll="hint" aria-hidden="true">
+        <span className={styles.scrollHintText}>{tr("Scroll", "مرّر")}</span>
+        <span className={styles.scrollHintLine} />
       </div>
     </section>
   );

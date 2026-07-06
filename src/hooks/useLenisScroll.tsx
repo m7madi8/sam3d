@@ -35,9 +35,11 @@ export function useLenisScroll() {
       gsap.registerPlugin(ScrollTrigger);
 
       const lenis = new Lenis({
-        duration: 1.2,
-        easing: (t: number) => 1 - Math.pow(1 - t, 3),
-        lerp: 0.1,
+        duration: 1.5,
+        easing: (t: number) => 1 - Math.pow(1 - t, 4),
+        lerp: 0.075,
+        smoothWheel: true,
+        touchMultiplier: 1.1,
       });
 
       ScrollTrigger.scrollerProxy(window, {

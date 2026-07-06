@@ -117,9 +117,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     const lenis =
       window.__lenis ??
       new Lenis({
-        duration: 1.35,
+        duration: 1.5,
         smoothWheel: true,
-        touchMultiplier: 1.2,
+        touchMultiplier: 1.1,
       });
     const ownsLenis = !window.__lenis;
 
@@ -135,94 +135,93 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     rafId = requestAnimationFrame(raf);
 
     const isMobile = window.matchMedia("(max-width: 1023px)").matches;
-    const cards = serviceCardRefs.current;
-    const layers = serviceLayerRefs.current;
-    const copy = serviceCopyRefs.current;
-    const stage = servicesStageRef.current;
 
-    const hasServicesReady =
-      !!stage &&
-      cards.length === services.length &&
-      layers.length === services.length &&
-      copy.length === services.length;
+    let ctx: gsap.Context | undefined;
+    let cancelled = false;
 
-    if (!hasServicesReady) {
-      return () => {
-        cancelAnimationFrame(rafId);
-        lenisRef.current = null;
-        if (ownsLenis && window.__lenis === lenis) delete window.__lenis;
-        if (ownsLenis) lenis.destroy();
-      };
-    }
+    const setupServices = () => {
+      if (cancelled) return;
 
-    const ctx = gsap.context(() => {
-      const sectionScrollSpan = isMobile
-        ? window.innerHeight * (cards.length * 0.95)
-        : window.innerHeight * (cards.length + 1.5);
+      const cards = serviceCardRefs.current;
+      const layers = serviceLayerRefs.current;
+      const copy = serviceCopyRefs.current;
+      const stage = servicesStageRef.current;
 
-      cards.forEach((card, index) => {
-        gsap.set(card, { zIndex: index + 1 });
-        gsap.set(card, { yPercent: index === 0 ? 0 : 108 });
-        gsap.set(layers[index], {
-          scale: 1,
-          borderRadius: 0,
-          boxShadow: "0 28px 56px rgb(16 12 9 / 28%)",
-        });
-        gsap.set(copy[index], { opacity: 0 });
-      });
+      const hasServicesReady =
+        !!stage &&
+        cards.length === services.length &&
+        layers.length === services.length &&
+        copy.length === services.length;
 
-      const timeline = gsap.timeline({
-        defaults: { ease: "power2.inOut", force3D: true },
-        scrollTrigger: {
-          trigger: servicesRef.current,
-          start: "top top",
-          end: () => `+=${sectionScrollSpan}`,
-          pin: servicesRef.current,
-          scrub: isMobile ? 0.8 : 1,
-          anticipatePin: 1,
-          pinSpacing: true,
-          invalidateOnRefresh: true,
-        },
-      });
+      if (!hasServicesReady) {
+        requestAnimationFrame(setupServices);
+        return;
+      }
 
-      const firstTransitionStart = isMobile ? 0.5 : 1.15;
-      const transitionStep = isMobile ? 0.7 : 1.2;
-      const dScale = isMobile ? 0.5 : 1.2;
-      const dCopyOut = isMobile ? 0.3 : 0.5;
-      const dCard = isMobile ? 0.55 : 0.95;
-      const dScaleNext = isMobile ? 0.5 : 0.8;
-      const dCopyIn = isMobile ? 0.4 : 0.6;
+      ctx = gsap.context(() => {
+        const perCardVh = isMobile ? 0.92 : 1;
+        const sectionScrollSpan = window.innerHeight * cards.length * perCardVh;
 
-      cards.forEach((_, index) => {
-        if (index === 0) {
-          timeline.to(copy[0], { opacity: 1, duration: isMobile ? 0.35 : 0.65 }, isMobile ? 0.25 : 0.5);
-        }
-
-        if (!cards[index + 1]) return;
-        const transitionStart = firstTransitionStart + index * transitionStep;
-
-        timeline.to(
-          layers[index],
-          {
+        cards.forEach((card, index) => {
+          gsap.set(card, { zIndex: index + 1, autoAlpha: 1 });
+          gsap.set(card, { yPercent: index === 0 ? 0 : 108 });
+          gsap.set(layers[index], {
             scale: 1,
-            duration: isMobile ? 0.4 : 0.7,
+            borderRadius: 0,
+            boxShadow: "0 28px 56px rgb(16 12 9 / 28%)",
+          });
+          gsap.set(copy[index], { opacity: index === 0 ? 1 : 0 });
+        });
+
+        const slot = 1;
+        const transitionLead = isMobile ? 0.18 : 0.22;
+        const dCopyOut = isMobile ? 0.22 : 0.28;
+        const dCard = isMobile ? 0.42 : 0.55;
+        const dCopyIn = isMobile ? 0.28 : 0.35;
+
+        const timeline = gsap.timeline({
+          defaults: { ease: "power2.inOut", force3D: true },
+          scrollTrigger: {
+            trigger: servicesRef.current,
+            start: "top top",
+            end: () => `+=${sectionScrollSpan}`,
+            pin: servicesRef.current,
+            pinReparent: true,
+            scrub: isMobile ? 0.9 : 1.1,
+            anticipatePin: 0,
+            pinSpacing: true,
+            invalidateOnRefresh: true,
           },
-          transitionStart,
-        );
-        timeline.to(copy[index], { opacity: 0.06, duration: dCopyOut }, transitionStart);
-        timeline.to(cards[index + 1], { yPercent: 0, duration: dCard }, transitionStart + (isMobile ? 0.02 : 0.04));
-        timeline.to(
-          layers[index + 1],
-          { scale: 1, duration: dScaleNext },
-          transitionStart + (isMobile ? 0.05 : 0.08),
-        );
-        timeline.to(copy[index + 1], { opacity: 1, duration: dCopyIn }, transitionStart + (isMobile ? 0.28 : 0.4));
-      });
-    }, servicesRef);
+        });
+
+        cards.forEach((_, index) => {
+          if (index === 0) {
+            timeline.to(copy[0], { opacity: 1, duration: 0.2 }, transitionLead * 0.35);
+          }
+
+          if (!cards[index + 1]) return;
+
+          const transitionStart = slot * (index + 1) - transitionLead;
+
+          timeline.to(copy[index], { opacity: 0.06, duration: dCopyOut }, transitionStart);
+          timeline.to(
+            cards[index + 1],
+            { yPercent: 0, duration: dCard },
+            transitionStart + 0.02,
+          );
+          timeline.to(copy[index + 1], { opacity: 1, duration: dCopyIn }, transitionStart + 0.18);
+        });
+      }, servicesRef);
+
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    };
+
+    requestAnimationFrame(setupServices);
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(rafId);
-      ctx.revert();
+      ctx?.revert();
       lenisRef.current = null;
       if (ownsLenis && window.__lenis === lenis) delete window.__lenis;
       if (ownsLenis) lenis.destroy();
@@ -471,38 +470,19 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
           controlsVisible
           showLangToggle
           showThemeToggle
+          variant="hero"
           theme={theme}
           setTheme={setTheme}
         />
         <HeroSection
           ref={heroRef}
           introReady={introReady}
-          brand="SAMARAMMAR"
-          logoSrc={brandLogo}
-          logoAlt={tr("Samarammar — home", "سمر عمار — الرئيسية")}
           discipline={tr("Dare to be different.", "تجرأ أن تكون مختلفًا.")}
-          imageCaption={tr(
-            "Interior · Landscape · Architecture · Commercial",
-            "تصميم داخلي · لاندسكيب · عمارة · تجاري",
-          )}
-          headline={
-            lang === "ar"
-              ? ["تصميم", "بلا مساومة.", "قوةٌ تدوم."]
-              : ["Design", "without compromise.", "Built to endure."]
-          }
-          accentLineIndex={1}
-          subline={tr(
-            `${STUDIO_STATS.yearsDisplay} years of experience · more than ${STUDIO_STATS.projectsDisplay} projects worldwide.`,
-            `${STUDIO_STATS.yearsDisplay} سنوات خبرة · أكثر من ${STUDIO_STATS.projectsDisplay} مشروع · حول العالم.`,
-          )}
-          ctaText={tr("View our work →", "استعرض أعمالنا →")}
-          ctaHref="/gallery"
           imageSrc="/home.jpg"
           imageAlt={tr(
             "Contemporary interior architecture with natural light and refined material palette",
             "عمارة داخلية معاصرة بإضاءة طبيعية ومواد مصقولة",
           )}
-          stats={getStudioStatEntries(lang)}
         />
 
         <section id="about" className={`${styles.panel} ${styles.aboutPanel}`} ref={aboutRef}>

@@ -19,6 +19,244 @@
   box-sizing: border-box;
 }
 
+.headerHero {
+  top: 0;
+  inset-inline: 0;
+  width: 100%;
+  max-width: 100%;
+  justify-content: space-between;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  --scroll-progress-clearance: 1.35rem;
+  padding: clamp(0.85rem, 2.2vh, 1.15rem) clamp(1rem, 3.5vw, 3rem);
+  padding-top: calc(clamp(0.85rem, 2.2vh, 1.15rem) + var(--safe-top));
+  padding-inline-start: max(clamp(1rem, 3.5vw, 3rem), var(--safe-left));
+  padding-inline-end: max(
+    calc(clamp(1rem, 3.5vw, 3rem) + var(--scroll-progress-clearance)),
+    calc(var(--safe-right) + var(--scroll-progress-clearance))
+  );
+  border-bottom: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.headerHero .headerControls {
+  margin-inline-end: 0.1rem;
+}
+
+.headerStart {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.headerLogoLink {
+  display: block;
+  opacity: 0.94;
+  transition: opacity 0.3s ease;
+}
+
+.headerLogoLink:hover,
+.headerLogoLink:focus-visible {
+  opacity: 1;
+}
+
+.headerLogo {
+  width: auto;
+  height: clamp(1.85rem, 3.8vw, 2.65rem);
+  object-fit: contain;
+  object-position: left center;
+}
+
+[dir="rtl"] .headerLogo {
+  object-position: right center;
+}
+
+.headerNav {
+  flex: 1;
+  display: none;
+  justify-content: center;
+  min-width: 0;
+}
+
+.headerNavList {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(0.35rem, 1.4vw, 0.15rem) clamp(0.65rem, 2vw, 1.35rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.headerNavLink {
+  position: relative;
+  display: inline-block;
+  padding: 0.35rem 0.15rem;
+  font-size: 0.62rem;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(252 251 249 / 78%);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.3s ease;
+}
+
+.headerNavLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.1rem;
+  height: 1px;
+  background: var(--color-warm-cedar);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.headerNavLink:hover,
+.headerNavLink:focus-visible {
+  color: rgb(252 251 249 / 96%);
+  outline: none;
+}
+
+.headerNavLink:hover::after,
+.headerNavLink:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.headerPrefButton {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.35rem;
+  min-height: 2.35rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  color: rgb(252 251 249 / 88%);
+  background: rgb(10 9 8 / 22%);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    border-color 0.25s ease,
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+.headerPrefButton:hover,
+.headerPrefButton:focus-visible {
+  border-color: rgb(255 255 255 / 32%);
+  background: rgb(10 9 8 / 38%);
+  color: rgb(252 251 249 / 98%);
+  outline: none;
+}
+
+.headerHero .langCode {
+  color: rgb(252 251 249 / 48%);
+}
+
+.headerHero .langCodeActive {
+  color: rgb(252 251 249 / 96%);
+}
+
+.headerHero .langDivider {
+  color: rgb(252 251 249 / 28%);
+}
+
+.heroLangFloat {
+  position: fixed;
+  bottom: calc(clamp(1.25rem, 3.5vh, 2.25rem) + var(--safe-bottom));
+  inset-inline-start: max(clamp(1rem, 3.5vw, 2.5rem), var(--safe-left));
+  z-index: 92;
+  display: grid;
+  padding: 0;
+  border: 1px solid rgb(255 255 255 / 24%);
+  border-radius: 3px;
+  background: rgb(10 9 8 / 24%);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  font: inherit;
+  overflow: hidden;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.heroLangFloat:hover,
+.heroLangFloat:focus-visible {
+  border-color: rgb(255 255 255 / 42%);
+  background: rgb(10 9 8 / 38%);
+  outline: none;
+  transform: translateY(-2px);
+}
+
+.heroLangTrack {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-width: 4.75rem;
+}
+
+.heroLangOption {
+  padding: 0.52rem 0.62rem;
+  font-size: 0.58rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(252 251 249 / 42%);
+  transition: color 0.3s ease;
+}
+
+.heroLangOptionActive {
+  color: rgb(252 251 249 / 96%);
+  font-weight: 600;
+}
+
+.heroLangIndicator {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 50%;
+  background: rgb(255 255 255 / 10%);
+  border-inline-end: 1px solid rgb(255 255 255 / 12%);
+  transition: inset-inline-start 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.heroLangIndicator[data-lang="ar"] {
+  inset-inline-start: 50%;
+}
+
+.menuButtonHero {
+  border-color: rgb(255 255 255 / 22%);
+  color: rgb(252 251 249 / 92%);
+  background: rgb(10 9 8 / 28%);
+}
+
+.menuButtonHero:hover,
+.menuButtonHero:focus-visible {
+  border-color: rgb(255 255 255 / 38%);
+  background: rgb(10 9 8 / 42%);
+}
+
+@media (min-width: 1024px) {
+  .headerHero .headerNav {
+    display: flex;
+  }
+
+  .headerHero .menuButton {
+    display: none;
+  }
+}
+
 .headerHidden {
   opacity: 0;
   pointer-events: none;
@@ -707,6 +945,39 @@
     top: calc(0.65rem + var(--safe-top));
     inset-inline-start: max(0.85rem, var(--safe-left));
     inset-inline-end: max(0.85rem, var(--safe-right));
+  }
+
+  .headerHero {
+    top: 0;
+    --scroll-progress-clearance: 1.2rem;
+    padding-top: calc(0.75rem + var(--safe-top));
+    padding-inline-start: max(0.85rem, var(--safe-left));
+    padding-inline-end: max(
+      calc(0.85rem + var(--scroll-progress-clearance)),
+      calc(var(--safe-right) + var(--scroll-progress-clearance))
+    );
+  }
+
+  .headerHero .headerControls {
+    margin-inline-end: 0.05rem;
+  }
+
+  .headerHero .headerLogo {
+    height: clamp(1.65rem, 7vw, 2.1rem);
+  }
+
+  .heroLangFloat {
+    bottom: calc(clamp(1rem, 3vh, 1.75rem) + var(--safe-bottom));
+    inset-inline-start: max(0.85rem, var(--safe-left));
+  }
+
+  .heroLangTrack {
+    min-width: 4.35rem;
+  }
+
+  .heroLangOption {
+    padding: 0.46rem 0.52rem;
+    font-size: 0.54rem;
   }
 
   .menuButton,

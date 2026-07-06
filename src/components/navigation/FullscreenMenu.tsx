@@ -1,6 +1,7 @@
 "use client";
 
 import Image, { type StaticImageData } from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useLanguage } from "@/components/site/LanguageProvider";
@@ -21,6 +22,8 @@ type FullscreenMenuProps = {
   controlsVisible?: boolean;
   showLangToggle?: boolean;
   showThemeToggle?: boolean;
+  /** Full-width transparent header with logo and inline nav — for hero pages. */
+  variant?: "default" | "hero";
   theme?: "light" | "dark";
   setTheme?: (t: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
 };
@@ -33,6 +36,7 @@ export default function FullscreenMenu({
   controlsVisible = true,
   showLangToggle = true,
   showThemeToggle = true,
+  variant = "default",
   theme: themeProp,
   setTheme: setThemeProp,
 }: FullscreenMenuProps) {
@@ -311,17 +315,80 @@ export default function FullscreenMenu({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, closeMenu]);
 
+  const isHeroVariant = variant === "hero";
+
   return (
-    <div ref={wrapperRef} className={styles.wrapper} data-open={open || undefined}>
+    <div
+      ref={wrapperRef}
+      className={styles.wrapper}
+      data-open={open || undefined}
+      data-variant={isHeroVariant ? "hero" : undefined}
+    >
       <header
-        className={`${styles.header} ${!controlsVisible ? styles.headerHidden : ""}`}
+        className={`${styles.header} ${isHeroVariant ? styles.headerHero : ""} ${!controlsVisible ? styles.headerHidden : ""}`}
         aria-label={tr("Main navigation", "التنقل الرئيسي")}
       >
-        <span className={styles.brand}>{brand}</span>
+        <div className={styles.headerStart}>
+          {isHeroVariant && logoSrc ? (
+            <Link href="/" className={styles.headerLogoLink} aria-label={logoAlt}>
+              <Image
+                src={logoSrc}
+                alt=""
+                width={160}
+                height={48}
+                className={styles.headerLogo}
+                priority
+                sizes="160px"
+              />
+            </Link>
+          ) : (
+            <span className={styles.brand}>{brand}</span>
+          )}
+        </div>
+
+        {isHeroVariant ? (
+          <nav className={styles.headerNav} aria-label={tr("Primary", "الرئيسية")}>
+            <ul className={styles.headerNavList}>
+              {items.map((item, index) => (
+                <li key={`${item.label}-${index}`}>
+                  <a className={styles.headerNavLink} href={item.link} aria-label={item.ariaLabel}>
+                    {item.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
+
         <div className={styles.headerControls} suppressHydrationWarning>
+          {isHeroVariant && showThemeToggle ? (
+            <button
+              type="button"
+              className={styles.headerPrefButton}
+              onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+              aria-label={
+                theme === "dark"
+                  ? tr("Switch to light mode", "التبديل للوضع الفاتح")
+                  : tr("Switch to dark mode", "التبديل للوضع الداكن")
+              }
+              suppressHydrationWarning
+            >
+              {theme === "dark" ? (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                </svg>
+              ) : (
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                </svg>
+              )}
+            </button>
+          ) : null}
+
           <button
             type="button"
-            className={styles.menuButton}
+            className={`${styles.menuButton} ${isHeroVariant ? styles.menuButtonHero : ""}`}
             onClick={toggleMenu}
             aria-expanded={open}
             aria-controls="fullscreen-menu"
@@ -343,6 +410,30 @@ export default function FullscreenMenu({
           </button>
         </div>
       </header>
+
+      {isHeroVariant && showLangToggle && controlsVisible ? (
+        <button
+          type="button"
+          className={styles.heroLangFloat}
+          onClick={toggleLang}
+          aria-label={tr("Toggle language", "تبديل اللغة")}
+          suppressHydrationWarning
+        >
+          <span className={styles.heroLangTrack} aria-hidden="true">
+            <span
+              className={`${styles.heroLangOption} ${lang === "en" ? styles.heroLangOptionActive : ""}`}
+            >
+              EN
+            </span>
+            <span
+              className={`${styles.heroLangOption} ${lang === "ar" ? styles.heroLangOptionActive : ""}`}
+            >
+              AR
+            </span>
+          </span>
+          <span className={styles.heroLangIndicator} aria-hidden="true" data-lang={lang} />
+        </button>
+      ) : null}
 
       <div id="fullscreen-menu" className={styles.overlay} ref={overlayRef} aria-hidden={!open}>
         <div className={styles.overlayBackdrop} ref={backdropRef} aria-hidden="true" />
