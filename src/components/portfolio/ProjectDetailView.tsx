@@ -514,15 +514,17 @@ export function ProjectDetailView() {
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
           >
-            <Image
-              src={project.gallery[lightboxIndex]}
-              alt={`${title} — ${lightboxIndex + 1}`}
-              fill
-              sizes="100vw"
-              quality={IMAGE_QUALITY.hero}
-              className={styles.lightboxImage}
-              priority
-            />
+            <div key={lightboxIndex} className={styles.lightboxFrame}>
+              <Image
+                src={project.gallery[lightboxIndex]}
+                alt={`${title} — ${lightboxIndex + 1}`}
+                fill
+                sizes="100vw"
+                quality={IMAGE_QUALITY.hero}
+                className={styles.lightboxImage}
+                priority
+              />
+            </div>
           </div>
 
           {galleryCount > 1 ? (
