@@ -122,7 +122,8 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
 
     const { zoom, motto, hint, words } = targets;
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    const scrollSpan = window.innerHeight * (isMobile ? 0.95 : 1.1);
+    const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+    const scrollSpan = viewportHeight * (isMobile ? 1.28 : 1.1);
     const zoomScale = isMobile ? 1.22 : 1.34;
     const mottoEnd = {
       scale: isMobile ? 5.45 : 7.15,
@@ -143,8 +144,9 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
           end: () => `+=${scrollSpan}`,
           pin: true,
           pinSpacing: true,
-          scrub: 1.05,
-          anticipatePin: 0.35,
+          pinReparent: isMobile,
+          scrub: isMobile ? 0.9 : 1.05,
+          anticipatePin: isMobile ? 0 : 0.35,
           refreshPriority: 20,
           invalidateOnRefresh: true,
         },

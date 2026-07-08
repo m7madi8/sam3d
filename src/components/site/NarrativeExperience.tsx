@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import Lenis from "lenis";
+import type Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { getOrCreateLenis } from "@/lib/lenisScroll";
 import { services } from "@/content/capsules";
 import styles from "./site.module.css";
 import aboutImage from "../../../samarr.jpeg";
@@ -114,25 +115,10 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
   const lenisRef = useRef<InstanceType<typeof Lenis> | null>(null);
 
   useEffect(() => {
-    const lenis =
-      window.__lenis ??
-      new Lenis({
-        duration: 1.5,
-        smoothWheel: true,
-        touchMultiplier: 1.1,
-      });
-    const ownsLenis = !window.__lenis;
+    const { lenis } = getOrCreateLenis();
 
     lenis.on("scroll", ScrollTrigger.update);
     lenisRef.current = lenis;
-    if (ownsLenis) window.__lenis = lenis;
-
-    let rafId = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
 
     const isMobile = window.matchMedia("(max-width: 1023px)").matches;
 
@@ -221,11 +207,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(rafId);
       ctx?.revert();
+      lenis.off("scroll", ScrollTrigger.update);
       lenisRef.current = null;
-      if (ownsLenis && window.__lenis === lenis) delete window.__lenis;
-      if (ownsLenis) lenis.destroy();
     };
   }, []);
 
