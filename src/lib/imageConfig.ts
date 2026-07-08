@@ -16,4 +16,6 @@ export const IMAGE_SIZES = {
   /** Decorative column hidden below 1024px — avoid loading full-width assets on mobile. */
   desktopOnlyColumn: "(min-width: 1024px) 32vw, 1px",
   projectStoryItem: "(max-width: 767px) 85vw, 55vw",
+  /** Original-size masonry: 1 col mobile, 2 col tablet, 3 col desktop. */
+  projectOriginalItem: "(max-width: 767px) 92vw, (max-width: 1100px) 46vw, 30vw",
 } as const;

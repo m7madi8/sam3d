@@ -190,6 +190,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
             scrub: isMobile ? 0.9 : 1.1,
             anticipatePin: 0,
             pinSpacing: true,
+            refreshPriority: 10,
             invalidateOnRefresh: true,
           },
         });

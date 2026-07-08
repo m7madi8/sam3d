@@ -3,6 +3,7 @@ import { COMMERCIAL_PROJECT_IMAGES } from "@/content/commercialImages";
 import { EXTERIOR_PROJECT_IMAGES } from "@/content/exteriorImages";
 import { INTERIOR_PROJECT_IMAGES } from "@/content/interiorImages";
 import { LANDSCAPE_PROJECT_IMAGES } from "@/content/landscapeImages";
+import { PALM_VILLA_IMAGES } from "@/content/palmVillaImages";
 
 type PortfolioImage = StaticImageData | string;
 
@@ -32,6 +33,8 @@ export type PortfolioProject = {
   year?: string | number;
   /** If true, gallery is shown as floor sections; if false, single image set. */
   hasFloors?: boolean;
+  /** If true, gallery is rendered at each image's original aspect ratio (no crop, single set). */
+  originalSize?: boolean;
 };
 
 export const PORTFOLIO_CATEGORIES: { id: PortfolioCategoryId; label: string }[] = [
@@ -61,6 +64,8 @@ export function buildPortfolioProjects(): PortfolioProject[] {
     const photosCounts = [12, 8, 15, 10, 14];
     const materials = i === 0 ? "Oak, marble, linen" : i === 1 ? "Concrete, wood, brass" : i === 3 ? "Oak, brass" : undefined;
     const client = i === 3 ? "Corporate client" : "Private client";
+    // Palm Villa (interior-1) uses its real photo set, shown at original aspect ratio.
+    const isPalmVilla = i === 0;
     return {
       id: `interior-${i + 1}`,
       title: titles[i],
@@ -72,9 +77,10 @@ export function buildPortfolioProjects(): PortfolioProject[] {
       area: areas[i],
       client,
       ...defaultSpecs,
-      thumbnail: img,
-      gallery: [img],
-      photosCount: photosCounts[i],
+      thumbnail: isPalmVilla ? PALM_VILLA_IMAGES[0] : img,
+      gallery: isPalmVilla ? PALM_VILLA_IMAGES : [img],
+      photosCount: isPalmVilla ? PALM_VILLA_IMAGES.length : photosCounts[i],
+      originalSize: isPalmVilla || undefined,
     };
   });
   const landscape: PortfolioProject[] = LANDSCAPE_PROJECT_IMAGES.map((img, i) => {
@@ -186,6 +192,10 @@ export function buildPortfolioProjects(): PortfolioProject[] {
   const all = [...interior, ...landscape, ...exterior, ...commercial, ...architectural];
   const firstThreeInteriorIds = ["interior-1", "interior-2", "interior-3"];
   return all.map((p) => {
+    // Original-size projects (e.g. Palm Villa) keep their real photos as a single set, no floors.
+    if (p.originalSize) {
+      return { ...p, hasFloors: false };
+    }
     const isInterior = p.category === "interior";
     const isLandscape = p.category === "landscape";
     const isArchitectural = p.category === "architectural";

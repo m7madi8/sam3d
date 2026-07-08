@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, notFound } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -38,8 +38,12 @@ export function ProjectDetailView() {
   const id = typeof params.id === "string" ? params.id : "";
   const project = getProjectById(projects, id);
   const rootRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const [theme, setTheme] = useState<"light" | "dark">("dark");
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   if (!project) notFound();
 
@@ -55,6 +59,55 @@ export function ProjectDetailView() {
   const { prev, next } = getPrevNextIds(projects, id);
   const year = project.year ?? "—";
   const photoTotal = project.photosCount ?? project.gallery.length;
+  const galleryCount = project.gallery.length;
+
+  const openLightbox = useCallback((index: number) => setLightboxIndex(index), []);
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const showPrev = useCallback(
+    () => setLightboxIndex((v) => (v === null ? v : (v - 1 + galleryCount) % galleryCount)),
+    [galleryCount],
+  );
+  const showNext = useCallback(
+    () => setLightboxIndex((v) => (v === null ? v : (v + 1) % galleryCount)),
+    [galleryCount],
+  );
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartX.current = t.clientX;
+    touchStartY.current = t.clientY;
+  }, []);
+
+  const onTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (touchStartX.current === null || touchStartY.current === null) return;
+      const t = e.changedTouches[0];
+      const dx = t.clientX - touchStartX.current;
+      const dy = t.clientY - touchStartY.current;
+      touchStartX.current = null;
+      touchStartY.current = null;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        if (dx < 0) showNext();
+        else showPrev();
+      }
+    },
+    [showNext, showPrev],
+  );
+
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    lenisRef.current?.stop();
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      else if (e.key === "ArrowLeft") showPrev();
+      else if (e.key === "ArrowRight") showNext();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      lenisRef.current?.start();
+    };
+  }, [lightboxIndex, closeLightbox, showPrev, showNext]);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -100,6 +153,7 @@ export function ProjectDetailView() {
     }
 
     const lenis = new Lenis({ lerp: 0.08, smoothWheel: true });
+    lenisRef.current = lenis;
     lenis.on("scroll", ScrollTrigger.update);
     let rafId = 0;
     const raf = (time: number) => {
@@ -138,6 +192,7 @@ export function ProjectDetailView() {
       ctx.revert();
       ScrollTrigger.getAll().forEach((t) => t.kill());
       lenis.destroy();
+      lenisRef.current = null;
       cancelAnimationFrame(rafId);
     };
   }, [project.id, project.hasFloors, reducedMotion, id]);
@@ -261,7 +316,33 @@ export function ProjectDetailView() {
               </p>
             </div>
 
-            {project.hasFloors ? (
+            {project.originalSize ? (
+              <div className={styles.stripWrap} data-project-entry>
+                <div className={styles.originalStrip}>
+                  {project.gallery.map((img, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className={styles.originalSlide}
+                      onClick={() => openLightbox(i)}
+                      aria-label={tr("View image", "عرض الصورة")}
+                      data-project-reveal
+                    >
+                      <Image
+                        src={img}
+                        alt={`${title} — ${i + 1}`}
+                        sizes={IMAGE_SIZES.projectOriginalItem}
+                        quality={IMAGE_QUALITY.gallery}
+                        className={styles.originalSlideImage}
+                      />
+                      <span className={styles.originalIndex} aria-hidden>
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : project.hasFloors ? (
               chunkBy(project.gallery, IMAGES_PER_LEVEL).map((images, levelIndex) => {
                 const isLandscape = project.category === "landscape";
                 const isArchitectural = project.category === "architectural";
@@ -289,23 +370,31 @@ export function ProjectDetailView() {
                     </div>
                     <div className={styles.stripWrap}>
                       <div className={styles.photoStrip}>
-                        {images.map((img, i) => (
-                          <div key={i} className={styles.stripItem}>
-                            <div className={styles.stripMat}>
-                              <Image
-                                src={img}
-                                alt={`${title} — ${sectionLabel}, ${i + 1}`}
-                                fill
-                                sizes={IMAGE_SIZES.projectStoryItem}
-                                quality={IMAGE_QUALITY.gallery}
-                                className={styles.stripImage}
-                              />
-                              <span className={styles.stripIndex} aria-hidden>
-                                {String(i + 1).padStart(2, "0")}
-                              </span>
+                        {images.map((img, i) => {
+                          const globalIndex = levelIndex * IMAGES_PER_LEVEL + i;
+                          return (
+                            <div key={i} className={styles.stripItem}>
+                              <button
+                                type="button"
+                                className={styles.stripMat}
+                                onClick={() => openLightbox(globalIndex)}
+                                aria-label={tr("View image", "عرض الصورة")}
+                              >
+                                <Image
+                                  src={img}
+                                  alt={`${title} — ${sectionLabel}, ${i + 1}`}
+                                  fill
+                                  sizes={IMAGE_SIZES.projectStoryItem}
+                                  quality={IMAGE_QUALITY.gallery}
+                                  className={styles.stripImage}
+                                />
+                                <span className={styles.stripIndex} aria-hidden>
+                                  {String(i + 1).padStart(2, "0")}
+                                </span>
+                              </button>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   </article>
@@ -316,7 +405,12 @@ export function ProjectDetailView() {
                 <div className={styles.photoStrip}>
                   {project.gallery.map((img, i) => (
                     <div key={i} className={styles.stripItem} data-project-reveal>
-                      <div className={styles.stripMat}>
+                      <button
+                        type="button"
+                        className={styles.stripMat}
+                        onClick={() => openLightbox(i)}
+                        aria-label={tr("View image", "عرض الصورة")}
+                      >
                         <Image
                           src={img}
                           alt={`${title} — ${i + 1}`}
@@ -328,7 +422,7 @@ export function ProjectDetailView() {
                         <span className={styles.stripIndex} aria-hidden>
                           {String(i + 1).padStart(2, "0")}
                         </span>
-                      </div>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -371,6 +465,85 @@ export function ProjectDetailView() {
           {tr("← Gallery", "← المعرض")}
         </Link>
       </div>
+
+      {lightboxIndex !== null ? (
+        <div
+          className={styles.lightbox}
+          role="dialog"
+          aria-modal="true"
+          aria-label={tr("Image viewer", "عارض الصور")}
+          onClick={closeLightbox}
+        >
+          <button
+            type="button"
+            className={styles.lightboxClose}
+            onClick={closeLightbox}
+            aria-label={tr("Close", "إغلاق")}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            >
+              <path d="M6 6 L18 18 M18 6 L6 18" />
+            </svg>
+          </button>
+
+          {galleryCount > 1 ? (
+            <button
+              type="button"
+              className={`${styles.lightboxNav} ${styles.lightboxPrev}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                showPrev();
+              }}
+              aria-label={tr("Previous image", "الصورة السابقة")}
+            >
+              ‹
+            </button>
+          ) : null}
+
+          <div
+            className={styles.lightboxStage}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <Image
+              src={project.gallery[lightboxIndex]}
+              alt={`${title} — ${lightboxIndex + 1}`}
+              fill
+              sizes="100vw"
+              quality={IMAGE_QUALITY.hero}
+              className={styles.lightboxImage}
+              priority
+            />
+          </div>
+
+          {galleryCount > 1 ? (
+            <button
+              type="button"
+              className={`${styles.lightboxNav} ${styles.lightboxNext}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                showNext();
+              }}
+              aria-label={tr("Next image", "الصورة التالية")}
+            >
+              ›
+            </button>
+          ) : null}
+
+          <span className={styles.lightboxCount}>
+            {String(lightboxIndex + 1).padStart(2, "0")} / {String(galleryCount).padStart(2, "0")}
+          </span>
+        </div>
+      ) : null}
     </div>
   );
 }

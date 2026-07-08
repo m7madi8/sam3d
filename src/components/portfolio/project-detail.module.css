@@ -395,6 +395,11 @@
 .stripMat {
   position: relative;
   display: block;
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  color: inherit;
+  cursor: zoom-in;
   width: min(52vw, 360px);
   aspect-ratio: 9 / 16;
   padding: 0.4rem;
@@ -427,6 +432,176 @@
   background: rgb(28 27 25 / 72%);
   backdrop-filter: blur(6px);
   pointer-events: none;
+}
+
+/* —— Original-size carousel (horizontal, no crop) —— */
+.originalStrip {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: clamp(0.65rem, 1.5vw, 0.85rem);
+  width: max-content;
+  padding-inline-end: 10vw;
+}
+
+.originalSlide {
+  position: relative;
+  display: block;
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: zoom-in;
+  flex: 0 0 auto;
+  height: clamp(320px, 58vh, 560px);
+  margin: 0;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  background: rgb(252 251 249 / 60%);
+  box-shadow: var(--shadow-light);
+  scroll-snap-align: start;
+}
+
+.originalSlideImage {
+  display: block;
+  width: auto;
+  height: 100%;
+  border-radius: 1rem;
+}
+
+.originalIndex {
+  position: absolute;
+  top: 0.65rem;
+  inset-inline-start: 0.65rem;
+  z-index: 2;
+  padding: 0.22rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ivory);
+  background: rgb(28 27 25 / 72%);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+/* —— Lightbox (zoom viewer) —— */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgb(12 11 10 / 92%);
+  backdrop-filter: blur(10px);
+  animation: lightboxFade 0.22s ease;
+}
+
+@keyframes lightboxFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lightboxStage {
+  position: relative;
+  width: min(94vw, 1400px);
+  height: min(86vh, 900px);
+}
+
+.lightboxImage {
+  object-fit: contain;
+}
+
+.lightboxClose {
+  position: absolute;
+  top: clamp(0.75rem, 2vw, 1.5rem);
+  inset-inline-end: clamp(0.75rem, 2vw, 1.5rem);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  padding: 0;
+  color: var(--color-ivory);
+  background: rgb(255 255 255 / 8%);
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 30%);
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.lightboxClose svg {
+  display: block;
+  transition: transform 0.25s ease;
+}
+
+.lightboxClose:hover {
+  background: rgb(255 255 255 / 16%);
+  border-color: rgb(255 255 255 / 34%);
+  transform: scale(1.06);
+}
+
+.lightboxClose:hover svg {
+  transform: rotate(90deg);
+}
+
+.lightboxClose:focus-visible {
+  outline: 2px solid rgb(255 255 255 / 70%);
+  outline-offset: 2px;
+}
+
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--color-ivory);
+  background: rgb(255 255 255 / 8%);
+  border: 1px solid rgb(255 255 255 / 20%);
+  border-radius: 999px;
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: background 0.2s ease;
+}
+
+.lightboxNav:hover {
+  background: rgb(255 255 255 / 18%);
+}
+
+.lightboxPrev {
+  inset-inline-start: clamp(0.5rem, 2vw, 1.75rem);
+}
+
+.lightboxNext {
+  inset-inline-end: clamp(0.5rem, 2vw, 1.75rem);
+}
+
+.lightboxCount {
+  position: absolute;
+  bottom: clamp(0.75rem, 2.5vw, 1.75rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: rgb(255 255 255 / 78%);
 }
 
 /* —— Footer nav —— */
@@ -572,6 +747,11 @@
   box-shadow: 0 8px 24px rgb(0 0 0 / 28%);
 }
 
+:global(html[data-theme="dark"]) .originalSlide {
+  background: rgb(22 21 20 / 70%);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 28%);
+}
+
 :global(html[data-theme="dark"]) .navCenter {
   background: rgb(30 28 26 / 55%);
   border-color: rgb(255 255 255 / 14%);
@@ -625,6 +805,28 @@
     width: min(80vw, 320px);
   }
 
+  .originalSlide {
+    height: clamp(260px, 52vh, 440px);
+  }
+
+  .lightboxNav {
+    display: none;
+  }
+
+  .lightbox {
+    padding: max(1rem, var(--safe-top)) 0.75rem max(1rem, var(--safe-bottom));
+  }
+
+  .lightboxStage {
+    width: 100vw;
+    height: 82vh;
+  }
+
+  .lightboxClose {
+    top: max(0.75rem, var(--safe-top));
+    inset-inline-end: max(0.75rem, var(--safe-right));
+  }
+
   .mobileBar {
     display: block;
     position: fixed;
@@ -657,7 +859,13 @@
   .backLink,
   .ctaLink,
   .navLink,
-  .navCenter {
+  .navCenter,
+  .lightboxClose,
+  .lightboxNav {
     transition: none;
+  }
+
+  .lightbox {
+    animation: none;
   }
 }

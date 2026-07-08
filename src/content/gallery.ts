@@ -3,6 +3,7 @@ import { COMMERCIAL_PROJECT_IMAGES } from "@/content/commercialImages";
 import { EXTERIOR_PROJECT_IMAGES } from "@/content/exteriorImages";
 import { INTERIOR_PROJECT_IMAGES } from "@/content/interiorImages";
 import { LANDSCAPE_PROJECT_IMAGES } from "@/content/landscapeImages";
+import { PALM_VILLA_IMAGES } from "@/content/palmVillaImages";
 
 export type GalleryImage = StaticImageData | string;
 
@@ -59,8 +60,8 @@ export function buildGalleryCategories(): GalleryCategory[] {
         titleEn: projectTitlesEn.interior[i],
         titleAr: projectTitlesAr.interior[i],
         subtitle: projectSubtitle.interior,
-        image: INTERIOR_PROJECT_IMAGES[i],
-        photosCount: photoCounts.interior[i],
+        image: i === 0 ? PALM_VILLA_IMAGES[0] : INTERIOR_PROJECT_IMAGES[i],
+        photosCount: i === 0 ? PALM_VILLA_IMAGES.length : photoCounts.interior[i],
       })),
     },
     {

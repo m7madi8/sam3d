@@ -122,12 +122,13 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
 
     const { zoom, motto, hint, words } = targets;
     const isMobile = window.matchMedia("(max-width: 767px)").matches;
-    const zoomScale = isMobile ? 1.24 : 1.38;
+    const scrollSpan = window.innerHeight * (isMobile ? 0.95 : 1.1);
+    const zoomScale = isMobile ? 1.22 : 1.34;
     const mottoEnd = {
-      scale: isMobile ? 5.2 : 6.8,
-      z: isMobile ? 560 : 860,
-      y: isMobile ? "-5vh" : "-7vh",
-      rotationX: isMobile ? -26 : -32,
+      scale: isMobile ? 5.45 : 7.15,
+      z: isMobile ? 620 : 980,
+      y: isMobile ? "-4vh" : "-6vh",
+      rotationX: isMobile ? -22 : -28,
       autoAlpha: 0,
       transformPerspective: 1400,
       force3D: true,
@@ -139,8 +140,12 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
         scrollTrigger: {
           trigger: root,
           start: "top top",
-          end: "bottom top",
-          scrub: 1.15,
+          end: () => `+=${scrollSpan}`,
+          pin: true,
+          pinSpacing: true,
+          scrub: 1.05,
+          anticipatePin: 0.35,
+          refreshPriority: 20,
           invalidateOnRefresh: true,
         },
       });
@@ -166,8 +171,8 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
           words,
           { z: 0, rotationY: 0, force3D: true },
           {
-            z: (index) => (index - (words.length - 1) / 2) * (isMobile ? 36 : 52),
-            rotationY: (index) => (index - (words.length - 1) / 2) * (isMobile ? 5 : 7),
+            z: (index) => (index - (words.length - 1) / 2) * (isMobile ? 44 : 66),
+            rotationY: (index) => (index - (words.length - 1) / 2) * (isMobile ? 4 : 6),
             duration: 1,
             force3D: true,
           },
@@ -178,10 +183,7 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
       tl.fromTo(zoom, { scale: 1 }, { scale: zoomScale, duration: 1, ease: "power1.inOut" }, 0);
     }, root);
 
-    const refreshId = window.setTimeout(() => ScrollTrigger.refresh(), 80);
-
     return () => {
-      window.clearTimeout(refreshId);
       ctx.revert();
     };
   }, [scrollReady, reducedMotion]);
@@ -194,22 +196,22 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
       data-intro-pending={pendingIntro || undefined}
       aria-label="Introduction"
     >
-      <div className={styles.bg} data-hero-intro="bg" aria-hidden="true">
-        <div className={styles.bgZoom} data-hero-intro="zoom" data-hero-scroll="zoom">
-          <Image
-            src={imageSrc}
-            alt=""
-            fill
-            priority
-            sizes={IMAGE_SIZES.fullViewport}
-            quality={IMAGE_QUALITY.hero}
-            className={styles.bgImage}
-          />
-        </div>
-      </div>
-
       <div className={styles.shell}>
-        <h1 className={styles.motto} data-hero-scroll="motto">
+        <div className={styles.bg} data-hero-intro="bg" aria-hidden="true">
+          <div className={styles.bgZoom} data-hero-intro="zoom" data-hero-scroll="zoom">
+            <Image
+              src={imageSrc}
+              alt=""
+              fill
+              priority
+              sizes={IMAGE_SIZES.fullViewport}
+              quality={IMAGE_QUALITY.hero}
+              className={styles.bgImage}
+            />
+          </div>
+        </div>
+
+        <h1 className={styles.motto} data-hero-scroll="motto" data-title={discipline}>
           {mottoWords.map((word, index) => (
             <span key={`${word}-${index}`} className={styles.mottoWord} data-hero-scroll="word">
               {word}
