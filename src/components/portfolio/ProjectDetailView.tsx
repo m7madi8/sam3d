@@ -16,10 +16,10 @@ import {
 import { getProjectDisplayLabels } from "@/content/projectDisplay";
 import { getSiteMenuItems } from "@/content/navigation";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
-import { useLanguage } from "@/components/site/LanguageProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
-import brandLogo from "../../../white-logo.png";
+import brandLogo from "@/assets/brand/white-logo.png";
 import styles from "./project-detail.module.css";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -206,7 +206,6 @@ export function ProjectDetailView() {
         logoSrc={brandLogo}
         logoAlt="samarammar"
         items={menuItems}
-        showLangToggle
         showThemeToggle
         theme={theme}
         setTheme={setTheme}

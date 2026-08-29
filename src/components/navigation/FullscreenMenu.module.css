@@ -17,6 +17,46 @@
   padding: 0;
   z-index: 95;
   box-sizing: border-box;
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    backdrop-filter 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.headerScrolled {
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border-light);
+  background: rgb(252 251 249 / 88%);
+  box-shadow: var(--shadow-light);
+}
+
+.headerScrolled:not(.headerHero) {
+  top: 0;
+  inset-inline: 0;
+  width: 100%;
+  max-width: 100%;
+  padding-top: calc(clamp(0.85rem, 2.2vh, 1.1rem) + var(--safe-top));
+  padding-bottom: clamp(0.85rem, 2.2vh, 1.1rem);
+  padding-inline: max(1rem, var(--safe-left)) max(1rem, var(--safe-right));
+}
+
+:global(html[data-theme="dark"]) .headerScrolled:not(.headerHero) {
+  border-bottom-color: rgb(255 255 255 / 10%);
+  background: rgb(22 21 20 / 88%);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 28%);
+}
+
+.headerScrolled.headerHero {
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+  background: rgb(16 15 14 / 82%);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 24%);
+}
+
+@media (max-width: 767px) {
+  .headerScrolled.headerHero {
+    background: rgb(16 15 14 / 94%);
+  }
 }
 
 .headerHero {
@@ -34,9 +74,10 @@
     calc(clamp(1rem, 3.5vw, 3rem) + var(--scroll-progress-clearance)),
     calc(var(--safe-right) + var(--scroll-progress-clearance))
   );
-  border-bottom: 0;
+  border-bottom: 1px solid transparent;
   background: transparent;
   backdrop-filter: none;
+  box-shadow: none;
 }
 
 .headerHero .headerControls {
@@ -186,7 +227,16 @@
   transition:
     border-color 0.3s ease,
     background-color 0.3s ease,
-    transform 0.3s ease;
+    transform 0.3s ease,
+    opacity 0.35s ease,
+    visibility 0.35s ease;
+}
+
+.heroLangFloat[data-hidden] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
 }
 
 .heroLangFloat:hover,
@@ -456,6 +506,7 @@
   height: 100dvh;
   height: 100svh;
   overflow: hidden;
+  overscroll-behavior: none;
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
@@ -531,12 +582,20 @@
 }
 
 .overlayBrand {
-  position: absolute;
-  top: clamp(1rem, 2.5vh, 1.35rem);
-  inset-inline-start: clamp(1rem, 3vw, 2rem);
+  position: relative;
+  display: block;
+  width: clamp(6.75rem, 11vw, 8.75rem);
+  margin: 0 0 clamp(1.35rem, 3.5vh, 2.4rem);
+  flex-shrink: 0;
+  opacity: 0.94;
   z-index: 2;
-  width: clamp(88px, 12vw, 120px);
-  opacity: 0.92;
+  transition: opacity 0.3s ease;
+}
+
+.overlayBrand:hover,
+.overlayBrand:focus-visible {
+  opacity: 1;
+  outline: none;
 }
 
 .overlayLogo {
@@ -544,7 +603,11 @@
   height: auto;
   display: block;
   object-fit: contain;
-  filter: brightness(1.05);
+  object-position: left center;
+}
+
+[dir="rtl"] .overlayLogo {
+  object-position: right center;
 }
 
 .closeButton {
@@ -595,6 +658,10 @@
   padding-top: clamp(5rem, 11vh, 6.5rem);
   padding-bottom: clamp(1.25rem, 2.5vh, 1.75rem);
   padding-inline: clamp(0.25rem, 1vw, 0.5rem);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .overlayNavMain {
@@ -618,30 +685,26 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0;
-  border-top: 1px solid rgb(245 245 240 / 12%);
+  gap: clamp(0.2rem, 1.1vh, 0.55rem);
 }
 
 .overlayNav li {
-  border-bottom: 1px solid rgb(245 245 240 / 10%);
+  min-width: 0;
 }
 
 .overlayLink {
   position: relative;
   display: grid;
-  grid-template-columns: 3.25rem minmax(0, 1fr) auto;
+  grid-template-columns: 2.4rem minmax(0, 1fr) 1.5rem;
   align-items: center;
-  gap: clamp(0.75rem, 2vw, 1.25rem);
-  width: 100%;
-  padding: clamp(0.9rem, 1.9vh, 1.2rem) clamp(0.5rem, 1.5vw, 0.85rem);
-  margin-inline: clamp(-0.5rem, -1.5vw, -0.85rem);
-  border-radius: 0.65rem;
-  color: rgb(252 251 249 / 92%);
+  column-gap: clamp(0.85rem, 2vw, 1.4rem);
+  width: fit-content;
+  max-width: 100%;
+  min-height: var(--touch-target-min);
+  padding: clamp(0.42rem, 1.15vh, 0.7rem) 0;
+  color: rgb(252 251 249 / 78%);
   text-decoration: none;
-  transition:
-    color 260ms ease,
-    background-color 260ms ease,
-    transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: color 320ms ease;
 }
 
 .overlayLink::after {
@@ -649,87 +712,58 @@
 }
 
 .overlayLinkIndex {
-  font-size: clamp(0.95rem, 1.6vw, 1.15rem);
-  font-weight: 200;
-  line-height: 1;
-  letter-spacing: -0.04em;
-  color: var(--color-warm-cedar);
-  transition: color 260ms ease, transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.overlayLinkBody {
-  display: grid;
-  gap: 0.45rem;
-  min-width: 0;
+  font-size: 0.62rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(157 147 134 / 55%);
+  font-variant-numeric: tabular-nums;
+  transition: color 320ms ease;
 }
 
 .overlayLinkLabel {
-  font-size: clamp(1.65rem, 5.5vw, 3.25rem);
-  font-weight: 200;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: clamp(1.45rem, 3.4vw, 2.4rem);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: 0.01em;
+  transition: color 320ms ease;
 }
 
-.overlayLinkRule {
-  display: block;
-  height: 1px;
-  width: 100%;
-  max-width: 0;
-  background: linear-gradient(to right, rgb(157 147 134 / 72%), rgb(157 147 134 / 18%));
-  transition: max-width 420ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-[dir="rtl"] .overlayLinkRule {
-  background: linear-gradient(to left, rgb(157 147 134 / 72%), rgb(157 147 134 / 18%));
+:global(html[lang="ar"]) .overlayLinkLabel {
+  letter-spacing: 0;
+  font-weight: 400;
 }
 
 .overlayLinkArrow {
-  font-size: 1.15rem;
+  align-self: center;
+  font-size: 0.85rem;
   font-weight: 300;
   color: rgb(157 147 134 / 0%);
-  transform: translateX(-0.4rem);
+  transform: translateX(-0.35rem);
   transition:
-    color 260ms ease,
-    transform 360ms cubic-bezier(0.4, 0, 0.2, 1);
+    color 280ms ease,
+    transform 380ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 [dir="rtl"] .overlayLinkArrow {
-  transform: translateX(0.4rem) scaleX(-1);
+  transform: translateX(0.35rem) scaleX(-1);
 }
 
 .overlayLink:hover,
 .overlayLink:focus-visible {
-  color: var(--color-ivory);
-  background: rgb(255 255 255 / 4%);
-  transform: translateX(0.2rem);
+  color: rgb(252 251 249 / 96%);
   outline: none;
-}
-
-[dir="rtl"] .overlayLink:hover,
-[dir="rtl"] .overlayLink:focus-visible {
-  transform: translateX(-0.2rem);
 }
 
 .overlayLink:hover .overlayLinkIndex,
 .overlayLink:focus-visible .overlayLinkIndex {
-  color: rgb(236 232 224 / 96%);
-  transform: translateX(0.15rem);
-}
-
-.overlayLink:hover .overlayLinkLabel,
-.overlayLink:focus-visible .overlayLinkLabel {
-  transform: translateX(0.12rem);
-}
-
-.overlayLink:hover .overlayLinkRule,
-.overlayLink:focus-visible .overlayLinkRule {
-  max-width: 100%;
+  color: var(--color-warm-cedar);
 }
 
 .overlayLink:hover .overlayLinkArrow,
 .overlayLink:focus-visible .overlayLinkArrow {
-  color: rgb(157 147 134 / 90%);
+  color: rgb(157 147 134 / 72%);
   transform: translateX(0);
 }
 
@@ -740,11 +774,7 @@
 
 @media (min-width: 1024px) {
   .overlayLinkLabel {
-    font-size: clamp(2rem, 3.4vw, 3.5rem);
-  }
-
-  .overlayLinkIndex {
-    font-size: clamp(1rem, 1.2vw, 1.25rem);
+    font-size: clamp(1.7rem, 2.6vw, 2.55rem);
   }
 }
 
@@ -753,9 +783,8 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.65rem;
-  padding-top: 1.25rem;
+  padding-top: 1.5rem;
   margin-top: auto;
-  border-top: 1px solid rgb(245 245 240 / 12%);
 }
 
 .overlayPrefButton {
@@ -847,54 +876,43 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgb(245 245 240 / 12%);
+  padding-top: 0.85rem;
 }
 
 .overlaySocial {
   display: flex;
   align-items: center;
-  gap: clamp(0.85rem, 2vw, 1.35rem);
-  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .overlaySocial a {
-  position: relative;
-  color: rgb(157 147 134 / 82%);
-  font-size: 0.62rem;
-  font-weight: 500;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  display: grid;
+  place-items: center;
+  width: 2.65rem;
+  height: 2.65rem;
+  border: 1px solid rgb(245 245 240 / 14%);
+  border-radius: 999px;
+  color: rgb(157 147 134 / 88%);
+  background: rgb(255 255 255 / 4%);
   text-decoration: none;
-  transition: color 260ms ease, transform 260ms ease;
+  transition:
+    color 260ms ease,
+    border-color 260ms ease,
+    background-color 260ms ease;
 }
 
-.overlaySocial a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -0.2rem;
-  height: 1px;
-  background: var(--color-warm-cedar);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 280ms ease;
-}
-
-[dir="rtl"] .overlaySocial a::after {
-  transform-origin: right;
+.overlaySocial a svg {
+  display: block;
+  width: 1.05rem;
+  height: 1.05rem;
 }
 
 .overlaySocial a:hover,
 .overlaySocial a:focus-visible {
   color: rgb(252 251 249 / 96%);
-  transform: translateY(-1px);
-}
-
-.overlaySocial a:hover::after,
-.overlaySocial a:focus-visible::after {
-  transform: scaleX(1);
+  border-color: rgb(157 147 134 / 42%);
+  background: rgb(255 255 255 / 8%);
+  outline: none;
 }
 
 .overlayBottomNote {
@@ -945,6 +963,13 @@
     top: calc(0.65rem + var(--safe-top));
     inset-inline-start: max(0.85rem, var(--safe-left));
     inset-inline-end: max(0.85rem, var(--safe-right));
+  }
+
+  .header.headerHero,
+  .header.headerHero.headerScrolled {
+    inset-inline: 0;
+    width: 100%;
+    max-width: 100%;
   }
 
   .headerHero {
@@ -1039,18 +1064,20 @@
     padding-inline: max(1rem, var(--safe-left)) max(1rem, var(--safe-right));
     justify-content: flex-start;
     gap: 0;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .overlayNavMain {
-    flex: 1 1 auto;
+    flex: 1 0 auto;
     min-height: 0;
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: stretch;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .overlayMenuLabel {
@@ -1064,8 +1091,8 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    border-top: 1px solid rgb(245 245 240 / 12%);
+    justify-content: center;
+    gap: 0.15rem;
   }
 
   .overlayNav li {
@@ -1073,31 +1100,26 @@
   }
 
   .overlayLink {
-    grid-template-columns: 2rem minmax(0, 1fr) auto;
-    gap: 0.5rem;
+    grid-template-columns: 1.85rem minmax(0, 1fr) 1.15rem;
+    column-gap: 0.7rem;
     width: 100%;
     max-width: 100%;
     margin-inline: 0;
-    padding: clamp(0.28rem, 1.1vh, 0.55rem) 0.2rem;
-    border-radius: 0.45rem;
+    padding: clamp(0.38rem, 1.05vh, 0.62rem) 0;
   }
 
   .overlayLinkIndex {
-    font-size: clamp(0.72rem, 2.8vw, 0.9rem);
+    font-size: 0.58rem;
   }
 
   .overlayLinkLabel {
-    font-size: clamp(1rem, 4.6vw, 1.28rem);
-    line-height: 1.05;
+    font-size: clamp(1.15rem, 5vw, 1.55rem);
+    line-height: 1.15;
     overflow-wrap: anywhere;
   }
 
-  .overlayLinkBody {
-    gap: 0.2rem;
-  }
-
   .overlayLinkArrow {
-    font-size: 0.95rem;
+    font-size: 0.82rem;
   }
 
   .overlayControls {
@@ -1140,15 +1162,21 @@
   }
 
   .overlaySocial {
-    gap: 0.5rem 0.75rem;
+    gap: 0.4rem;
   }
 
   .overlaySocial a {
-    display: inline-flex;
-    align-items: center;
-    min-height: auto;
-    padding: 0.2rem 0;
-    font-size: 0.58rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .overlaySocial a svg {
+    width: 1rem;
+    height: 1rem;
   }
 
   .overlayBottomNote {
@@ -1156,9 +1184,8 @@
   }
 
   .overlayBrand {
-    top: calc(0.65rem + var(--safe-top));
-    inset-inline-start: max(1rem, var(--safe-left));
-    width: 72px;
+    width: 5.75rem;
+    margin-bottom: 1.05rem;
   }
 }
 
@@ -1191,10 +1218,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .header {
+    transition-duration: 0.01ms;
+  }
+
   .overlayLink,
   .overlayLinkArrow,
   .overlayLinkLabel,
-  .overlayLinkRule,
   .overlayLinkIndex,
   .menuButton,
   .closeButton,

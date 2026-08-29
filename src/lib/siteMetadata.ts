@@ -19,7 +19,7 @@ export const SITE_DESCRIPTION_AR =
 
 export const SITE_DESCRIPTION_BILINGUAL = `${SITE_DESCRIPTION_EN} | ${SITE_DESCRIPTION_AR}`;
 
-export const SITE_TITLE_DEFAULT = "samarammar — Samar Ammar Studio";
+export const SITE_TITLE_DEFAULT = "Sama Ammar";
 
 function resolveImageUrl(image: string): string {
   return image.startsWith("http") ? image : new URL(image, siteUrl).toString();

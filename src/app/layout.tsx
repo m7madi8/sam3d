@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Cairo, Inter } from "next/font/google";
-import { RootWithScroll } from "@/components/site/RootWithScroll";
-import { ThemeSync } from "@/components/site/ThemeSync";
-import { LanguageProvider } from "@/components/site/LanguageProvider";
+import { RootWithScroll } from "@/components/layout/RootWithScroll";
+import { ThemeSync } from "@/components/providers/ThemeSync";
+import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { rootMetadata } from "@/lib/siteMetadata";
-import brandLogo from "../../white-logo.png";
+import brandLogo from "@/assets/brand/white-logo.png";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,6 +36,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  colorScheme: "dark",
+  themeColor: "#161514",
 };
 
 export default function RootLayout({
@@ -44,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icon.png" type="image/png" sizes="any" />
         <link rel="shortcut icon" href="/icon.png" type="image/png" />
@@ -53,7 +55,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} ${cairo.variable}`} suppressHydrationWarning>
         <Script id="sam3d-theme-init" strategy="beforeInteractive">
-          {`(function(){try{var t=localStorage.getItem("sam3d-theme");document.documentElement.setAttribute("data-theme",t==="light"||t==="dark"?t:"dark");var l=localStorage.getItem("sam3d-lang");if(l==="ar"||l==="en"){document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";}}catch(e){}})();`}
+          {`(function(){try{var g=location.pathname.indexOf("/gallery")===0;var t=g?"dark":localStorage.getItem("sam3d-theme");document.documentElement.setAttribute("data-theme",t==="light"||t==="dark"?t:"dark");var l=localStorage.getItem("sam3d-lang");if(l==="ar"||l==="en"){document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";}}catch(e){}})();`}
         </Script>
         <RootWithScroll>
           <LanguageProvider>

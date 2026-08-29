@@ -5,14 +5,14 @@ import Image from "next/image";
 import Link from "next/link";
 import gsap from "gsap";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
-import { useLanguage } from "./LanguageProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { getSiteMenuItems } from "@/content/navigation";
 import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
 import styles from "./RequestServiceForm.module.css";
-import brandLogo from "../../../white-logo.png";
-import serviceImageInterior from "../../../interior.jpg";
-import serviceImageLandscape from "../../../landscape.jpg";
-import serviceImageExterior from "../../../exterior.jpg";
+import brandLogo from "@/assets/brand/white-logo.png";
+import serviceImageInterior from "@/assets/services/interior.jpg";
+import serviceImageLandscape from "@/assets/services/landscape.jpg";
+import serviceImageExterior from "@/assets/services/exterior.jpg";
 
 const THEME_STORAGE_KEY = "sam3d-theme";
 
@@ -173,7 +173,6 @@ export function RequestServiceForm({
           logoSrc={brandLogo}
           logoAlt="samarammar"
           items={menuItems}
-          showLangToggle
           showThemeToggle
           theme={theme}
           setTheme={setTheme}
@@ -208,7 +207,6 @@ export function RequestServiceForm({
         logoSrc={brandLogo}
         logoAlt="samarammar"
         items={menuItems}
-        showLangToggle
         showThemeToggle
         theme={theme}
         setTheme={setTheme}

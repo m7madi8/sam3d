@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { RequestServiceForm } from "@/components/site/RequestServiceForm";
+import { RequestServiceForm } from "@/components/forms/RequestServiceForm";
 import { services } from "@/content/capsules";
 import { createPageMetadata } from "@/lib/siteMetadata";
 
@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { service } = await params;
   if (!VALID_SERVICES.has(service)) {
     return createPageMetadata({
-      title: "Request Service | samarammar",
+      title: "Request Service",
       path: `/request-service/${service}`,
     });
   }
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps) {
   const titleAr = SERVICE_TITLE_AR[service] ?? "طلب خدمة";
 
   return createPageMetadata({
-    title: `Request ${s.title} | ${titleAr} — samarammar`,
+    title: `Request ${s.title}`,
     description: `${s.description} | ${titleAr} — سمر عمار، رام الله.`,
     path: `/request-service/${service}`,
     imageAlt: `Request ${s.title} — samarammar`,

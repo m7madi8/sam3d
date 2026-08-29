@@ -1,8 +1,12 @@
 const HASH_SCROLL_OFFSET = -72;
+const HASH_ALIASES: Record<string, string> = {
+  location: "contact",
+};
 
 export function getHashId(hash: string): string | null {
   const id = hash.replace(/^#/, "").trim();
-  return id || null;
+  if (!id) return null;
+  return HASH_ALIASES[id] ?? id;
 }
 
 type LenisLike = {

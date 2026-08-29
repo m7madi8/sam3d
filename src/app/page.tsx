@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { cookies, headers } from "next/headers";
-import { HomePageClient } from "@/components/site/HomePageClient";
-import { UnderDevelopment } from "@/components/site/UnderDevelopment";
+import { HomePageClient } from "@/components/home/HomePageClient";
+import { UnderDevelopment } from "@/components/forms/UnderDevelopment";
 import { createPageMetadata } from "@/lib/siteMetadata";
 import { isPublicSiteGated, PREVIEW_COOKIE } from "@/lib/siteMode";
 
@@ -12,7 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     ...createPageMetadata({
-      title: "Under Development | samarammar",
+      title: "Under Development",
       description:
         "The samarammar website is currently under development. A refined digital experience is coming soon.",
       path: "/",

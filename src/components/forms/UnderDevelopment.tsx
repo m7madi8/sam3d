@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import brandLogo from "../../../white-logo.png";
+import brandLogo from "@/assets/brand/white-logo.png";
 import styles from "./UnderDevelopment.module.css";
 
 const CONTACT_EMAIL = "sam.ammar1992@gmail.com";

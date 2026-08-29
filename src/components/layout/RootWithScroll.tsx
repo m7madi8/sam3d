@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 import { useLenisScroll } from "@/hooks/useLenisScroll";
-import { ScrollProgress } from "@/components/site/ScrollProgress";
+import { ScrollProgress } from "@/components/layout/ScrollProgress";
 
 type RootWithScrollProps = {
   children: ReactNode;

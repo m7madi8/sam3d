@@ -2,10 +2,11 @@
 
 import Image, { type StaticImageData } from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import gsap from "gsap";
-import { useLanguage } from "@/components/site/LanguageProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import type Lenis from "lenis";
 import styles from "./FullscreenMenu.module.css";
 
 type MenuItem = {
@@ -13,6 +14,75 @@ type MenuItem = {
   link: string;
   ariaLabel: string;
 };
+
+function isAppRoute(href: string) {
+  return href.startsWith("/") && !href.startsWith("//") && !href.includes("#");
+}
+
+function RouteLink({
+  href,
+  className,
+  ariaLabel,
+  onClick,
+  children,
+}: {
+  href: string;
+  className: string;
+  ariaLabel: string;
+  onClick?: () => void;
+  children: ReactNode;
+}) {
+  if (isAppRoute(href)) {
+    return (
+      <Link href={href} className={className} aria-label={ariaLabel} onClick={onClick} scroll>
+        {children}
+      </Link>
+    );
+  }
+
+  return (
+    <a href={href} className={className} aria-label={ariaLabel} onClick={onClick}>
+      {children}
+    </a>
+  );
+}
+
+const WHATSAPP_NUMBER = "972569126200";
+
+const OVERLAY_SOCIAL = [
+  {
+    href: `https://wa.me/${WHATSAPP_NUMBER}`,
+    labelEn: "WhatsApp",
+    labelAr: "واتساب",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
+      </svg>
+    ),
+  },
+  {
+    href: "https://instagram.com",
+    labelEn: "Instagram",
+    labelAr: "إنستغرام",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <rect x="3" y="3" width="18" height="18" rx="5" />
+        <circle cx="12" cy="12" r="3.75" />
+        <circle cx="17.2" cy="6.8" r="0.75" fill="currentColor" stroke="none" />
+      </svg>
+    ),
+  },
+  {
+    href: "https://facebook.com",
+    labelEn: "Facebook",
+    labelAr: "فيسبوك",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+        <path d="M18 2h-2.8A4.2 4.2 0 0 0 11 6.2V9H8v4h3v8h4v-8h3.1l.9-4H15V7.1c0-.6.5-1.1 1.1-1.1H18V2Z" />
+      </svg>
+    ),
+  },
+] as const;
 
 type FullscreenMenuProps = {
   brand?: string;
@@ -24,6 +94,8 @@ type FullscreenMenuProps = {
   showThemeToggle?: boolean;
   /** Full-width transparent header with logo and inline nav — for hero pages. */
   variant?: "default" | "hero";
+  /** Keep the language control visible on pages that have no #hero section. */
+  pinLangToggle?: boolean;
   theme?: "light" | "dark";
   setTheme?: (t: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
 };
@@ -34,15 +106,18 @@ export default function FullscreenMenu({
   logoSrc,
   logoAlt = "Brand logo",
   controlsVisible = true,
-  showLangToggle = true,
+  showLangToggle = false,
   showThemeToggle = true,
   variant = "default",
+  pinLangToggle = false,
   theme: themeProp,
   setTheme: setThemeProp,
 }: FullscreenMenuProps) {
   const { lang, toggleLang, tr } = useLanguage();
   const reducedMotion = useReducedMotion();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [heroInView, setHeroInView] = useState(false);
   const [themeInternal, setThemeInternal] = useState<"light" | "dark">("dark");
   const theme = themeProp ?? themeInternal;
   const setTheme = setThemeProp ?? setThemeInternal;
@@ -51,8 +126,6 @@ export default function FullscreenMenu({
   const overlayRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
   const decorRef = useRef<HTMLDivElement>(null);
-  const brandRef = useRef<HTMLDivElement>(null);
-  const labelRef = useRef<HTMLParagraphElement>(null);
   const listItemRefs = useRef<HTMLLIElement[]>([]);
   const controlsRef = useRef<HTMLDivElement>(null);
   const prefButtonRefs = useRef<HTMLButtonElement[]>([]);
@@ -65,8 +138,6 @@ export default function FullscreenMenu({
     const overlay = overlayRef.current;
     const backdrop = backdropRef.current;
     const decor = decorRef.current;
-    const brandEl = brandRef.current;
-    const label = labelRef.current;
     const listItems = listItemRefs.current.filter(Boolean);
     const controls = controlsRef.current;
     const prefs = prefButtonRefs.current.filter(Boolean);
@@ -75,14 +146,12 @@ export default function FullscreenMenu({
 
     if (overlay) gsap.set(overlay, { autoAlpha: 0, pointerEvents: "none", visibility: "hidden" });
     gsap.set(
-      [backdrop, decor, brandEl, label, ...listItems, controls, ...prefs, bottom, ...social].filter(Boolean),
+      [backdrop, decor, ...listItems, controls, ...prefs, bottom, ...social].filter(Boolean),
       { clearProps: "all" },
     );
     gsap.set(listItems, { y: 36, autoAlpha: 0 });
     if (backdrop) gsap.set(backdrop, { scale: 1.04, autoAlpha: 0 });
     if (decor) gsap.set(decor, { x: -24, autoAlpha: 0 });
-    if (brandEl) gsap.set(brandEl, { y: -16, autoAlpha: 0 });
-    if (label) gsap.set(label, { y: 18, autoAlpha: 0 });
     if (controls) gsap.set(controls, { y: 28, autoAlpha: 0 });
     gsap.set(prefs, { y: 22, autoAlpha: 0 });
     if (bottom) gsap.set(bottom, { y: 20, autoAlpha: 0 });
@@ -93,8 +162,6 @@ export default function FullscreenMenu({
     const overlay = overlayRef.current;
     const backdrop = backdropRef.current;
     const decor = decorRef.current;
-    const brandEl = brandRef.current;
-    const label = labelRef.current;
     const listItems = listItemRefs.current.filter(Boolean);
     const controls = controlsRef.current;
     const prefs = prefButtonRefs.current.filter(Boolean);
@@ -108,7 +175,7 @@ export default function FullscreenMenu({
     if (reducedMotion) {
       gsap.set(overlay, { autoAlpha: 1, pointerEvents: "auto", visibility: "visible" });
       gsap.set(
-        [backdrop, decor, brandEl, label, ...listItems, controls, ...prefs, bottom, ...social].filter(Boolean),
+        [backdrop, decor, ...listItems, controls, ...prefs, bottom, ...social].filter(Boolean),
         { autoAlpha: 1, y: 0, x: 0, scale: 1 },
       );
       return;
@@ -125,8 +192,6 @@ export default function FullscreenMenu({
     gsap.set(listItems, { y: 36, autoAlpha: 0 });
     if (backdrop) gsap.set(backdrop, { scale: 1.04, autoAlpha: 0 });
     if (decor) gsap.set(decor, { x: -24, autoAlpha: 0 });
-    if (brandEl) gsap.set(brandEl, { y: -16, autoAlpha: 0 });
-    if (label) gsap.set(label, { y: 18, autoAlpha: 0 });
     if (controls) gsap.set(controls, { y: 28, autoAlpha: 0 });
     gsap.set(prefs, { y: 22, autoAlpha: 0 });
     if (bottom) gsap.set(bottom, { y: 20, autoAlpha: 0 });
@@ -142,14 +207,6 @@ export default function FullscreenMenu({
       tl.to(decor, { x: 0, autoAlpha: 1, duration: 0.7 }, 0.08);
     }
 
-    if (brandEl) {
-      tl.to(brandEl, { y: 0, autoAlpha: 1, duration: 0.55 }, 0.14);
-    }
-
-    if (label) {
-      tl.to(label, { y: 0, autoAlpha: 1, duration: 0.5 }, 0.22);
-    }
-
     if (listItems.length) {
       tl.to(
         listItems,
@@ -160,12 +217,12 @@ export default function FullscreenMenu({
           stagger: { each: 0.07, from: "start" },
           ease: "power3.out",
         },
-        0.28,
+        0.2,
       );
     }
 
     if (controls) {
-      tl.to(controls, { y: 0, autoAlpha: 1, duration: 0.5 }, 0.52);
+      tl.to(controls, { y: 0, autoAlpha: 1, duration: 0.5 }, 0.44);
     }
 
     if (prefs.length) {
@@ -177,12 +234,12 @@ export default function FullscreenMenu({
           duration: 0.48,
           stagger: 0.09,
         },
-        0.58,
+        0.5,
       );
     }
 
     if (bottom) {
-      tl.to(bottom, { y: 0, autoAlpha: 1, duration: 0.48 }, 0.68);
+      tl.to(bottom, { y: 0, autoAlpha: 1, duration: 0.48 }, 0.6);
     }
 
     if (social.length) {
@@ -194,7 +251,7 @@ export default function FullscreenMenu({
           duration: 0.42,
           stagger: 0.06,
         },
-        0.74,
+        0.66,
       );
     }
 
@@ -207,8 +264,6 @@ export default function FullscreenMenu({
       const overlay = overlayRef.current;
       const backdrop = backdropRef.current;
       const decor = decorRef.current;
-      const brandEl = brandRef.current;
-      const label = labelRef.current;
       const listItems = listItemRefs.current.filter(Boolean);
       const controls = controlsRef.current;
       const prefs = prefButtonRefs.current.filter(Boolean);
@@ -244,13 +299,11 @@ export default function FullscreenMenu({
           duration: 0.28,
           stagger: { each: 0.04, from: "end" },
         },
-        0.12,
+        0.08,
       );
-      if (label) tl.to(label, { y: 12, autoAlpha: 0, duration: 0.22 }, 0.22);
-      if (brandEl) tl.to(brandEl, { y: -10, autoAlpha: 0, duration: 0.22 }, 0.24);
-      if (decor) tl.to(decor, { x: -16, autoAlpha: 0, duration: 0.28 }, 0.28);
-      if (backdrop) tl.to(backdrop, { scale: 1.03, autoAlpha: 0, duration: 0.32 }, 0.3);
-      tl.to(overlay, { autoAlpha: 0, duration: 0.28 }, 0.34);
+      if (decor) tl.to(decor, { x: -16, autoAlpha: 0, duration: 0.28 }, 0.18);
+      if (backdrop) tl.to(backdrop, { scale: 1.03, autoAlpha: 0, duration: 0.32 }, 0.2);
+      tl.to(overlay, { autoAlpha: 0, duration: 0.28 }, 0.24);
 
       timelineRef.current = tl;
       isAnimatingRef.current = true;
@@ -301,9 +354,60 @@ export default function FullscreenMenu({
   }, [theme]);
 
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+
+    const html = document.documentElement;
+    const { body } = document;
+    const scrollY = Math.round(window.__lenis?.scroll ?? window.scrollY);
+
+    window.__lenisStop?.();
+    window.__lenis?.stop();
+
+    const prev = {
+      htmlOverflow: html.style.overflow,
+      htmlOverscroll: html.style.overscrollBehavior,
+      bodyOverflow: body.style.overflow,
+      bodyPosition: body.style.position,
+      bodyTop: body.style.top,
+      bodyWidth: body.style.width,
+      bodyOverscroll: body.style.overscrollBehavior,
+    };
+
+    html.style.overflow = "hidden";
+    html.style.overscrollBehavior = "none";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+    html.setAttribute("data-menu-open", "");
+
+    const overlay = overlayRef.current;
+    const onScrollAttempt = (event: WheelEvent | TouchEvent) => {
+      const target = event.target;
+      if (!(target instanceof Node) || !overlay?.contains(target)) {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener("wheel", onScrollAttempt, { passive: false });
+    window.addEventListener("touchmove", onScrollAttempt, { passive: false });
+
     return () => {
-      document.body.style.overflow = "";
+      window.removeEventListener("wheel", onScrollAttempt);
+      window.removeEventListener("touchmove", onScrollAttempt);
+      html.style.overflow = prev.htmlOverflow;
+      html.style.overscrollBehavior = prev.htmlOverscroll;
+      body.style.overflow = prev.bodyOverflow;
+      body.style.position = prev.bodyPosition;
+      body.style.top = prev.bodyTop;
+      body.style.width = prev.bodyWidth;
+      body.style.overscrollBehavior = prev.bodyOverscroll;
+      html.removeAttribute("data-menu-open");
+      window.scrollTo(0, scrollY);
+      window.__lenis?.scrollTo(scrollY, { immediate: true });
+      window.__lenisStart?.();
+      window.__lenis?.start();
     };
   }, [open]);
 
@@ -315,6 +419,97 @@ export default function FullscreenMenu({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, closeMenu]);
 
+  useEffect(() => {
+    let lenisCleanup: (() => void) | undefined;
+    let pollId = 0;
+    let attachedLenis: Lenis | null = null;
+
+    const update = () => {
+      const scrollY = window.__lenis?.scroll ?? attachedLenis?.scroll ?? window.scrollY;
+      setScrolled(scrollY > 8);
+    };
+
+    const bindLenis = (lenis: Lenis) => {
+      attachedLenis = lenis;
+      const onScroll = () => update();
+      lenis.on("scroll", onScroll);
+      update();
+      return () => {
+        lenis.off("scroll", onScroll);
+        if (attachedLenis === lenis) attachedLenis = null;
+      };
+    };
+
+    const tryBindLenis = () => {
+      if (window.__lenis) {
+        lenisCleanup?.();
+        lenisCleanup = bindLenis(window.__lenis);
+        return true;
+      }
+      return false;
+    };
+
+    if (!tryBindLenis()) {
+      pollId = window.setInterval(() => {
+        if (tryBindLenis()) window.clearInterval(pollId);
+      }, 80);
+    }
+
+    const onNativeScroll = () => {
+      if (!window.__lenis && !attachedLenis) update();
+    };
+
+    window.addEventListener("scroll", onNativeScroll, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+
+    return () => {
+      window.clearInterval(pollId);
+      window.removeEventListener("scroll", onNativeScroll);
+      window.removeEventListener("resize", update);
+      lenisCleanup?.();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (variant !== "hero" || !showLangToggle) {
+      setHeroInView(false);
+      return;
+    }
+
+    if (pinLangToggle) {
+      setHeroInView(true);
+      return;
+    }
+
+    let observer: IntersectionObserver | undefined;
+    let pollId = 0;
+
+    const bindHero = () => {
+      const hero = document.getElementById("hero");
+      if (!hero) return false;
+
+      observer?.disconnect();
+      observer = new IntersectionObserver(
+        ([entry]) => setHeroInView(entry.isIntersecting),
+        { threshold: 0.08 },
+      );
+      observer.observe(hero);
+      return true;
+    };
+
+    if (!bindHero()) {
+      pollId = window.setInterval(() => {
+        if (bindHero()) window.clearInterval(pollId);
+      }, 80);
+    }
+
+    return () => {
+      window.clearInterval(pollId);
+      observer?.disconnect();
+    };
+  }, [variant, showLangToggle, pinLangToggle]);
+
   const isHeroVariant = variant === "hero";
 
   return (
@@ -325,7 +520,7 @@ export default function FullscreenMenu({
       data-variant={isHeroVariant ? "hero" : undefined}
     >
       <header
-        className={`${styles.header} ${isHeroVariant ? styles.headerHero : ""} ${!controlsVisible ? styles.headerHidden : ""}`}
+        className={`${styles.header} ${isHeroVariant ? styles.headerHero : ""} ${scrolled ? styles.headerScrolled : ""} ${!controlsVisible ? styles.headerHidden : ""}`}
         aria-label={tr("Main navigation", "التنقل الرئيسي")}
       >
         <div className={styles.headerStart}>
@@ -351,9 +546,9 @@ export default function FullscreenMenu({
             <ul className={styles.headerNavList}>
               {items.map((item, index) => (
                 <li key={`${item.label}-${index}`}>
-                  <a className={styles.headerNavLink} href={item.link} aria-label={item.ariaLabel}>
+                  <RouteLink className={styles.headerNavLink} href={item.link} ariaLabel={item.ariaLabel}>
                     {item.label}
-                  </a>
+                  </RouteLink>
                 </li>
               ))}
             </ul>
@@ -415,6 +610,7 @@ export default function FullscreenMenu({
         <button
           type="button"
           className={styles.heroLangFloat}
+          data-hidden={!heroInView || undefined}
           onClick={toggleLang}
           aria-label={tr("Toggle language", "تبديل اللغة")}
           suppressHydrationWarning
@@ -444,24 +640,21 @@ export default function FullscreenMenu({
           <span className={styles.overlayDecorLine} />
         </div>
 
-        {logoSrc ? (
-          <div className={styles.overlayBrand} ref={brandRef}>
-            <Image
-              src={logoSrc}
-              alt={logoAlt}
-              width={120}
-              height={48}
-              className={styles.overlayLogo}
-              quality={100}
-            />
-          </div>
-        ) : null}
-
         <nav className={styles.overlayNav} aria-label={tr("Fullscreen menu", "قائمة كاملة الشاشة")}>
+          {logoSrc ? (
+            <Link href="/" className={styles.overlayBrand} onClick={closeMenu} aria-label={logoAlt}>
+              <Image
+                src={logoSrc}
+                alt=""
+                width={160}
+                height={48}
+                className={styles.overlayLogo}
+                sizes="136px"
+              />
+            </Link>
+          ) : null}
+
           <div className={styles.overlayNavMain}>
-            <p className={styles.overlayMenuLabel} ref={labelRef}>
-              {tr("Navigation", "تنقّل")}
-            </p>
             <ul>
               {items.map((item, index) => (
                 <li
@@ -471,117 +664,74 @@ export default function FullscreenMenu({
                     listItemRefs.current[index] = node;
                   }}
                 >
-                  <a className={styles.overlayLink} href={item.link} aria-label={item.ariaLabel} onClick={closeMenu}>
+                  <RouteLink
+                    className={styles.overlayLink}
+                    href={item.link}
+                    ariaLabel={item.ariaLabel}
+                    onClick={closeMenu}
+                  >
                     <span className={styles.overlayLinkIndex} aria-hidden>
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <span className={styles.overlayLinkBody}>
-                      <span className={styles.overlayLinkLabel}>{item.label}</span>
-                      <span className={styles.overlayLinkRule} aria-hidden />
-                    </span>
+                    <span className={styles.overlayLinkLabel}>{item.label}</span>
                     <span className={styles.overlayLinkArrow} aria-hidden>
                       →
                     </span>
-                  </a>
+                  </RouteLink>
                 </li>
               ))}
             </ul>
           </div>
 
-          {(showLangToggle || showThemeToggle) && (
+          {showThemeToggle ? (
             <div className={styles.overlayControls} ref={controlsRef} aria-label={tr("Preferences", "التفضيلات")}>
-              {showLangToggle ? (
-                <button
-                  ref={(node) => {
-                    if (!node) return;
-                    prefButtonRefs.current[0] = node;
-                  }}
-                  type="button"
-                  className={styles.overlayPrefButton}
-                  onClick={toggleLang}
-                  aria-label={tr("Toggle language", "تبديل اللغة")}
-                  suppressHydrationWarning
-                >
-                  <span className={styles.overlayPrefIcon} aria-hidden="true">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 5h12M9 3v2M8 13h4M7 10l2 6 2-6M18 10h.01M14 21c4.418 0 8-3.582 8-8s-3.582-8-8-8" />
-                    </svg>
-                  </span>
-                  <span className={styles.overlayPrefLabel}>{tr("Language", "اللغة")}</span>
-                  <span className={styles.langCodes}>
-                    <span className={`${styles.langCode} ${lang === "en" ? styles.langCodeActive : ""}`}>EN</span>
-                    <span className={styles.langDivider}>/</span>
-                    <span className={`${styles.langCode} ${lang === "ar" ? styles.langCodeActive : ""}`}>AR</span>
-                  </span>
-                </button>
-              ) : null}
-              {showThemeToggle ? (
-                <button
-                  ref={(node) => {
-                    if (!node) return;
-                    prefButtonRefs.current[1] = node;
-                  }}
-                  type="button"
-                  className={styles.overlayPrefButton}
-                  onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
-                  aria-label={
-                    theme === "dark"
-                      ? tr("Switch to light mode", "التبديل للوضع الفاتح")
-                      : tr("Switch to dark mode", "التبديل للوضع الداكن")
-                  }
-                  suppressHydrationWarning
-                >
-                  <span className={styles.overlayPrefIcon} aria-hidden="true">
-                    {theme === "dark" ? (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                    ) : (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                    )}
-                  </span>
-                  <span className={styles.overlayPrefLabel}>{tr("Appearance", "المظهر")}</span>
-                  <span className={styles.overlayPrefValue}>
-                    {theme === "dark" ? tr("Light", "فاتح") : tr("Night", "ليلي")}
-                  </span>
-                </button>
-              ) : null}
+              <button
+                ref={(node) => {
+                  if (!node) return;
+                  prefButtonRefs.current[0] = node;
+                }}
+                type="button"
+                className={styles.overlayPrefButton}
+                onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
+                aria-label={
+                  theme === "dark"
+                    ? tr("Switch to light mode", "التبديل للوضع الفاتح")
+                    : tr("Switch to dark mode", "التبديل للوضع الداكن")
+                }
+                suppressHydrationWarning
+              >
+                <span className={styles.overlayPrefIcon} aria-hidden="true">
+                  {theme === "dark" ? (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                  ) : (
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  )}
+                </span>
+                <span className={styles.overlayPrefLabel}>{tr("Appearance", "المظهر")}</span>
+                <span className={styles.overlayPrefValue}>
+                  {theme === "dark" ? tr("Light", "فاتح") : tr("Night", "ليلي")}
+                </span>
+              </button>
             </div>
-          )}
+          ) : null}
 
           <div className={styles.overlayBottomBar} ref={bottomBarRef}>
             <div className={styles.overlaySocial} aria-label={tr("Social links", "روابط التواصل")}>
-              <a
-                ref={(node) => {
-                  if (!node) return;
-                  socialRefs.current[0] = node;
-                }}
-                href="https://wa.me/17600000000"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                WhatsApp
-              </a>
-              <a
-                ref={(node) => {
-                  if (!node) return;
-                  socialRefs.current[1] = node;
-                }}
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Instagram
-              </a>
-              <a
-                ref={(node) => {
-                  if (!node) return;
-                  socialRefs.current[2] = node;
-                }}
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Facebook
-              </a>
+              {OVERLAY_SOCIAL.map((item, index) => (
+                <a
+                  key={item.href}
+                  ref={(node) => {
+                    if (!node) return;
+                    socialRefs.current[index] = node;
+                  }}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={tr(item.labelEn, item.labelAr)}
+                >
+                  {item.icon}
+                </a>
+              ))}
             </div>
             <p className={styles.overlayBottomNote}>SAMARAMMAR.COM</p>
           </div>

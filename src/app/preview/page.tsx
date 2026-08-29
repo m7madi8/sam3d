@@ -1,7 +1,7 @@
-import { PreviewAccess } from "@/components/site/PreviewAccess";
+import { PreviewAccess } from "@/components/forms/PreviewAccess";
 
 export const metadata = {
-  title: "Team access | samarammar",
+  title: "Team access",
   robots: { index: false, follow: false },
 };
 

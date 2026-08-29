@@ -16,8 +16,8 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 12% 10%, rgb(235 231 224 / 22%), transparent 34%),
-    radial-gradient(circle at 88% 82%, rgb(228 223 215 / 16%), transparent 36%),
+    radial-gradient(circle at 12% 10%, var(--night-warm-glow), transparent 34%),
+    radial-gradient(circle at 88% 82%, rgb(157 147 134 / 10%), transparent 36%),
     var(--surface-primary);
 }
 
@@ -384,6 +384,7 @@
   position: relative;
   aspect-ratio: 3 / 4;
   overflow: hidden;
+  transform-origin: center center;
 }
 
 .cardImage {
@@ -621,13 +622,14 @@
   border-color: var(--color-warm-cedar);
 }
 
-/* —— Dark theme —— */
-:global(html[data-theme="dark"]) .pageShell::before {
+:global(html[data-theme="light"]) .pageShell::before {
   background:
-    radial-gradient(circle at 12% 10%, var(--night-warm-glow), transparent 34%),
-    radial-gradient(circle at 88% 82%, rgb(157 147 134 / 10%), transparent 36%),
+    radial-gradient(circle at 12% 10%, rgb(235 231 224 / 22%), transparent 34%),
+    radial-gradient(circle at 88% 82%, rgb(228 223 215 / 16%), transparent 36%),
     var(--surface-primary);
 }
+
+/* —— Dark theme —— */
 
 :global(html[data-theme="dark"]) .galleryIndex {
   -webkit-text-stroke-color: rgb(255 255 255 / 12%);
@@ -712,6 +714,15 @@
   background: transparent;
   color: var(--color-ivory);
   border-color: var(--color-warm-cedar);
+}
+
+/* Cards stay hidden until GSAP reveals them — prevents a full-page flash before the intro. */
+@media (prefers-reduced-motion: no-preference) {
+  .pageShell [data-gallery-entry],
+  .pageShell [data-gallery-section],
+  .pageShell [data-gallery-card] {
+    opacity: 0;
+  }
 }
 
 /* —— Responsive —— */

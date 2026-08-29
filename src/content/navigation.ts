@@ -6,7 +6,7 @@ export type SiteMenuItemSource = {
   ariaAr: string;
 };
 
-/** Site order: Home → Gallery (02) → About → Services → Location → Contact */
+/** Site order: Home → Gallery → About → Services → Contact */
 export const SITE_MENU_ITEMS: readonly SiteMenuItemSource[] = [
   {
     label: "Home",
@@ -35,13 +35,6 @@ export const SITE_MENU_ITEMS: readonly SiteMenuItemSource[] = [
     link: "/#services",
     ariaLabel: "Go to services section",
     ariaAr: "الذهاب لقسم الخدمات",
-  },
-  {
-    label: "Location",
-    labelAr: "الموقع",
-    link: "/#location",
-    ariaLabel: "Go to location section",
-    ariaAr: "الذهاب لقسم الموقع",
   },
   {
     label: "Contact",

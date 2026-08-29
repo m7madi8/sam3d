@@ -1,18 +1,19 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { services } from "@/content/capsules";
 import styles from "./site.module.css";
-import aboutImage from "../../../samarr.jpeg";
-import brandLogo from "../../../white-logo.png";
-import FullscreenMenu from "../navigation/FullscreenMenu";
-import { useLanguage } from "./LanguageProvider";
-import { LocationMap } from "./LocationMap";
-import { HeroSection } from "@/components/HeroSection";
+import aboutImage from "@/assets/brand/samarr.jpeg";
+import brandLogo from "@/assets/brand/white-logo.png";
+import FullscreenMenu from "@/components/navigation/FullscreenMenu";
+import { useLanguage } from "@/components/providers/LanguageProvider";
+import { HeroSection } from "@/components/hero/HeroSection";
+import { GOOGLE_MAPS_STUDIO } from "@/content/location";
 import { getStudioStatEntries, STUDIO_STATS } from "@/content/studio";
 import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
 import { scheduleHashScroll, scrollToHashTarget } from "@/lib/scrollToHash";
@@ -23,7 +24,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const THEME_STORAGE_KEY = "sam3d-theme";
 
-const LOCATION_STATS = {
+const ABOUT_PROOF = {
   years: STUDIO_STATS.yearsExperience,
   projects: STUDIO_STATS.projects,
 } as const;
@@ -36,9 +37,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
   const { lang, tr } = useLanguage();
   const reducedMotion = useReducedMotion();
   const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const [locationNums, setLocationNums] = useState({ years: 0, projects: 0 });
-  const locationStatsAnimatedRef = useRef(false);
-  const locationStatsRef = useRef<HTMLUListElement | null>(null);
+  const [proofNums, setProofNums] = useState({ years: 0, projects: 0 });
+  const proofAnimatedRef = useRef(false);
+  const aboutProofRef = useRef<HTMLUListElement | null>(null);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
@@ -53,33 +54,38 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
-  // تأثير العد للأرقام في قسم الخريطة عند ظهور القسم
+  // Count-up for About proof figures when the strip enters view
   useEffect(() => {
-    const el = locationStatsRef.current;
-    if (!el || locationStatsAnimatedRef.current) return;
+    if (reducedMotion) {
+      setProofNums({ years: ABOUT_PROOF.years, projects: ABOUT_PROOF.projects });
+      return;
+    }
+
+    const el = aboutProofRef.current;
+    if (!el || proofAnimatedRef.current) return;
     const obj = { years: 0, projects: 0 };
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (!entry.isIntersecting || locationStatsAnimatedRef.current) return;
-        locationStatsAnimatedRef.current = true;
+        if (!entry.isIntersecting || proofAnimatedRef.current) return;
+        proofAnimatedRef.current = true;
         gsap.to(obj, {
-          years: LOCATION_STATS.years,
-          projects: LOCATION_STATS.projects,
+          years: ABOUT_PROOF.years,
+          projects: ABOUT_PROOF.projects,
           duration: 1.8,
           ease: "power2.out",
           onUpdate: () => {
-            setLocationNums({
+            setProofNums({
               years: Math.floor(obj.years),
               projects: Math.floor(obj.projects),
             });
           },
         });
       },
-      { threshold: 0.25, rootMargin: "0px" }
+      { threshold: 0.35, rootMargin: "0px" },
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [reducedMotion]);
 
   const serviceImagesById: Record<string, string> = {
     interior: "/interior/download%20(2).jpg",
@@ -259,6 +265,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
         root.querySelectorAll(`.${styles.aboutHeadline} span`),
       );
       const aboutLead = root.querySelector<HTMLElement>(`.${styles.aboutLead}`);
+      const aboutProofItems = gsap.utils.toArray<HTMLElement>(
+        root.querySelectorAll(`.${styles.aboutProofItem}`),
+      );
       const aboutPillarsList = root.querySelector<HTMLElement>(`.${styles.aboutPillars}`);
       const aboutPillars = gsap.utils.toArray<HTMLElement>(
         root.querySelectorAll(`.${styles.aboutPillar}`),
@@ -286,6 +295,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
         kicker,
         ...headlineLines,
         aboutLead,
+        ...aboutProofItems,
         ...pillarCopyTargets,
         aboutMotto,
       ].filter(Boolean) as HTMLElement[];
@@ -303,6 +313,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
       if (kicker) gsap.set(kicker, { autoAlpha: 0, y: 18 });
       if (headlineLines.length) gsap.set(headlineLines, { autoAlpha: 0, y: 36 });
       if (aboutLead) gsap.set(aboutLead, { autoAlpha: 0, y: 26, filter: "blur(5px)" });
+      if (aboutProofItems.length) gsap.set(aboutProofItems, { autoAlpha: 0, y: 16 });
       if (pillarIndices.length) gsap.set(pillarIndices, { autoAlpha: 0, y: 22, x: rtl ? 14 : -14 });
       if (pillarTitles.length) gsap.set(pillarTitles, { autoAlpha: 0, y: 18 });
       if (pillarTexts.length) gsap.set(pillarTexts, { autoAlpha: 0, y: 14, filter: "blur(4px)" });
@@ -341,6 +352,13 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
           aboutLead,
           { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.85 },
           0.34,
+        );
+      }
+      if (aboutProofItems.length) {
+        timeline.to(
+          aboutProofItems,
+          { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08 },
+          0.48,
         );
       }
       if (aboutPillars.length && aboutPillarsList) {
@@ -425,7 +443,6 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
       const storytellingTargets = gsap.utils.toArray<HTMLElement>(
         [
           `.${styles.panelContent}:not(.${styles.heroContent}) > *`,
-          `.${styles.locationInfoCards} article`,
           `.${styles.contactFormPanel}`,
         ].join(","),
       );
@@ -507,6 +524,41 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                       )}
                     </p>
                   </header>
+
+                  <ul
+                    className={styles.aboutProof}
+                    ref={aboutProofRef}
+                    aria-label={tr("Studio credentials", "مؤهلات الاستوديو")}
+                  >
+                    {getStudioStatEntries(lang).map((stat) => {
+                      const value =
+                        stat.key === "experience"
+                          ? String(proofNums.years)
+                          : stat.key === "projects"
+                            ? `${proofNums.projects}+`
+                            : stat.value;
+
+                      return (
+                        <li
+                          key={stat.key}
+                          className={styles.aboutProofItem}
+                        >
+                          <span
+                            className={
+                              stat.display === "phrase"
+                                ? styles.aboutProofValuePhrase
+                                : styles.aboutProofValue
+                            }
+                          >
+                            {value}
+                          </span>
+                          {stat.label ? (
+                            <span className={styles.aboutProofLabel}>{stat.label}</span>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
 
                   <ul className={styles.aboutPillars} aria-label={tr("Studio principles", "مبادئ الاستوديو")}>
                     <li className={styles.aboutPillar}>
@@ -640,13 +692,13 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                           {tr(service.description, serviceDescriptionArById[service.id] ?? service.description)}
                         </p>
                         <div className={styles.serviceActions}>
-                          <a
+                          <Link
                             href={`/gallery?category=${service.id}`}
                             className={styles.serviceGalleryButton}
                           >
                             <span>{tr("Gallery", "المعرض")}</span>
                             <span aria-hidden="true">→</span>
-                          </a>
+                          </Link>
                           <a href={`/request-service/${service.id}`} className={styles.serviceRequestButton}>
                             <span>
                               {tr("Request", "طلب")}{" "}
@@ -668,93 +720,13 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
           </div>
         </section>
 
-        <div className={styles.locationContactRow}>
-        <section id="location" className={`${styles.panel} ${styles.locationPanel}`}>
-          <div className={styles.panelContent}>
-            <div className={styles.locationSection}>
-              <header className={styles.locationHeader}>
-                <span className={styles.panelIndex} aria-hidden>
-                  04
-                </span>
-                <p className={styles.kicker}>{tr("Studio", "الاستوديو")}</p>
-                <h2 className={styles.locationHeadline}>{tr("Our Location", "موقعنا")}</h2>
-                <p className={styles.locationLead}>
-                  {tr(
-                    "Visit us in Ramallah or start your project remotely — we work with clients across the region and worldwide.",
-                    "زُرنا في رام الله أو ابدأ مشروعك عن بُعد — نعمل مع عملاء في المنطقة وحول العالم.",
-                  )}
-                </p>
-              </header>
-
-              <ul className={styles.locationStatsBand} ref={locationStatsRef} aria-label={tr("Studio reach", "انتشار الاستوديو")}>
-                {getStudioStatEntries(lang).map((stat, index) => {
-                  const value =
-                    stat.key === "experience"
-                      ? String(locationNums.years)
-                      : stat.key === "projects"
-                        ? `${locationNums.projects}+`
-                        : stat.value;
-
-                  return (
-                    <li
-                      key={stat.key}
-                      className={`${styles.locationStat} ${stat.display === "phrase" ? styles.locationStatPhrase : ""}`}
-                    >
-                      {stat.prefix ? <span className={styles.locationStatPrefix}>{stat.prefix}</span> : null}
-                      <span
-                        className={
-                          stat.display === "phrase" ? styles.locationStatValuePhrase : styles.locationStatValue
-                        }
-                      >
-                        {value}
-                      </span>
-                      {stat.label ? <span className={styles.locationStatLabel}>{stat.label}</span> : null}
-                      {index < 2 ? <span className={styles.locationStatDivider} aria-hidden="true" /> : null}
-                    </li>
-                  );
-                })}
-              </ul>
-
-              <div className={styles.locationStage}>
-                <div className={styles.locationCopy}>
-                  <p className={styles.locationCity}>{tr("Ramallah, Palestine", "رام الله، فلسطين")}</p>
-                  <address className={styles.locationAddress}>
-                    <span>{tr("Al Kulliyah Al Ahliyah Street", "شارع الكلية الأهلية")}</span>
-                  </address>
-                  <p className={styles.locationHours}>
-                    {tr("Consultations by appointment", "الاستشارات بموعد مسبق")}
-                  </p>
-                  <div className={styles.locationLinks}>
-                    <a
-                      href="https://www.google.com/maps/search/?api=1&query=Al+Kulliyah+Al+Ahliyah+Street+Ramallah+Palestine"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.locationCta}
-                    >
-                      <span>{tr("Open in Google Maps", "فتح في خرائط جوجل")}</span>
-                      <span aria-hidden="true">→</span>
-                    </a>
-                    <a href="#contact" className={styles.locationCtaSecondary}>
-                      <span>{tr("Request a consultation", "طلب استشارة")}</span>
-                      <span aria-hidden="true">→</span>
-                    </a>
-                  </div>
-                </div>
-                <div className={styles.locationMapWrap}>
-                  <LocationMap />
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <section id="contact" className={`${styles.panel} ${styles.contactFooterPanel}`}>
           <div className={styles.panelContent}>
             <div className={styles.contactFooterSection}>
               <div className={styles.contactFooterStage}>
                 <div className={styles.contactFooterIntro}>
                   <span className={styles.panelIndex} aria-hidden>
-                    05
+                    04
                   </span>
                   <p className={styles.kicker}>{tr("Contact", "تواصل")}</p>
                   <h2 className={styles.contactFooterHeadline}>
@@ -762,8 +734,8 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                   </h2>
                   <p className={styles.contactFooterLead}>
                     {tr(
-                      "Tell us about your space, timeline, and vision — we respond with clarity and care.",
-                      "أخبرنا عن مساحتك والجدول الزمني ورؤيتك — نرد بوضوح واهتمام.",
+                      "Tell us about your space — visit the studio in Ramallah or begin remotely. We work with clients worldwide.",
+                      "أخبرنا عن مساحتك — زُر الاستوديو في رام الله أو ابدأ عن بُعد. نعمل مع عملاء حول العالم.",
                     )}
                   </p>
                   <div className={styles.contactChannels}>
@@ -775,6 +747,25 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                       <span className={styles.contactChannelLabel}>{tr("Phone", "الهاتف")}</span>
                       <span>+972 56-912-6200</span>
                     </a>
+                    <div className={styles.contactStudioChannel}>
+                      <span className={styles.contactChannelLabel}>{tr("Studio", "الاستوديو")}</span>
+                      <address className={styles.contactStudioAddress}>
+                        <span>{tr("Al Kulliyah Al Ahliyah Street", "شارع الكلية الأهلية")}</span>
+                        <span>{tr("Ramallah, Palestine", "رام الله، فلسطين")}</span>
+                      </address>
+                      <p className={styles.contactStudioHours}>
+                        {tr("Consultations by appointment", "الاستشارات بموعد مسبق")}
+                      </p>
+                      <a
+                        href={GOOGLE_MAPS_STUDIO}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.contactDirections}
+                      >
+                        <span>{tr("Directions", "الاتجاهات")}</span>
+                        <span aria-hidden="true">→</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -830,10 +821,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                 <nav className={styles.contactFooterNav} aria-label={tr("Site navigation", "تنقّل الموقع")}>
                   <p className={styles.footerBlockTitle}>{tr("Explore", "استكشف")}</p>
                   <a href="#hero">{tr("Home", "الرئيسية")}</a>
-                  <a href="/gallery">{tr("Gallery", "المعرض")}</a>
+                  <Link href="/gallery">{tr("Gallery", "المعرض")}</Link>
                   <a href="#about">{tr("About", "من نحن")}</a>
                   <a href="#services">{tr("Services", "الخدمات")}</a>
-                  <a href="#location">{tr("Location", "الموقع")}</a>
                   <a href="#contact">{tr("Contact", "تواصل")}</a>
                 </nav>
 
@@ -858,8 +848,6 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
             </div>
           </div>
         </section>
-
-        </div>
 
       </main>
     </div>

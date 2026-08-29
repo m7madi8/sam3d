@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { useLanguage } from "@/components/site/LanguageProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import styles from "./Loader.module.css";
-import brandLogo from "../../../white-logo.png";
+import brandLogo from "@/assets/brand/white-logo.png";
 
 export const LOADER_DURATION_MS = 2600;
 export const LOADER_FADE_MS = 550;

@@ -3,17 +3,20 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { buildGalleryCategories, type GalleryProject } from "@/content/gallery";
 import { getSiteMenuItems } from "@/content/navigation";
 import { STUDIO_STATS } from "@/content/studio";
 import FullscreenMenu from "@/components/navigation/FullscreenMenu";
-import { useLanguage } from "@/components/site/LanguageProvider";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
-import brandLogo from "../../../white-logo.png";
+import brandLogo from "@/assets/brand/white-logo.png";
 import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
 import styles from "./gallery.module.css";
+
+gsap.registerPlugin(ScrollTrigger);
+
 const THEME_STORAGE_KEY = "sam3d-theme";
 
 const categories = buildGalleryCategories();
@@ -27,20 +30,18 @@ const SUBTITLE_AR: Record<string, string> = {
   Commercial: "تجاري",
 };
 
-export function GalleryExperience() {
+export function GalleryExperience({ initialCategory }: { initialCategory?: string }) {
   const { tr } = useLanguage();
   const reducedMotion = useReducedMotion();
-  const searchParams = useSearchParams();
   const rootRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Record<string, HTMLElement | null>>({});
   const zoomImageWrapRef = useRef<HTMLDivElement | null>(null);
   const isClosingRef = useRef(false);
 
   const [theme, setTheme] = useState<"light" | "dark">("dark");
-  const [activeFilter, setActiveFilter] = useState<string>(() => {
-    const category = searchParams.get("category");
-    return category && VALID_CATEGORY_IDS.has(category) ? category : ALL_ID;
-  });
+  const [activeFilter, setActiveFilter] = useState<string>(() =>
+    initialCategory && VALID_CATEGORY_IDS.has(initialCategory) ? initialCategory : ALL_ID,
+  );
   const [zoomProject, setZoomProject] = useState<GalleryProject | null>(null);
   const [zoomPanelReady, setZoomPanelReady] = useState(false);
   const [sourceId, setSourceId] = useState<string | null>(null);
@@ -55,12 +56,10 @@ export function GalleryExperience() {
     [],
   );
 
-  useEffect(() => {
-    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-    if (stored === "dark" || stored === "light") {
-      const id = requestAnimationFrame(() => setTheme(stored));
-      return () => cancelAnimationFrame(id);
-    }
+  useLayoutEffect(() => {
+    document.documentElement.setAttribute("data-theme", "dark");
+    window.localStorage.setItem(THEME_STORAGE_KEY, "dark");
+    setTheme("dark");
   }, []);
 
   useEffect(() => {
@@ -70,29 +69,109 @@ export function GalleryExperience() {
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-    if (!root || reducedMotion) return;
-    gsap.set(root.querySelectorAll("[data-gallery-entry]"), { opacity: 0, y: 16 });
-  }, [activeFilter, reducedMotion]);
-
-  useEffect(() => {
-    const root = rootRef.current;
     if (!root) return;
+
+    const intro = root.querySelectorAll("[data-gallery-entry]");
+    const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-gallery-section]"));
+    const cards = Array.from(root.querySelectorAll<HTMLElement>("[data-gallery-card]"));
+
     if (reducedMotion) {
-      root.querySelectorAll<HTMLElement>("[data-gallery-entry]").forEach((el) => {
-        el.style.opacity = "1";
-        el.style.transform = "none";
-      });
+      gsap.set([...intro, ...sections, ...cards], { clearProps: "all" });
       return;
     }
-    const els = root.querySelectorAll("[data-gallery-entry]");
-    gsap.to(els, {
-      opacity: 1,
-      y: 0,
-      duration: 0.5,
-      stagger: 0.06,
-      ease: "power3.out",
-      delay: 0.06,
-    });
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        intro,
+        { autoAlpha: 0, y: 22 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.72,
+          stagger: 0.1,
+          ease: "power3.out",
+          delay: 0.04,
+        },
+      );
+
+      gsap.set(sections, { autoAlpha: 0, y: 28 });
+      ScrollTrigger.batch(sections, {
+        start: "top 90%",
+        once: true,
+        onEnter: (batch) => {
+          gsap.to(batch, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.7,
+            stagger: 0.08,
+            ease: "power3.out",
+          });
+        },
+      });
+
+      cards.forEach((card) => {
+        const media = card.querySelector("[data-gallery-card-media]");
+        const copy = card.querySelector("[data-gallery-card-copy]");
+        gsap.set(card, { autoAlpha: 0, y: 64, scale: 0.94, transformOrigin: "50% 85%" });
+        if (media) gsap.set(media, { scale: 1.2 });
+        if (copy) gsap.set(copy, { autoAlpha: 0, y: 16 });
+      });
+
+      ScrollTrigger.batch(cards, {
+        start: "top 92%",
+        once: true,
+        interval: 0.1,
+        batchMax: 5,
+        onEnter: (batch) => {
+          batch.forEach((card, index) => {
+            const media = card.querySelector("[data-gallery-card-media]");
+            const copy = card.querySelector("[data-gallery-card-copy]");
+            const delay = index * 0.09;
+
+            gsap.to(card, {
+              autoAlpha: 1,
+              y: 0,
+              scale: 1,
+              duration: 0.92,
+              delay,
+              ease: "power3.out",
+              onComplete: () => {
+                gsap.set(card, { clearProps: "transform" });
+              },
+            });
+
+            if (media) {
+              gsap.to(media, {
+                scale: 1,
+                duration: 1.25,
+                delay,
+                ease: "power2.out",
+                onComplete: () => {
+                  gsap.set(media, { clearProps: "transform" });
+                },
+              });
+            }
+
+            if (copy) {
+              gsap.to(copy, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.55,
+                delay: delay + 0.22,
+                ease: "power2.out",
+              });
+            }
+          });
+        },
+      });
+    }, root);
+
+    const refreshId = window.requestAnimationFrame(() => ScrollTrigger.refresh());
+
+    return () => {
+      window.cancelAnimationFrame(refreshId);
+      ctx.revert();
+    };
   }, [activeFilter, reducedMotion]);
 
   const setFilter = (id: string) => {
@@ -196,10 +275,13 @@ export function GalleryExperience() {
       <FullscreenMenu
         brand="SAMARAMMAR"
         logoSrc={brandLogo}
-        logoAlt="samarammar"
+        logoAlt={tr("Samarammar logo", "شعار سمر عمار")}
         items={menuItems}
+        controlsVisible
         showLangToggle
         showThemeToggle
+        variant="hero"
+        pinLangToggle
         theme={theme}
         setTheme={setTheme}
       />
@@ -285,9 +367,8 @@ export function GalleryExperience() {
               className={styles.gallerySection}
               id={category.id}
               aria-labelledby={`gallery-${category.id}`}
-              data-gallery-entry
             >
-              <div className={styles.gallerySectionHead}>
+              <div className={styles.gallerySectionHead} data-gallery-section>
                 <div className={styles.gallerySectionTitleWrap}>
                   <span className={styles.gallerySectionIndex} aria-hidden>
                     {String(sectionIndex + 1).padStart(2, "0")}
@@ -306,6 +387,7 @@ export function GalleryExperience() {
                   <article
                     key={project.id}
                     className={styles.card}
+                    data-gallery-card
                     ref={(el) => {
                       cardRefs.current[project.id] = el;
                     }}
@@ -319,7 +401,7 @@ export function GalleryExperience() {
                       )}
                       onClick={() => openQuickView(project)}
                     />
-                    <div className={styles.cardMedia}>
+                    <div className={styles.cardMedia} data-gallery-card-media>
                       <Image
                         src={project.image}
                         alt=""
@@ -332,7 +414,7 @@ export function GalleryExperience() {
                         {String(cardIndex + 1).padStart(2, "0")}
                       </span>
                     </div>
-                    <div className={styles.cardCopy}>
+                    <div className={styles.cardCopy} data-gallery-card-copy>
                       <div className={styles.cardTopLine}>
                         <span>
                           {project.photosCount ?? 10} {tr("photos", "صورة")}

@@ -2,11 +2,11 @@
 
 import dynamic from "next/dynamic";
 import { useCallback, useState } from "react";
-import { Loader } from "@/components/site/Loader";
+import { Loader } from "@/components/layout/Loader";
 
 const NarrativeExperience = dynamic(
   () =>
-    import("@/components/site/NarrativeExperience").then((mod) => ({
+    import("@/components/home/NarrativeExperience").then((mod) => ({
       default: mod.NarrativeExperience,
     })),
   { ssr: false },

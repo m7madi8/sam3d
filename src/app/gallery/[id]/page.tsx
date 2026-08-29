@@ -14,14 +14,14 @@ export async function generateMetadata({ params }: PageProps) {
 
   if (!project) {
     return createPageMetadata({
-      title: `Project | samarammar`,
+      title: "Project",
       description: "samarammar design project.",
       path: `/gallery/${id}`,
     });
   }
 
   return createPageMetadata({
-    title: `${project.titleEn} | ${project.titleAr} — samarammar`,
+    title: project.titleEn,
     description: `${project.titleEn} — ${project.subtitle ?? "Design"} project by samarammar. | ${project.titleAr} — مشروع ${project.subtitle ?? "تصميم"} من سمر عمار.`,
     path: `/gallery/${id}`,
     image: getGalleryProjectImagePath(project.image),
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps) {
 
 export default function GalleryProjectPage({ params }: PageProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[var(--surface-primary)]" />}>
+    <Suspense fallback={<div aria-hidden style={{ minHeight: "100svh", backgroundColor: "#161514" }} />}>
       <ProjectDetailView />
     </Suspense>
   );

@@ -1,4 +1,4 @@
-/** Verified studio facts — single source for hero, location, and marketing copy. */
+/** Verified studio facts — single source for about proof and marketing copy. */
 export const STUDIO_STATS = {
   yearsExperience: 10,
   yearsDisplay: "10",
@@ -12,7 +12,6 @@ export type StudioStatEntry = {
   key: StudioStatKey;
   value: string;
   label: string;
-  prefix?: string;
   display: "numeric" | "phrase";
 };
 
@@ -20,14 +19,8 @@ export function getStudioStatEntries(locale: "en" | "ar"): StudioStatEntry[] {
   if (locale === "ar") {
     return [
       { key: "experience", value: STUDIO_STATS.yearsDisplay, label: "سنوات خبرة", display: "numeric" },
-      {
-        key: "projects",
-        value: STUDIO_STATS.projectsDisplay,
-        prefix: "أكثر من",
-        label: "مشروع",
-        display: "numeric",
-      },
-      { key: "global", value: "حول العالم", label: "", display: "phrase" },
+      { key: "projects", value: STUDIO_STATS.projectsDisplay, label: "مشروع", display: "numeric" },
+      { key: "global", value: "حول العالم", label: "انتشار الاستوديو", display: "phrase" },
     ];
   }
 
@@ -41,10 +34,9 @@ export function getStudioStatEntries(locale: "en" | "ar"): StudioStatEntry[] {
     {
       key: "projects",
       value: STUDIO_STATS.projectsDisplay,
-      prefix: "More than",
       label: "Projects",
       display: "numeric",
     },
-    { key: "global", value: "Worldwide", label: "Around the world", display: "phrase" },
+    { key: "global", value: "Worldwide", label: "Studio reach", display: "phrase" },
   ];
 }
