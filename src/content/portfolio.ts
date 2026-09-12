@@ -3,6 +3,9 @@ import { COMMERCIAL_PROJECT_IMAGES } from "@/content/commercialImages";
 import { EXTERIOR_PROJECT_IMAGES } from "@/content/exteriorImages";
 import { INTERIOR_PROJECT_IMAGES } from "@/content/interiorImages";
 import { LANDSCAPE_PROJECT_IMAGES } from "@/content/landscapeImages";
+import { LANDSCAPE_01_IMAGES } from "@/content/landscape01Images";
+import { LANDSCAPE_02_IMAGES } from "@/content/landscape02Images";
+import { LANDSCAPE_03_IMAGES } from "@/content/landscape03Images";
 import { PALM_VILLA_IMAGES } from "@/content/palmVillaImages";
 
 type PortfolioImage = StaticImageData | string;
@@ -84,16 +87,18 @@ export function buildPortfolioProjects(): PortfolioProject[] {
     };
   });
   const landscape: PortfolioProject[] = LANDSCAPE_PROJECT_IMAGES.map((img, i) => {
-    const titles = ["Rooftop Garden", "Pool Terrace", "Shade Walk", "Inner Courtyard", "Front Layout"];
+    const titles = ["Wedding Hall", "Palace Garden", "Villa Garden", "Inner Courtyard", "Front Layout"];
     const descriptions = [
-      "Rooftop garden with native planting.",
-      "Infinity pool and terrace with desert views.",
-      "Shaded walkway with water feature.",
+      "Wedding hall landscape with refined outdoor zones, planting, and ceremonial approach.",
+      "Palace garden with layered planting, stone paths, and formal outdoor composition.",
+      "Villa garden with private outdoor living, planting, and integrated landscape design.",
       "Central courtyard with olive trees.",
       "Front garden and approach design.",
     ];
     const areas = ["2200 sq. ft.", "3500 sq. ft.", undefined, undefined, undefined];
     const photosCounts = [9, 11, 7, 13, 10];
+    const landscapeRealSets = [LANDSCAPE_01_IMAGES, LANDSCAPE_02_IMAGES, LANDSCAPE_03_IMAGES];
+    const realImages = landscapeRealSets[i];
     return {
       id: `landscape-${i + 1}`,
       title: titles[i],
@@ -104,9 +109,10 @@ export function buildPortfolioProjects(): PortfolioProject[] {
       area: areas[i],
       client: "Private client",
       ...defaultSpecs,
-      thumbnail: img,
-      gallery: [img],
-      photosCount: photosCounts[i],
+      thumbnail: realImages ? realImages[0] : img,
+      gallery: realImages ? realImages : [img],
+      photosCount: realImages ? realImages.length : photosCounts[i],
+      originalSize: realImages ? true : undefined,
     };
   });
   const exterior: PortfolioProject[] = EXTERIOR_PROJECT_IMAGES.map((img, i) => {

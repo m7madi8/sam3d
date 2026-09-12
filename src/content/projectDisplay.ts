@@ -1,13 +1,13 @@
 const PROJECT_TITLES_EN: Record<string, string[]> = {
   interior: ["Palm Villa", "Duplex Apartment", "Guest House", "Reception Hall", "Modern Living"],
-  landscape: ["Rooftop Garden", "Pool Terrace", "Shade Walk", "Inner Courtyard", "Front Layout"],
+  landscape: ["Wedding Hall", "Palace Garden", "Villa Garden", "Inner Courtyard", "Front Layout"],
   architectural: ["Building A Facade", "East Wing", "Main Entrance", "Residential Tower", "Office Block"],
   commercial: ["Jewelry Store", "Office", "Restaurant", "Cafe", "Clothing Store"],
 };
 
 const PROJECT_TITLES_AR: Record<string, string[]> = {
   interior: ["فيلا النخيل", "شقة دوبلكس", "بيت الضيافة", "قاعة استقبال", "معيشة عصرية"],
-  landscape: ["حديقة السطح", "تراس المسبح", "ممشى الظل", "فناء داخلي", "تنسيق الواجهة"],
+  landscape: ["قاعة أفراح", "حديقة قصر", "حديقة فيلا", "فناء داخلي", "تنسيق الواجهة"],
   architectural: ["واجهة المبنى A", "الجناح الشرقي", "المدخل الرئيسي", "برج سكني", "مبنى مكاتب"],
   commercial: ["متجر مجوهرات", "مكتب", "مطعم", "مقهى", "متجر ملابس"],
 };

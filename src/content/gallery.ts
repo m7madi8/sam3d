@@ -3,7 +3,12 @@ import { COMMERCIAL_PROJECT_IMAGES } from "@/content/commercialImages";
 import { EXTERIOR_PROJECT_IMAGES } from "@/content/exteriorImages";
 import { INTERIOR_PROJECT_IMAGES } from "@/content/interiorImages";
 import { LANDSCAPE_PROJECT_IMAGES } from "@/content/landscapeImages";
+import { LANDSCAPE_01_IMAGES } from "@/content/landscape01Images";
+import { LANDSCAPE_02_IMAGES } from "@/content/landscape02Images";
+import { LANDSCAPE_03_IMAGES } from "@/content/landscape03Images";
 import { PALM_VILLA_IMAGES } from "@/content/palmVillaImages";
+
+const LANDSCAPE_REAL_IMAGE_SETS = [LANDSCAPE_01_IMAGES, LANDSCAPE_02_IMAGES, LANDSCAPE_03_IMAGES];
 
 export type GalleryImage = StaticImageData | string;
 
@@ -26,13 +31,13 @@ export type GalleryCategory = {
 export function buildGalleryCategories(): GalleryCategory[] {
   const projectTitlesEn: Record<string, string[]> = {
     interior: ["Palm Villa", "Duplex Apartment", "Guest House", "Reception Hall", "Modern Living"],
-    landscape: ["Rooftop Garden", "Pool Terrace", "Shade Walk", "Inner Courtyard", "Front Layout"],
+    landscape: ["Wedding Hall", "Palace Garden", "Villa Garden", "Inner Courtyard", "Front Layout"],
     architectural: ["Building A Facade", "East Wing", "Main Entrance", "Residential Tower", "Office Block"],
     commercial: ["Jewelry Store", "Office", "Restaurant", "Cafe", "Clothing Store"],
   };
   const projectTitlesAr: Record<string, string[]> = {
     interior: ["فيلا النخيل", "شقة دوبلكس", "بيت الضيافة", "قاعة استقبال", "معيشة عصرية"],
-    landscape: ["حديقة السطح", "تراس المسبح", "ممشى الظل", "فناء داخلي", "تنسيق الواجهة"],
+    landscape: ["قاعة أفراح", "حديقة قصر", "حديقة فيلا", "فناء داخلي", "تنسيق الواجهة"],
     architectural: ["واجهة المبنى A", "الجناح الشرقي", "المدخل الرئيسي", "برج سكني", "مبنى مكاتب"],
     commercial: ["متجر مجوهرات", "مكتب", "مطعم", "مقهى", "متجر ملابس"],
   };
@@ -73,8 +78,8 @@ export function buildGalleryCategories(): GalleryCategory[] {
         titleEn: projectTitlesEn.landscape[i],
         titleAr: projectTitlesAr.landscape[i],
         subtitle: projectSubtitle.landscape,
-        image: LANDSCAPE_PROJECT_IMAGES[i],
-        photosCount: photoCounts.landscape[i],
+        image: LANDSCAPE_REAL_IMAGE_SETS[i]?.[0] ?? LANDSCAPE_PROJECT_IMAGES[i],
+        photosCount: LANDSCAPE_REAL_IMAGE_SETS[i]?.length ?? photoCounts.landscape[i],
       })),
     },
     {
