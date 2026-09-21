@@ -924,6 +924,82 @@
   text-transform: uppercase;
 }
 
+:global(html[data-theme="light"]) .headerScrolled.headerHero {
+  border-bottom-color: var(--border-light);
+  background: rgb(253 251 248 / 90%);
+  box-shadow: var(--shadow-light);
+  backdrop-filter: blur(18px);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerNavLink {
+  color: rgb(31 29 26 / 72%);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerNavLink:hover,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerNavLink:focus-visible {
+  color: var(--text-primary);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerPrefButton {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  background: rgb(255 255 255 / 72%);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerPrefButton:hover,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerPrefButton:focus-visible {
+  border-color: var(--color-warm-cedar);
+  background: rgb(255 255 255 / 92%);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .headerLogo {
+  filter: brightness(0) saturate(100%);
+  opacity: 0.86;
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .menuButtonHero,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .menuButton {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  background: rgb(255 255 255 / 72%);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .menuButtonHero:hover,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .menuButtonHero:focus-visible,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .menuButton:hover,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .menuButton:focus-visible {
+  border-color: var(--color-warm-cedar);
+  background: rgb(255 255 255 / 92%);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .themeButton,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .langButton {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  background: rgb(253 251 248 / 92%);
+  box-shadow: var(--shadow-light);
+}
+
+:global(html[data-theme="light"]) .headerScrolled.headerHero .themeButtonIcon,
+:global(html[data-theme="light"]) .headerScrolled.headerHero .langIcon {
+  background: var(--color-obsidian);
+  color: var(--color-ivory);
+}
+
+:global(html[data-theme="light"]) .headerScrolled:not(.headerHero) .menuButton {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  background: rgb(253 251 248 / 92%);
+}
+
+:global(html[lang="ar"]) .headerNavLink,
+:global(html[lang="ar"]) .menuButtonText {
+  font-family: var(--font-arabic-display);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
 :global(html[data-theme="dark"]) .menuButton {
   border-color: rgb(255 248 237 / 35%);
   color: rgb(255 249 241 / 94%);

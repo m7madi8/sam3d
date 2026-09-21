@@ -594,6 +594,7 @@
 
 .contactFooterHeadline {
   margin: 0;
+  font-family: var(--font-display);
   font-size: clamp(2rem, 5vw, 3.5rem);
   font-weight: 200;
   line-height: 1.04;
@@ -818,6 +819,7 @@
   margin: 0;
   display: grid;
   gap: 0.12em;
+  font-family: var(--font-display);
   font-size: clamp(2.35rem, 5.8vw, 4.25rem);
   font-weight: 200;
   line-height: 1.02;
@@ -1024,6 +1026,7 @@
   object-fit: cover;
   object-position: center 35%;
   transform-origin: center center;
+  backface-visibility: hidden;
 }
 
 .aboutCaption {
@@ -1253,10 +1256,20 @@
   overflow: hidden;
 }
 
+.serviceMedia > span {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .serviceMedia img {
   object-fit: cover;
+  object-position: center center;
   opacity: 1;
   visibility: visible;
+  backface-visibility: hidden;
 }
 
 .serviceOverlay {
@@ -1294,15 +1307,13 @@
   gap: clamp(0.85rem, 2vh, 1.15rem);
   padding: clamp(1.15rem, 2.4vw, 1.65rem);
   border-radius: 1.2rem;
-  border: 1px solid rgb(255 255 255 / 14%);
-  background:
-    linear-gradient(145deg, rgb(38 36 34 / 42%), rgb(22 20 18 / 78%)),
-    rgb(18 16 14 / 82%);
-  backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid var(--service-panel-border);
+  background: var(--service-panel-bg);
+  backdrop-filter: blur(20px) saturate(125%);
   box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 10%),
-    0 24px 56px rgb(0 0 0 / 28%);
-  color: rgb(252 251 249 / 96%);
+    inset 0 1px 0 rgb(255 255 255 / 22%),
+    var(--shadow-soft);
+  color: var(--service-panel-color);
 }
 
 .servicePanelHead {
@@ -1311,11 +1322,12 @@
   justify-content: space-between;
   gap: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgb(255 255 255 / 12%);
+  border-bottom: 1px solid var(--service-panel-divider);
 }
 
 .serviceTitle {
   margin: 0;
+  font-family: var(--font-display);
   font-size: clamp(1.65rem, 3.8vw, 2.85rem);
   font-weight: 200;
   line-height: 1.02;
@@ -1332,7 +1344,7 @@
   font-weight: 300;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgb(200 192 182 / 88%);
+  color: var(--service-panel-subtle);
   white-space: normal;
   text-align: end;
 }
@@ -1343,7 +1355,7 @@
   font-size: clamp(0.88rem, 1.1vw, 1rem);
   font-weight: 300;
   line-height: 1.68;
-  color: rgb(232 228 222 / 92%);
+  color: var(--service-panel-muted);
 }
 
 .serviceActions {
@@ -1373,35 +1385,35 @@
 .serviceGalleryButton {
   padding: 0.5rem 0.95rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 32%);
-  color: rgb(252 251 249 / 94%);
-  background: rgb(255 255 255 / 14%);
+  border: 1px solid var(--service-gallery-border);
+  color: var(--service-gallery-color);
+  background: var(--service-gallery-bg);
   backdrop-filter: blur(10px);
-  box-shadow: 0 4px 18px rgb(0 0 0 / 16%);
+  box-shadow: var(--shadow-light);
 }
 
 .serviceRequestButton {
   padding: 0.5rem 0.95rem;
   border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 22%);
-  color: var(--color-obsidian);
-  background: linear-gradient(to bottom, rgb(252 251 249 / 98%), rgb(240 237 232 / 96%));
-  box-shadow: 0 6px 20px rgb(0 0 0 / 18%);
+  border: 1px solid var(--service-request-border);
+  color: var(--service-request-color);
+  background: var(--service-request-bg);
+  box-shadow: var(--shadow-light);
 }
 
 .serviceGalleryButton:hover,
 .serviceGalleryButton:focus-visible {
-  border-color: rgb(255 255 255 / 48%);
-  background: rgb(255 255 255 / 24%);
-  color: rgb(252 251 249 / 100%);
+  border-color: var(--color-warm-cedar);
+  background: var(--accent-hover);
+  color: var(--service-gallery-color);
   gap: 0.58rem;
   outline: none;
 }
 
 .serviceRequestButton:hover,
 .serviceRequestButton:focus-visible {
-  border-color: rgb(157 147 134 / 55%);
-  color: var(--color-obsidian);
+  border-color: var(--color-warm-cedar);
+  color: var(--service-request-color);
   gap: 0.58rem;
   outline: none;
 }
@@ -1418,7 +1430,7 @@
   font-weight: 200;
   line-height: 1;
   letter-spacing: -0.04em;
-  color: rgb(252 251 249 / 92%);
+  color: var(--service-index-color);
 }
 
 .serviceIndex i {
@@ -1630,6 +1642,110 @@
   border: 0;
   color: inherit;
   font-size: inherit;
+}
+
+:global(html[data-theme="light"]) .pageShell::before {
+  background:
+    radial-gradient(circle at 10% 8%, rgb(214 205 192 / 18%), transparent 34%),
+    radial-gradient(circle at 90% 86%, rgb(196 186 172 / 14%), transparent 38%),
+    linear-gradient(180deg, #faf8f5 0%, #f3efe8 46%, #f6f4f0 100%);
+}
+
+:global(html[data-theme="light"]) .panelIndex,
+:global(html[data-theme="light"]) .aboutIndex {
+  -webkit-text-stroke-color: rgb(111 102 92 / 22%);
+}
+
+:global(html[data-theme="light"]) .aboutMat {
+  background:
+    linear-gradient(150deg, rgb(255 255 255 / 72%), transparent 48%),
+    rgb(255 255 255 / 42%);
+  border-color: var(--border-light);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 85%),
+    var(--shadow-soft);
+}
+
+:global(html[data-theme="light"]) .aboutBadge {
+  background: rgb(253 251 248 / 88%);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-light);
+}
+
+:global(html[data-theme="light"]) .aboutPillarIndex {
+  color: var(--accent-primary);
+}
+
+:global(html[data-theme="light"]) .servicesHeading {
+  background: rgb(253 251 248 / 92%);
+  border-color: var(--border-medium);
+  color: var(--accent-primary);
+}
+
+:global(html[data-theme="light"]) .servicesBackdropLine {
+  color: rgb(31 29 26 / 10%);
+}
+
+:global(html[data-theme="light"]) .servicesBackdropLineAlt {
+  color: rgb(31 29 26 / 7%);
+}
+
+:global(html[data-theme="light"]) .serviceLayer {
+  box-shadow:
+    0 28px 64px rgb(40 36 32 / 14%),
+    inset 0 0 0 1px rgb(31 29 26 / 6%);
+}
+
+:global(html[data-theme="light"]) .contactFormPanel {
+  background:
+    linear-gradient(152deg, rgb(255 255 255 / 88%), rgb(250 247 242 / 94%)),
+    rgb(253 251 248 / 96%);
+  border-color: var(--border-medium);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 90%),
+    var(--shadow-soft);
+}
+
+:global(html[data-theme="light"]) .contactFooterMat {
+  background: rgb(255 255 255 / 38%);
+  border-color: var(--border-light);
+}
+
+:global(html[data-theme="light"]) .contactField input,
+:global(html[data-theme="light"]) .contactField textarea {
+  background: rgb(255 255 255 / 96%);
+  border-color: var(--border-medium);
+}
+
+:global(html[data-theme="light"]) .contactButton {
+  background: var(--color-obsidian);
+  border-color: var(--color-obsidian);
+  color: var(--color-ivory);
+}
+
+:global(html[data-theme="light"]) .contactButton:hover,
+:global(html[data-theme="light"]) .contactButton:focus-visible {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--color-warm-cedar);
+}
+
+:global(html[data-theme="light"]) .footerLogo {
+  filter: brightness(0) saturate(100%);
+  opacity: 0.82;
+}
+
+:global(html[data-theme="light"]) .serviceRequestButton:hover,
+:global(html[data-theme="light"]) .serviceRequestButton:focus-visible {
+  filter: brightness(1.06);
+}
+
+:global(html[lang="ar"]) .aboutHeadline,
+:global(html[lang="ar"]) .contactFooterHeadline,
+:global(html[lang="ar"]) .serviceTitle {
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.12;
 }
 
 :global(html[data-theme="dark"]) .pageShell::before {

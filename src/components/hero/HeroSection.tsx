@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
 import { forwardRef, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import gsap from "gsap";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -47,7 +47,7 @@ const SOCIAL_LINKS = [
 
 export interface HeroProps {
   discipline: string;
-  imageSrc: string;
+  imageSrc: string | StaticImageData;
   imageAlt: string;
   /** When false, hero stays hidden until loader finishes. Defaults to true. */
   introReady?: boolean;
@@ -82,7 +82,7 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
     const root = heroRef.current;
     if (!root || reducedMotion || introReady) return;
 
-    gsap.set(root.querySelector("[data-hero-intro='bg']"), { autoAlpha: 0, scale: 1.035 });
+    gsap.set(root.querySelector("[data-hero-intro='bg']"), { autoAlpha: 0, scale: 1.02 });
     gsap.set(root.querySelector("[data-hero-intro='overlay']"), { autoAlpha: 0 });
     gsap.set(root.querySelector("[data-hero-intro='index']"), { autoAlpha: 0, y: 16 });
     gsap.set(root.querySelector("[data-hero-intro='kicker']"), { autoAlpha: 0, y: 14 });
@@ -144,8 +144,9 @@ export const HeroSection = forwardRef<HTMLElement, HeroProps>(function HeroSecti
             alt=""
             fill
             priority
-            sizes={IMAGE_SIZES.fullViewport}
-            quality={IMAGE_QUALITY.hero}
+            fetchPriority="high"
+            sizes={IMAGE_SIZES.homeHero}
+            quality={IMAGE_QUALITY.home}
             className={styles.bgImage}
           />
         </div>

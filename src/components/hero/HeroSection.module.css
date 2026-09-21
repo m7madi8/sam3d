@@ -28,9 +28,18 @@
   transform-origin: 50% var(--hero-focal-y);
 }
 
+.bg > span {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .bgImage {
   object-fit: cover;
   object-position: center var(--hero-focal-y);
+  backface-visibility: hidden;
 }
 
 .overlay {
@@ -113,6 +122,7 @@
   margin: 0;
   display: grid;
   gap: 0.35em;
+  font-family: var(--font-display);
   font-size: clamp(1.15rem, 3.2vw, 1.85rem);
   line-height: 1.35;
   color: var(--hero-text);
@@ -202,8 +212,11 @@
 }
 
 .hero[data-lang="ar"] .headline {
+  font-family: var(--font-arabic-display);
+  font-weight: 600;
   font-size: clamp(1.05rem, 3.5vw, 1.65rem);
   line-height: 1.45;
+  letter-spacing: 0;
 }
 
 .hero[data-lang="ar"] .heroMicroText {

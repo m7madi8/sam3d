@@ -18,7 +18,9 @@ import { getStudioStatEntries, STUDIO_STATS } from "@/content/studio";
 import { IMAGE_QUALITY, IMAGE_SIZES } from "@/lib/imageConfig";
 import { scheduleHashScroll, scrollToHashTarget } from "@/lib/scrollToHash";
 import { getSiteMenuItems } from "@/content/navigation";
+import { HOME_HERO_IMAGE, HOME_SERVICE_IMAGES } from "@/content/homeImages";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
+import { applyThemeMeta } from "@/lib/themeMeta";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,6 +54,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+    applyThemeMeta(theme);
   }, [theme]);
 
   // Count-up for About proof figures when the strip enters view
@@ -87,14 +90,6 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     return () => obs.disconnect();
   }, [reducedMotion]);
 
-  const serviceImagesById: Record<string, string> = {
-    interior: "/interior/download%20(2).jpg",
-    landscape:
-      "/landscape/Modern%20Mansion%20Garden%20with%20Luxury%20Landscaping%20_%20Luxury%20Modern%20Mansion%20Garden%20That%20People%20Love%20it.jpg",
-    architectural:
-      "/exterior/Sleek%20black%20modern%20villa%20with%20minimal%20design%20Wallpaper.jpg",
-    commercial: "/commercial/download.jpg",
-  };
   const serviceTitleArById: Record<string, string> = {
     interior: "التصميم الداخلي",
     landscape: "اللاندسكيب",
@@ -320,7 +315,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
       if (aboutMotto) gsap.set(aboutMotto, { autoAlpha: 0, y: 18 });
       if (aboutFigure) gsap.set(aboutFigure, { autoAlpha: 0, y: 32 });
       if (aboutMat) gsap.set(aboutMat, { autoAlpha: 0, y: 20 });
-      if (aboutPortrait) gsap.set(aboutPortrait, { scale: 1.08, autoAlpha: 0.92 });
+      if (aboutPortrait) gsap.set(aboutPortrait, { scale: 1.02, autoAlpha: 0.94 });
       if (aboutCaption) gsap.set(aboutCaption, { autoAlpha: 0, y: 12 });
       if (aboutBadge) gsap.set(aboutBadge, { autoAlpha: 0, y: 22 });
 
@@ -496,7 +491,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
           ref={heroRef}
           introReady={introReady}
           discipline={tr("Dare to be different.", "تجرأ أن تكون مختلفًا.")}
-          imageSrc="/home.jpg"
+          imageSrc={HOME_HERO_IMAGE}
           imageAlt={tr(
             "Contemporary interior architecture with natural light and refined material palette",
             "عمارة داخلية معاصرة بإضاءة طبيعية ومواد مصقولة",
@@ -613,7 +608,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                         )}
                         fill
                         sizes={IMAGE_SIZES.aboutPortrait}
-                        quality={IMAGE_QUALITY.hero}
+                        quality={IMAGE_QUALITY.home}
                       />
                     </div>
                     <figcaption className={styles.aboutCaption}>Samarammar</figcaption>
@@ -665,12 +660,12 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                   >
                     <div className={styles.serviceMedia}>
                       <Image
-                        src={serviceImagesById[service.id] ?? serviceImagesById.interior}
+                        src={HOME_SERVICE_IMAGES[service.id] ?? HOME_SERVICE_IMAGES.interior}
                         alt={tr(service.title, serviceTitleArById[service.id] ?? service.title)}
                         fill
                         sizes={IMAGE_SIZES.servicePanel}
-                        priority={index === 0}
-                        quality={IMAGE_QUALITY.hero}
+                        priority={index < 2}
+                        quality={IMAGE_QUALITY.home}
                       />
                       <div className={styles.serviceOverlay} />
                     </div>

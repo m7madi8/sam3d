@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect } from "react";
+import { applyThemeMeta } from "@/lib/themeMeta";
 
 const STORAGE_KEY = "sam3d-theme";
 
@@ -15,6 +16,7 @@ export function ThemeSync() {
         ? stored
         : "dark";
     document.documentElement.setAttribute("data-theme", theme);
+    applyThemeMeta(theme);
   }, []);
   return null;
 }

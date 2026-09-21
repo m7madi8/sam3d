@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Cairo, Inter } from "next/font/google";
+import { El_Messiri, IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
 import { RootWithScroll } from "@/components/layout/RootWithScroll";
 import { ThemeSync } from "@/components/providers/ThemeSync";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
@@ -25,10 +25,17 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const cairo = Cairo({
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
   variable: "--font-arabic",
-  subsets: ["arabic", "latin"],
-  weight: ["200", "300", "400", "500", "600", "700", "800", "900", "1000"],
+  subsets: ["arabic"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+});
+
+const elMessiri = El_Messiri({
+  variable: "--font-arabic-display",
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -53,7 +60,7 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon.png" />
         <link rel="preload" href={brandLogo.src} as="image" type="image/png" />
       </head>
-      <body className={`${inter.variable} ${cairo.variable}`} suppressHydrationWarning>
+      <body className={`${inter.variable} ${ibmPlexArabic.variable} ${elMessiri.variable}`} suppressHydrationWarning>
         <Script id="sam3d-theme-init" strategy="beforeInteractive">
           {`(function(){try{var g=location.pathname.indexOf("/gallery")===0;var t=g?"dark":localStorage.getItem("sam3d-theme");document.documentElement.setAttribute("data-theme",t==="light"||t==="dark"?t:"dark");var l=localStorage.getItem("sam3d-lang");if(l==="ar"||l==="en"){document.documentElement.lang=l;document.documentElement.dir=l==="ar"?"rtl":"ltr";}}catch(e){}})();`}
         </Script>
