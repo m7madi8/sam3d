@@ -224,6 +224,15 @@
   text-transform: none;
 }
 
+@media (max-width: 1023px) {
+  .bg,
+  .index,
+  .kicker,
+  .headlineLine {
+    will-change: auto;
+  }
+}
+
 @media (max-width: 767px) {
   .content {
     inset-inline: max(1.25rem, var(--safe-left)) max(1.25rem, var(--safe-right));

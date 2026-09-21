@@ -11,6 +11,12 @@ body {
   background-color: #161514;
 }
 
+@media (max-width: 1023px) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /* Native scrollbar hidden — scroll fill bar is custom (ScrollProgress) */
 html {
   color-scheme: dark;
@@ -52,6 +58,11 @@ html[lang="ar"] {
   font-optical-sizing: auto;
   font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[dir="rtl"] body {
+  overflow-x: clip;
 }
 
 html[lang="ar"] :where(h1, h2, h3, h4) {

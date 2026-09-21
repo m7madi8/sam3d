@@ -1,6 +1,15 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from "react";
+import { notifyLocaleChange } from "@/lib/viewport";
 
 type Lang = "en" | "ar";
 
@@ -19,16 +28,22 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>("en");
 
   useLayoutEffect(() => {
+    const docLang = document.documentElement.lang;
+    if (docLang === "ar" || docLang === "en") {
+      setLang(docLang);
+      return;
+    }
     const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
     if (stored === "ar" || stored === "en") {
       setLang(stored);
     }
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, lang);
+    notifyLocaleChange();
   }, [lang]);
 
   useEffect(() => {

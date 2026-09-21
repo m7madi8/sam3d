@@ -2235,6 +2235,15 @@
 
 /* —— Mobile overflow: keep all content inside the viewport —— */
 @media (max-width: 1023px) {
+  .servicePanel {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .serviceCard {
+    contain: layout style;
+  }
+
   .aboutSection,
   .aboutStage,
   .aboutIntro,
@@ -2381,5 +2390,36 @@
   .aboutBadgeName {
     font-size: clamp(0.82rem, 3.8vw, 0.92rem);
     letter-spacing: 0.05em;
+  }
+}
+
+:global(html[lang="ar"]) .serviceTitle,
+:global(html[lang="ar"]) .aboutHeadline,
+:global(html[lang="ar"]) .contactFooterHeadline {
+  overflow-wrap: anywhere;
+  hyphens: manual;
+}
+
+@media (max-width: 767px) {
+  :global(html[lang="ar"]) .serviceTitle {
+    font-size: clamp(1.05rem, 5.6vw, 1.32rem);
+    line-height: 1.22;
+  }
+
+  :global(html[lang="ar"]) .serviceDescription {
+    line-height: 1.62;
+    max-width: 100%;
+  }
+
+  :global(html[lang="ar"]) .serviceScrollHint {
+    letter-spacing: 0.06em;
+  }
+
+  :global(html[lang="ar"]) .aboutHeadline {
+    line-height: 1.14;
+  }
+
+  :global(html[lang="ar"]) .contactFooterHeadline {
+    line-height: 1.1;
   }
 }

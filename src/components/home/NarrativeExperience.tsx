@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
-import Lenis from "lenis";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { services } from "@/content/capsules";
@@ -21,6 +21,7 @@ import { getSiteMenuItems } from "@/content/navigation";
 import { HOME_HERO_IMAGE, HOME_SERVICE_IMAGES } from "@/content/homeImages";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 import { applyThemeMeta } from "@/lib/themeMeta";
+import { isMobileLikeViewport, LOCALE_CHANGE_EVENT } from "@/lib/viewport";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -103,7 +104,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     architectural: "حلول معمارية دقيقة تحقق التوازن بين الشكل والاستخدام.",
     commercial: "مساحات تجارية عملية تعزز تجربة العميل وتدفق العمل.",
   };
-  const menuItems = getSiteMenuItems(tr);
+  const menuItems = useMemo(() => getSiteMenuItems(tr), [lang, tr]);
 
   const heroRef = useRef<HTMLElement | null>(null);
   const aboutRef = useRef<HTMLElement | null>(null);
@@ -115,28 +116,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
   const lenisRef = useRef<InstanceType<typeof Lenis> | null>(null);
 
   useEffect(() => {
-    const lenis =
-      window.__lenis ??
-      new Lenis({
-        duration: 1.5,
-        smoothWheel: true,
-        touchMultiplier: 1.1,
-      });
-    const ownsLenis = !window.__lenis;
+    if (reducedMotion) return;
 
-    lenis.on("scroll", ScrollTrigger.update);
-    lenisRef.current = lenis;
-    if (ownsLenis) window.__lenis = lenis;
-
-    let rafId = 0;
-    const raf = (time: number) => {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    };
-    rafId = requestAnimationFrame(raf);
-
-    const isMobile = window.matchMedia("(max-width: 1023px)").matches;
-
+    const isMobile = isMobileLikeViewport();
     let ctx: gsap.Context | undefined;
     let cancelled = false;
 
@@ -160,25 +142,25 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
       }
 
       ctx = gsap.context(() => {
-        const perCardVh = isMobile ? 0.92 : 1;
+        const perCardVh = isMobile ? 0.88 : 1;
         const sectionScrollSpan = window.innerHeight * cards.length * perCardVh;
 
         cards.forEach((card, index) => {
-          gsap.set(card, { zIndex: index + 1, autoAlpha: 1 });
+          gsap.set(card, { zIndex: index + 1, autoAlpha: 1, force3D: true });
           gsap.set(card, { yPercent: index === 0 ? 0 : 108 });
           gsap.set(layers[index], {
             scale: 1,
             borderRadius: 0,
-            boxShadow: "0 28px 56px rgb(16 12 9 / 28%)",
+            boxShadow: isMobile ? "0 12px 32px rgb(16 12 9 / 18%)" : "0 28px 56px rgb(16 12 9 / 28%)",
           });
           gsap.set(copy[index], { opacity: index === 0 ? 1 : 0 });
         });
 
         const slot = 1;
-        const transitionLead = isMobile ? 0.18 : 0.22;
-        const dCopyOut = isMobile ? 0.22 : 0.28;
-        const dCard = isMobile ? 0.42 : 0.55;
-        const dCopyIn = isMobile ? 0.28 : 0.35;
+        const transitionLead = isMobile ? 0.16 : 0.22;
+        const dCopyOut = isMobile ? 0.18 : 0.28;
+        const dCard = isMobile ? 0.36 : 0.55;
+        const dCopyIn = isMobile ? 0.22 : 0.35;
 
         const timeline = gsap.timeline({
           defaults: { ease: "power2.inOut", force3D: true },
@@ -187,12 +169,13 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
             start: "top top",
             end: () => `+=${sectionScrollSpan}`,
             pin: servicesRef.current,
-            pinReparent: true,
-            scrub: isMobile ? 0.9 : 1.1,
-            anticipatePin: 0,
+            pinReparent: !isMobile,
+            scrub: isMobile ? true : 1.05,
+            anticipatePin: isMobile ? 1 : 0,
             pinSpacing: true,
             refreshPriority: 10,
             invalidateOnRefresh: true,
+            fastScrollEnd: isMobile,
           },
         });
 
@@ -218,17 +201,40 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
       requestAnimationFrame(() => ScrollTrigger.refresh());
     };
 
-    requestAnimationFrame(setupServices);
+    const start = () => {
+      if (cancelled) return;
+      lenisRef.current = window.__lenis ?? null;
+      setupServices();
+    };
+
+    if (isMobile) {
+      start();
+    } else {
+      const waitForLenis = () => {
+        if (cancelled) return;
+        if (window.__lenis) {
+          start();
+          return;
+        }
+        requestAnimationFrame(waitForLenis);
+      };
+      waitForLenis();
+    }
+
+    const refreshLayout = () => {
+      requestAnimationFrame(() => ScrollTrigger.refresh());
+    };
+    window.addEventListener(LOCALE_CHANGE_EVENT, refreshLayout);
+    window.addEventListener("resize", refreshLayout, { passive: true });
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(rafId);
+      window.removeEventListener(LOCALE_CHANGE_EVENT, refreshLayout);
+      window.removeEventListener("resize", refreshLayout);
       ctx?.revert();
       lenisRef.current = null;
-      if (ownsLenis && window.__lenis === lenis) delete window.__lenis;
-      if (ownsLenis) lenis.destroy();
     };
-  }, []);
+  }, [reducedMotion]);
 
   useEffect(() => {
     const cleanupScheduled = scheduleHashScroll(lenisRef.current);
@@ -249,6 +255,9 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
   useEffect(() => {
     const root = aboutRef.current;
     if (!root) return;
+
+    const isMobile = isMobileLikeViewport();
+    const useBlurMotion = !reducedMotion && !isMobile;
 
     const ctx = gsap.context(() => {
       const rtl = document.documentElement.dir === "rtl";
@@ -307,11 +316,23 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
       if (aboutIndex) gsap.set(aboutIndex, { autoAlpha: 0, x: slideX });
       if (kicker) gsap.set(kicker, { autoAlpha: 0, y: 18 });
       if (headlineLines.length) gsap.set(headlineLines, { autoAlpha: 0, y: 36 });
-      if (aboutLead) gsap.set(aboutLead, { autoAlpha: 0, y: 26, filter: "blur(5px)" });
+      if (aboutLead) {
+        gsap.set(aboutLead, {
+          autoAlpha: 0,
+          y: 26,
+          filter: useBlurMotion ? "blur(5px)" : "none",
+        });
+      }
       if (aboutProofItems.length) gsap.set(aboutProofItems, { autoAlpha: 0, y: 16 });
       if (pillarIndices.length) gsap.set(pillarIndices, { autoAlpha: 0, y: 22, x: rtl ? 14 : -14 });
       if (pillarTitles.length) gsap.set(pillarTitles, { autoAlpha: 0, y: 18 });
-      if (pillarTexts.length) gsap.set(pillarTexts, { autoAlpha: 0, y: 14, filter: "blur(4px)" });
+      if (pillarTexts.length) {
+        gsap.set(pillarTexts, {
+          autoAlpha: 0,
+          y: 14,
+          filter: useBlurMotion ? "blur(4px)" : "none",
+        });
+      }
       if (aboutMotto) gsap.set(aboutMotto, { autoAlpha: 0, y: 18 });
       if (aboutFigure) gsap.set(aboutFigure, { autoAlpha: 0, y: 32 });
       if (aboutMat) gsap.set(aboutMat, { autoAlpha: 0, y: 20 });
@@ -431,9 +452,11 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     }, aboutRef);
 
     return () => ctx.revert();
-  }, [reducedMotion]);
+  }, [reducedMotion, lang]);
 
   useEffect(() => {
+    if (reducedMotion || isMobileLikeViewport()) return;
+
     const ctx = gsap.context(() => {
       const storytellingTargets = gsap.utils.toArray<HTMLElement>(
         [
@@ -447,22 +470,17 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
 
         gsap.fromTo(
           element,
-          {
-            y: 24,
-            autoAlpha: 0,
-            filter: "blur(3px)",
-          },
+          { y: 20, autoAlpha: 0 },
           {
             y: 0,
             autoAlpha: 1,
-            filter: "blur(0px)",
-            duration: 1.25,
-            ease: "sine.out",
+            duration: 0.85,
+            ease: "power2.out",
             scrollTrigger: {
               trigger: element,
-              start: "top 88%",
-              end: "top 50%",
-              scrub: 1.25,
+              start: "top 90%",
+              toggleActions: "play none none none",
+              once: true,
             },
           },
         );
@@ -470,7 +488,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
     });
 
     return () => ctx.revert();
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <div className={styles.pageShell}>

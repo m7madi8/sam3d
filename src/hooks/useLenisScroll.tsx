@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { isMobileLikeViewport, prefersReducedMotion } from "@/lib/viewport";
 
 declare global {
   interface Window {
@@ -14,11 +15,7 @@ export function useLenisScroll() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const prefersReducedMotion = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-
-    if (prefersReducedMotion) return;
+    if (prefersReducedMotion() || isMobileLikeViewport()) return;
 
     let cancelled = false;
     let cleanup: (() => void) | undefined;
