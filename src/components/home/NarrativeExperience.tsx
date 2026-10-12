@@ -683,6 +683,7 @@ export function NarrativeExperience({ introReady = false }: NarrativeExperienceP
                         fill
                         sizes={IMAGE_SIZES.servicePanel}
                         priority={index < 2}
+                        fetchPriority={service.id === "landscape" ? "high" : undefined}
                         quality={IMAGE_QUALITY.home}
                       />
                       <div className={styles.serviceOverlay} />

@@ -1,14 +1,25 @@
 import type { StaticImageData } from "next/image";
 import { COMMERCIAL_PROJECT_IMAGES } from "@/content/commercialImages";
 import { EXTERIOR_PROJECT_IMAGES } from "@/content/exteriorImages";
+import { EXTERIOR_01_IMAGES } from "@/content/exterior01Images";
+import { EXTERIOR_02_IMAGES } from "@/content/exterior02Images";
 import { INTERIOR_PROJECT_IMAGES } from "@/content/interiorImages";
 import { LANDSCAPE_PROJECT_IMAGES } from "@/content/landscapeImages";
 import { LANDSCAPE_01_IMAGES } from "@/content/landscape01Images";
 import { LANDSCAPE_02_IMAGES } from "@/content/landscape02Images";
+import { LANDSCAPE_02_TARAS_IMAGES } from "@/content/landscape02TarasImages";
 import { LANDSCAPE_03_IMAGES } from "@/content/landscape03Images";
+import { LANDSCAPE_04_IMAGES } from "@/content/landscape04Images";
+import { LANDSCAPE_05_IMAGES } from "@/content/landscape05Images";
 import { PALM_VILLA_IMAGES } from "@/content/palmVillaImages";
 
 type PortfolioImage = StaticImageData | string;
+
+export type PortfolioGallerySection = {
+  titleEn: string;
+  titleAr: string;
+  images: PortfolioImage[];
+};
 
 export type PortfolioCategoryId = "interior" | "landscape" | "exterior" | "commercial" | "architectural";
 
@@ -38,6 +49,8 @@ export type PortfolioProject = {
   hasFloors?: boolean;
   /** If true, gallery is rendered at each image's original aspect ratio (no crop, single set). */
   originalSize?: boolean;
+  /** Named gallery levels (e.g. terrace) — used with originalSize. */
+  gallerySections?: PortfolioGallerySection[];
 };
 
 export const PORTFOLIO_CATEGORIES: { id: PortfolioCategoryId; label: string }[] = [
@@ -87,18 +100,36 @@ export function buildPortfolioProjects(): PortfolioProject[] {
     };
   });
   const landscape: PortfolioProject[] = LANDSCAPE_PROJECT_IMAGES.map((img, i) => {
-    const titles = ["Wedding Hall", "Palace Garden", "Villa Garden", "Inner Courtyard", "Front Layout"];
+    const titles = ["Wedding Hall", "Palace Garden", "Villa Garden", "Terraced Garden", "Estate Landscape"];
     const descriptions = [
       "Wedding hall landscape with refined outdoor zones, planting, and ceremonial approach.",
       "Palace garden with layered planting, stone paths, and formal outdoor composition.",
       "Villa garden with private outdoor living, planting, and integrated landscape design.",
-      "Central courtyard with olive trees.",
-      "Front garden and approach design.",
+      "Terraced garden with planted levels, stone detailing, and balanced outdoor flow.",
+      "Estate landscape with cohesive planting, paths, and refined outdoor composition.",
     ];
     const areas = ["2200 sq. ft.", "3500 sq. ft.", undefined, undefined, undefined];
     const photosCounts = [9, 11, 7, 13, 10];
-    const landscapeRealSets = [LANDSCAPE_01_IMAGES, LANDSCAPE_02_IMAGES, LANDSCAPE_03_IMAGES];
+    const landscapeRealSets = [
+      LANDSCAPE_01_IMAGES,
+      LANDSCAPE_02_IMAGES,
+      LANDSCAPE_03_IMAGES,
+      LANDSCAPE_04_IMAGES,
+      LANDSCAPE_05_IMAGES,
+    ];
     const realImages = landscapeRealSets[i];
+    const isPalaceGarden = i === 1 && realImages;
+    const gallerySections: PortfolioGallerySection[] | undefined = isPalaceGarden
+      ? [
+          { titleEn: "Gallery", titleAr: "المعرض", images: LANDSCAPE_02_IMAGES },
+          { titleEn: "Terrace", titleAr: "الترس", images: LANDSCAPE_02_TARAS_IMAGES },
+        ]
+      : undefined;
+    const gallery = gallerySections
+      ? gallerySections.flatMap((s) => s.images)
+      : realImages
+        ? realImages
+        : [img];
     return {
       id: `landscape-${i + 1}`,
       title: titles[i],
@@ -110,9 +141,10 @@ export function buildPortfolioProjects(): PortfolioProject[] {
       client: "Private client",
       ...defaultSpecs,
       thumbnail: realImages ? realImages[0] : img,
-      gallery: realImages ? realImages : [img],
-      photosCount: realImages ? realImages.length : photosCounts[i],
+      gallery,
+      photosCount: gallery.length,
       originalSize: realImages ? true : undefined,
+      gallerySections,
     };
   });
   const exterior: PortfolioProject[] = EXTERIOR_PROJECT_IMAGES.map((img, i) => {
@@ -127,6 +159,8 @@ export function buildPortfolioProjects(): PortfolioProject[] {
     const areas = ["18000 sq. ft.", undefined, undefined, "24000 sq. ft.", undefined];
     const photosCounts = [16, 10, 12, 8, 14];
     const client = i === 0 ? "Development client" : i === 3 ? "Developer" : undefined;
+    const exteriorRealSets = [EXTERIOR_01_IMAGES, EXTERIOR_02_IMAGES];
+    const realImages = exteriorRealSets[i];
     return {
       id: `exterior-${i + 1}`,
       title: titles[i],
@@ -137,9 +171,10 @@ export function buildPortfolioProjects(): PortfolioProject[] {
       area: areas[i],
       client,
       ...defaultSpecs,
-      thumbnail: img,
-      gallery: [img],
-      photosCount: photosCounts[i],
+      thumbnail: realImages ? realImages[0] : img,
+      gallery: realImages ? realImages : [img],
+      photosCount: realImages ? realImages.length : photosCounts[i],
+      originalSize: realImages ? true : undefined,
     };
   });
   const commercial: PortfolioProject[] = COMMERCIAL_PROJECT_IMAGES.map((img, i) => {

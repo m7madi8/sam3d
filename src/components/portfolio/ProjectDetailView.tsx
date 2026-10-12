@@ -316,31 +316,87 @@ export function ProjectDetailView() {
             </div>
 
             {project.originalSize ? (
-              <div className={styles.stripWrap} data-project-entry>
-                <div className={styles.originalStrip}>
-                  {project.gallery.map((img, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className={styles.originalSlide}
-                      onClick={() => openLightbox(i)}
-                      aria-label={tr("View image", "عرض الصورة")}
-                      data-project-reveal
-                    >
-                      <Image
-                        src={img}
-                        alt={`${title} — ${i + 1}`}
-                        sizes={IMAGE_SIZES.projectOriginalItem}
-                        quality={IMAGE_QUALITY.gallery}
-                        className={styles.originalSlideImage}
-                      />
-                      <span className={styles.originalIndex} aria-hidden>
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                    </button>
-                  ))}
+              project.gallerySections?.length ? (
+                (() => {
+                  let offset = 0;
+                  return project.gallerySections.map((section, sectionIndex) => {
+                    const sectionTitle = tr(section.titleEn, section.titleAr);
+                    const images = section.images;
+                    const block = (
+                      <article key={sectionIndex} className={styles.floorBlock} data-project-entry>
+                        <div className={styles.floorHead}>
+                          <span className={styles.floorIndex}>
+                            {String(sectionIndex + 1).padStart(2, "0")}
+                          </span>
+                          <div className={styles.floorTitles}>
+                            <h3 className={styles.floorTitle}>{sectionTitle}</h3>
+                            <p className={styles.floorSubtitle}>{tr("Photos", "صور")}</p>
+                          </div>
+                          <span className={styles.floorCount}>
+                            {images.length} {tr("photos", "صورة")}
+                          </span>
+                        </div>
+                        <div className={styles.stripWrap}>
+                          <div className={styles.originalStrip}>
+                            {images.map((img, i) => {
+                              const globalIndex = offset + i;
+                              return (
+                                <button
+                                  key={globalIndex}
+                                  type="button"
+                                  className={styles.originalSlide}
+                                  onClick={() => openLightbox(globalIndex)}
+                                  aria-label={tr("View image", "عرض الصورة")}
+                                  data-project-reveal
+                                >
+                                  <Image
+                                    src={img}
+                                    alt={`${title} — ${sectionTitle}, ${i + 1}`}
+                                    sizes={IMAGE_SIZES.projectOriginalItem}
+                                    quality={IMAGE_QUALITY.gallery}
+                                    className={styles.originalSlideImage}
+                                  />
+                                  <span className={styles.originalIndex} aria-hidden>
+                                    {String(i + 1).padStart(2, "0")}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </article>
+                    );
+                    offset += images.length;
+                    return block;
+                  });
+                })()
+              ) : (
+                <div className={styles.stripWrap} data-project-entry>
+                  <div className={styles.originalStrip}>
+                    {project.gallery.map((img, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        className={styles.originalSlide}
+                        onClick={() => openLightbox(i)}
+                        aria-label={tr("View image", "عرض الصورة")}
+                        data-project-reveal
+                      >
+                        <Image
+                          src={img}
+                          alt={`${title} — ${i + 1}`}
+                          sizes={IMAGE_SIZES.projectOriginalItem}
+                          quality={IMAGE_QUALITY.gallery}
+                          className={styles.originalSlideImage}
+                        />
+                        <span className={styles.originalIndex} aria-hidden>
+                          {String(i + 1).padStart(2, "0")}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )
             ) : project.hasFloors ? (
               chunkBy(project.gallery, IMAGES_PER_LEVEL).map((images, levelIndex) => {
                 const isLandscape = project.category === "landscape";

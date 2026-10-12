@@ -26,6 +26,7 @@ const VALID_CATEGORY_IDS = new Set(categories.map((c) => c.id));
 const SUBTITLE_AR: Record<string, string> = {
   Interior: "داخلي",
   Landscape: "لاندسكيب",
+  Exterior: "خارجي",
   Architectural: "معماري",
   Commercial: "تجاري",
 };
