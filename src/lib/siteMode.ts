@@ -1,19 +1,15 @@
 import type { NextRequest } from "next/server";
 import type { NextResponse } from "next/server";
 
-/** Production domains that show the under-development page only. */
-const UNDER_DEV_HOSTS = new Set(["samarammar.com", "www.samarammar.com"]);
-
 export const PREVIEW_COOKIE = "sam3d-site-preview";
 
 export function normalizeHost(host: string | null): string {
   return (host ?? "").split(":")[0].toLowerCase();
 }
 
-/** True when the site should serve only the under-development experience. */
-export function isUnderDevelopmentSite(host: string | null): boolean {
-  if (process.env.SITE_UNDER_DEVELOPMENT === "true") return true;
-  return UNDER_DEV_HOSTS.has(normalizeHost(host));
+/** Legacy hook — site is public; always false. */
+export function isUnderDevelopmentSite(_host: string | null): boolean {
+  return false;
 }
 
 export function getPreviewSecret(): string | undefined {
